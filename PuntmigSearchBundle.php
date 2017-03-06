@@ -16,10 +16,9 @@ declare(strict_types=1);
 
 namespace Puntmig\Search;
 
+use Mmoreram\BaseBundle\SimpleBaseBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\HttpKernel\KernelInterface;
-
-use Mmoreram\BaseBundle\SimpleBaseBundle;
 
 /**
  * Class PuntmigSearchBundle.

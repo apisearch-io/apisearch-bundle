@@ -16,9 +16,10 @@ declare(strict_types=1);
 
 namespace Puntmig\Search\Twig;
 
-use Puntmig\Search\Query\UrlBuilder;
 use Twig_Extension;
 use Twig_SimpleFilter;
+
+use Puntmig\Search\Query\UrlBuilder;
 
 /**
  * Class QueryExtension.
