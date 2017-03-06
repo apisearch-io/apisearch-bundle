@@ -1,0 +1,11 @@
+services:
+
+    #
+    # Repositories
+    #
+    search_bundle.twig_extension:
+        class: Puntmig\Search\Twig\QueryExtension
+        arguments:
+            - "@search_bundle.url_builder"
+        tags:
+            - { name: twig.extension }

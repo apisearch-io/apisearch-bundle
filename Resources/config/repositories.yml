@@ -1,0 +1,9 @@
+services:
+
+    #
+    # Adapters
+    #
+    search_bundle.http_repository:
+        class: Puntmig\Search\Repository\HttpRepository
+        arguments:
+            - "@search_bundle.http_client"

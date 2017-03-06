@@ -1,0 +1,12 @@
+services:
+
+    #
+    # Http clients
+    #
+    search_bundle.test_client:
+        class: Mmoreram\SearchBundle\Http\TestClient
+        arguments:
+            - "@test.client"
+
+    search_bundle.http_client:
+        alias: search_bundle.test_client

@@ -1,0 +1,32 @@
+{% macro printPaginator(search_query, result) %}
+
+    <nav aria-label="...">
+        <ul class="pager">
+            {% set prevPage = search_query|add_prev_page(result) %}
+            {% set nextPage = search_query|add_next_page(result) %}
+            <li class="previous{% if prevPage is null %} disabled{% endif %}">
+                {% if prevPage is null %}
+                    <a href="#">
+                        <span aria-hidden="true">&larr;</span> Older
+                    </a>
+                {% else %}
+                    <a href="{{ url('shop', prevPage) }}">
+                        <span aria-hidden="true">&larr;</span> Older
+                    </a>
+                {% endif %}
+            </li>
+            <li class="next{% if nextPage is null %} disabled{% endif %}">
+                {% if nextPage is null %}
+                    <a href="#">
+                        Newer <span aria-hidden="true">&rarr;</span>
+                    </a>
+                {% else %}
+                    <a href="{{ url('shop', nextPage) }}">
+                        Newer <span aria-hidden="true">&rarr;</span>
+                    </a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+
+{% endmacro printPaginator %}
