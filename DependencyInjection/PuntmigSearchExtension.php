@@ -70,6 +70,7 @@ class PuntmigSearchExtension extends BaseExtension
     protected function getConfigFiles(array $config) : array
     {
         return [
+            'commands',
             'repositories',
             'query',
             'twig',

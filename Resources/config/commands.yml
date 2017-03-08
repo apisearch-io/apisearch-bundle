@@ -1,0 +1,11 @@
+services:
+
+    #
+    # Commands
+    #
+    search_bundle.reset_index_command:
+        class: Puntmig\Search\Command\ResetIndexCommand
+        arguments:
+            - "@search_bundle.http_repository"
+        tags:
+            - { name: console.command }
