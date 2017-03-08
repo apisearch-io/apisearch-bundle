@@ -33,6 +33,9 @@ class PuntmigSearchConfiguration extends BaseConfiguration
     {
         $rootNode
             ->children()
+                ->scalarNode('endpoint')
+                    ->isRequired()
+                ->end()
                 ->scalarNode('api_key')
                     ->isRequired()
                 ->end()

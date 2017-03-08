@@ -23,9 +23,9 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Puntmig\Search\PuntmigSearchBundle;
 
 /**
- * Class ApiKeyParameterExceptionTest.
+ * Class EndpointParameterExceptionTest.
  */
-class ApiKeyParameterExceptionTest extends PHPUnit_Framework_TestCase
+class EndpointParameterExceptionTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Test fail.
@@ -36,13 +36,13 @@ class ApiKeyParameterExceptionTest extends PHPUnit_Framework_TestCase
             PuntmigSearchBundle::class,
         ], [
             'puntmig_search' => [
-                'endpoint' => 'http://example.com',
+                'api_key' => '12345',
             ],
         ]);
 
         try {
             $kernel->boot();
-            $this->fail('Api key should be required. Kernel booted without value for puntmig_search.api_key');
+            $this->fail('Api key should be required. Kernel booted without value for puntmig_search.endpoint');
         } catch (InvalidConfigurationException $exception) {
             // Silent pass
         }

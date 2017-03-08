@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace Puntmig\Search\Tests\Functional;
+namespace Puntmig\Search\Tests\Repository;
 
 use Mmoreram\BaseBundle\Kernel\BaseKernel;
 use Mmoreram\BaseBundle\Tests\BaseFunctionalTest;
@@ -25,7 +25,7 @@ use Puntmig\Search\PuntmigSearchBundle;
 /**
  * File header placeholder.
  */
-class ApiKeyParameterTest extends BaseFunctionalTest
+class RepositoryWithKeyTest extends BaseFunctionalTest
 {
     /**
      * Get kernel.
@@ -51,12 +51,7 @@ class ApiKeyParameterTest extends BaseFunctionalTest
     {
         $this->assertEquals(
             '12345',
-            $this->getParameter('search_bundle.api_key')
-        );
-
-        $this->assertEquals(
-            'http://example.com',
-            $this->getParameter('search_bundle.endpoint')
+            $this->get('search_bundle.http_repository')->getKey()
         );
     }
 }

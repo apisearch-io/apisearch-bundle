@@ -7,3 +7,5 @@ services:
         class: Puntmig\Search\Repository\HttpRepository
         arguments:
             - "@search_bundle.http_client"
+        calls:
+            - ["setKey", ["%search_bundle.api_key%"]]

@@ -6,7 +6,7 @@ services:
     search_bundle.guzzle_client:
         class: Puntmig\Search\Http\GuzzleClient
         arguments:
-            - "http://search.puntmig.com:8000"
+            - "%search_bundle.endpoint"
 
     search_bundle.http_client:
         alias: search_bundle.guzzle_client
