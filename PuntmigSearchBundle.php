@@ -16,28 +16,26 @@ declare(strict_types=1);
 
 namespace Puntmig\Search;
 
-use Mmoreram\BaseBundle\SimpleBaseBundle;
+use Mmoreram\BaseBundle\BaseBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+
+use Puntmig\Search\DependencyInjection\PuntmigSearchExtension;
 
 /**
  * Class PuntmigSearchBundle.
  */
-class PuntmigSearchBundle extends SimpleBaseBundle
+class PuntmigSearchBundle extends BaseBundle
 {
     /**
-     * get config files.
+     * Returns the bundle's container extension.
      *
-     * @return array
+     * @return ExtensionInterface|null The container extension
      */
-    public function getConfigFiles() : array
+    public function getContainerExtension()
     {
-        return [
-            'repositories',
-            'query',
-            'twig',
-            'http',
-        ];
+        return new PuntmigSearchExtension();
     }
 
     /**
