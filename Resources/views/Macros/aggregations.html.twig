@@ -30,7 +30,7 @@
                         : search_query|add_filter_value(aggregationName, counter.id)
                     %}
 
-                    <a href="{{ url_decode(url("shop", url)) }}">
+                    <a href="{{ url("shop", url) }}">
                         {% if not aggregation.hasLevels %}
                             <input type="checkbox"{% if counter.isUsed %} checked{% endif %}/>
                         {% endif %}
