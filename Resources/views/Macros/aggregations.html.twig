@@ -1,4 +1,4 @@
-{% macro printAggregation(search_query, result, aggregationName) %}
+{% macro printAggregation(url, search_query, result, aggregationName) %}
     {% set aggregation = result.aggregation(aggregationName) %}
     {% if aggregation != null %}
         {{ aggregation.sortByName }}
@@ -7,7 +7,7 @@
 
             {% if aggregation.activeElements is not empty %}
                 <li>
-                    <a href="{{ url("shop", search_query|remove_filter_value(aggregationName)) }}">
+                    <a href="{{ url(search_url, search_query|remove_filter_value(aggregationName)) }}">
                         <span class="glyphicon glyphicon-remove-circle"></span> Remove selected
                     </a>
                 </li>
@@ -16,7 +16,7 @@
             {% if aggregation.hasLevels %}
                 {% for activeElement in aggregation.activeElements %}
                     <li>
-                        <a href="{{ url("shop", search_query|remove_filter_value(aggregationName, activeElement.id)) }}">
+                        <a href="{{ url(search_url, search_query|remove_filter_value(aggregationName, activeElement.id)) }}">
                             <span class="glyphicon glyphicon-remove-circle"></span> {{ activeElement.name }}
                         </a>
                     </li>
@@ -25,12 +25,12 @@
 
             {% for name,counter in aggregation  %}
                 <li>
-                    {% set url = counter.used
+                    {% set edited_search_query = counter.used
                         ? search_query|remove_filter_value(aggregationName, counter.id)
                         : search_query|add_filter_value(aggregationName, counter.id)
                     %}
 
-                    <a href="{{ url("shop", url) }}">
+                    <a href="{{ url(search_url, edited_search_query) }}">
                         {% if not aggregation.hasLevels %}
                             <input type="checkbox"{% if counter.isUsed %} checked{% endif %}/>
                         {% endif %}
@@ -43,20 +43,20 @@
 {% endmacro printAggregation %}
 
 
-{% macro printPriceRange(search_query, result) %}
+{% macro printPriceRange(url, search_query, result) %}
 
     {% set aggregation = result.aggregation('price') %}
     {% set result_min_price = result.minPrice %}
     {% set result_max_price = result.maxPrice %}
 
     <div id="price_range_wrapper"
-        data-url-placeholder = "{{ url("shop", search_query|remove_price_range_filter) }}"
+        data-url-placeholder = "{{ url(search_url, search_query|remove_price_range_filter) }}"
         data-slider-max = "{{ result_max_price }}"
     >
         <h4>Price</h4>
         {% if app.request.query.has('price') %}
             <div>
-                <a href="{{ url("shop", search_query|remove_price_range_filter) }}">
+                <a href="{{ url(search_url, search_query|remove_price_range_filter) }}">
                     <span class="glyphicon glyphicon-remove-circle"></span> Remove filter
                 </a>
             </div>
@@ -75,7 +75,7 @@
 
 {% endmacro printPriceRange %}
 
-{% macro printMultiplePriceRange(search_query, result) %}
+{% macro printMultiplePriceRange(url, search_query, result) %}
 
     {% set aggregation = result.aggregation('price') %}
     <h4>Price</h4>
@@ -83,7 +83,7 @@
     <ul class="nav nav-sidebar">
         {% if aggregation.activeElements is not empty %}
             <li>
-                <a href="{{ url("shop", search_query|remove_filter_value('price')) }}">
+                <a href="{{ url(search_url, search_query|remove_filter_value('price')) }}">
                     <span class="glyphicon glyphicon-remove-circle"></span> Remove selected
                 </a>
             </li>
@@ -91,12 +91,12 @@
 
         {% for name,counter in aggregation  %}
             <li>
-                {% set url = counter.used
+                {% set edited_search_query = counter.used
                     ? search_query|remove_filter_value('price', counter.id)
                     : search_query|add_filter_value('price', counter.id)
                 %}
 
-                <a href="{{ url("shop", url) }}">
+                <a href="{{ url(search_url, edited_search_query) }}">
                     <input type="checkbox"{% if counter.isUsed %} checked{% endif %}/>
                     {% set elems = counter.name|split('..') %}
                     {{ elems.0 }} - {{ elems.1 }} EUR ({{ counter.n }})
@@ -107,7 +107,7 @@
 
 {% endmacro printMultiplePriceRange %}
 
-{% macro printRatingRange(search_query, result) %}
+{% macro printRatingRange(url, search_query, result) %}
     {% set aggregation = result.aggregation('rating') %}
     <h4>Rating</h4>
 
@@ -115,7 +115,7 @@
 
         {% if aggregation.activeElements is not empty %}
             <li>
-                <a href="{{ url("shop", search_query|remove_filter_value('rating')) }}">
+                <a href="{{ url(search_url, search_query|remove_filter_value('rating')) }}">
                     <span class="glyphicon glyphicon-remove-circle"></span> Remove selected
                 </a>
             </li>
@@ -124,12 +124,12 @@
         {% for name,counter in aggregation  %}
             {% set elems = counter.name|split('..') %}
             <li>
-                {% set url = counter.used
+                {% set edited_search_query = counter.used
                     ? search_query|remove_filter_value('rating', counter.id)
                     : search_query|add_filter_value('rating', counter.id)
                 %}
 
-                <a href="{{ url("shop", url) }}">
+                <a href="{{ url(search_url, edited_search_query) }}">
                     <input type="checkbox"{% if counter.isUsed %} checked{% endif %}/>
                     <span style="font-size: 12px; color: #337ab7;">
                         {% set numStars = (elems.0|number_format) %}

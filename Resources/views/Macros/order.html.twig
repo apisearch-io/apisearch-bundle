@@ -1,4 +1,4 @@
-{% macro printOrderBy(search_query, result) %}
+{% macro printOrderBy(search_url, search_query, result) %}
 
     {% import _self as _order %}
     <ul class="nav nav-pills">
@@ -31,7 +31,7 @@
         </li>
     {% else %}
         <li role="presentation">
-            <a href="{{ url('shop', search_query|add_sort_by(field, direction)) }}">
+            <a href="{{ url(search_url, search_query|add_sort_by(field, direction)) }}">
                 {{ message }}
             </a>
         </li>
