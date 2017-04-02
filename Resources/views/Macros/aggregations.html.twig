@@ -1,4 +1,4 @@
-{% macro printAggregation(url, search_query, result, aggregationName) %}
+{% macro printAggregation(search_url, search_query, result, aggregationName) %}
     {% set aggregation = result.aggregation(aggregationName) %}
     {% if aggregation != null %}
         {{ aggregation.sortByName }}
@@ -43,7 +43,7 @@
 {% endmacro printAggregation %}
 
 
-{% macro printPriceRange(url, search_query, result) %}
+{% macro printPriceRange(search_url, search_query, result) %}
 
     {% set aggregation = result.aggregation('price') %}
     {% set result_min_price = result.minPrice %}
@@ -75,7 +75,7 @@
 
 {% endmacro printPriceRange %}
 
-{% macro printMultiplePriceRange(url, search_query, result) %}
+{% macro printMultiplePriceRange(search_url, search_query, result) %}
 
     {% set aggregation = result.aggregation('price') %}
     <h4>Price</h4>
@@ -107,7 +107,7 @@
 
 {% endmacro printMultiplePriceRange %}
 
-{% macro printRatingRange(url, search_query, result) %}
+{% macro printRatingRange(search_url, search_query, result) %}
     {% set aggregation = result.aggregation('rating') %}
     <h4>Rating</h4>
 

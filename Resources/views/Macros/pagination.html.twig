@@ -1,4 +1,4 @@
-{% macro printPaginator(search_query, search_query, result) %}
+{% macro printPaginator(search_url, search_query, result) %}
 
     <nav aria-label="...">
         <ul class="pager">
@@ -10,7 +10,7 @@
                         <span aria-hidden="true">&larr;</span> Older
                     </a>
                 {% else %}
-                    <a href="{{ url(search_query, prevPage) }}">
+                    <a href="{{ url(search_url, prevPage) }}">
                         <span aria-hidden="true">&larr;</span> Older
                     </a>
                 {% endif %}
@@ -21,7 +21,7 @@
                         Newer <span aria-hidden="true">&rarr;</span>
                     </a>
                 {% else %}
-                    <a href="{{ url(search_query, nextPage) }}">
+                    <a href="{{ url(search_url, nextPage) }}">
                         Newer <span aria-hidden="true">&rarr;</span>
                     </a>
                 {% endif %}
