@@ -2,13 +2,12 @@
     {% set aggregation = result.aggregation(aggregationName) %}
     {% if aggregation != null %}
         {{ aggregation.sortByName }}
-        <h4>{{ aggregationName }}</h4>
-        <ul class="nav nav-sidebar">
-
+        <h6>{{ aggregationName }}</h6>
+        <ul>
             {% if aggregation.activeElements is not empty %}
                 <li>
                     <a href="{{ url(search_url, search_query|remove_filter_value(aggregationName)) }}">
-                        <span class="glyphicon glyphicon-remove-circle"></span> Remove selected
+                        <span class="glyphicon glyphicon-remove-circle fa fa-times"></span> Remove selected
                     </a>
                 </li>
             {% endif %}
@@ -17,7 +16,7 @@
                 {% for activeElement in aggregation.activeElements %}
                     <li>
                         <a href="{{ url(search_url, search_query|remove_filter_value(aggregationName, activeElement.id)) }}">
-                            <span class="glyphicon glyphicon-remove-circle"></span> {{ activeElement.name }}
+                            <span class="glyphicon glyphicon-remove-circle fa fa-times"></span> {{ activeElement.name }}
                         </a>
                     </li>
                 {% endfor %}
@@ -57,7 +56,7 @@
         {% if app.request.query.has('price') %}
             <div>
                 <a href="{{ url(search_url, search_query|remove_price_range_filter) }}">
-                    <span class="glyphicon glyphicon-remove-circle"></span> Remove filter
+                    <span class="glyphicon glyphicon-remove-circle fa fa-times"></span> Remove filter
                 </a>
             </div>
         {% endif %}
@@ -84,7 +83,7 @@
         {% if aggregation.activeElements is not empty %}
             <li>
                 <a href="{{ url(search_url, search_query|remove_filter_value('price')) }}">
-                    <span class="glyphicon glyphicon-remove-circle"></span> Remove selected
+                    <span class="glyphicon glyphicon-remove-circle fa fa-times"></span> Remove selected
                 </a>
             </li>
         {% endif %}
@@ -116,7 +115,7 @@
         {% if aggregation.activeElements is not empty %}
             <li>
                 <a href="{{ url(search_url, search_query|remove_filter_value('rating')) }}">
-                    <span class="glyphicon glyphicon-remove-circle"></span> Remove selected
+                    <span class="glyphicon glyphicon-remove-circle fa fa-times"></span> Remove selected
                 </a>
             </li>
         {% endif %}
@@ -136,12 +135,12 @@
                         {% set numEmptyStarts = 10-numStars %}
                         {% if numStars > 0 %}
                             {% for i in 1..numStars %}
-                                <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                                <span class="glyphicon glyphicon-star fa fa-star" aria-hidden="true"></span>
                             {% endfor %}
                         {% endif %}
                         {% if numEmptyStarts > 0 %}
                             {% for i in 1..numEmptyStarts %}
-                                <span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span>
+                                <span class="glyphicon glyphicon-star-empty fa fa-star-o" aria-hidden="true"></span>
                             {% endfor %}
                         {% endif %}
                     </span>
