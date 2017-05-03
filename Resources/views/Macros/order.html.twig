@@ -11,8 +11,8 @@
         {{ _order.printOrderByElement(search_url, search_query, 'discount_percentage', 'desc', 'First the biggest discount %') }}
         {{ _order.printOrderByElement(search_url, search_query, 'updated_at', 'asc', 'First the newest') }}
         {{ _order.printOrderByElement(search_url, search_query, 'updated_at', 'desc', 'First the oldest') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'manufacturer.name', 'asc', 'By manufacturer A/Z') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'manufacturer.name', 'desc', 'By manufacturer Z/A') }}
+        {{ _order.printOrderByElement(search_url, search_query, 'manufacturers.name', 'asc', 'By manufacturer A/Z') }}
+        {{ _order.printOrderByElement(search_url, search_query, 'manufacturers.name', 'desc', 'By manufacturer Z/A') }}
         {{ _order.printOrderByElement(search_url, search_query, 'brand.name', 'asc', 'By brand A/Z') }}
         {{ _order.printOrderByElement(search_url, search_query, 'brand.name', 'desc', 'By brand Z/A') }}
         {{ _order.printOrderByElement(search_url, search_query, 'rating', 'desc', 'Best rated first') }}
