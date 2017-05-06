@@ -1,13 +1,13 @@
 {% macro printAggregation(search_url, search_query, result, aggregationName) %}
     {% set aggregation = result.aggregation(aggregationName) %}
-    {% if aggregation != null %}
+    {% if aggregation != null and not aggregation.isEmpty %}
         {{ aggregation.sortByName }}
         <h6>{{ aggregationName }}</h6>
         <ul>
             {% if aggregation.activeElements is not empty %}
                 <li>
                     <a href="{{ url(search_url, search_query|remove_filter_value(aggregationName)) }}">
-                        <span class="glyphicon glyphicon-remove-circle fa fa-times"></span> Remove selected
+                        <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> Remove selected
                     </a>
                 </li>
             {% endif %}
@@ -16,22 +16,23 @@
                 {% for activeElement in aggregation.activeElements %}
                     <li>
                         <a href="{{ url(search_url, search_query|remove_filter_value(aggregationName, activeElement.id)) }}">
-                            <span class="glyphicon glyphicon-remove-circle fa fa-times"></span> {{ activeElement.name }}
+                            <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> {{ activeElement.name }}
                         </a>
                     </li>
                 {% endfor %}
             {% endif %}
 
             {% for name,counter in aggregation  %}
-                <li>
+                <li class="nav-item">
                     {% set edited_search_query = counter.used
                         ? search_query|remove_filter_value(aggregationName, counter.id)
                         : search_query|add_filter_value(aggregationName, counter.id)
                     %}
+                    {% set url = url(search_url, edited_search_query) %}
 
-                    <a href="{{ url(search_url, edited_search_query) }}">
+                    <a href="{{ url }}" class="nav-link" style="padding: .5em 0em">
                         {% if not aggregation.hasLevels %}
-                            <input type="checkbox"{% if counter.isUsed %} checked{% endif %}/>
+                            <input type="checkbox"{% if counter.isUsed %} checked{% endif %} onclick='window.location.assign("{{ url }}")'>
                         {% endif %}
                         {{ counter.name }} ({{ counter.n }})
                     </a>
@@ -56,7 +57,7 @@
         {% if app.request.query.has('price') %}
             <div>
                 <a href="{{ url(search_url, search_query|remove_price_range_filter) }}">
-                    <span class="glyphicon glyphicon-remove-circle fa fa-times"></span> Remove filter
+                    <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> Remove filter
                 </a>
             </div>
         {% endif %}
@@ -83,7 +84,7 @@
         {% if aggregation.activeElements is not empty %}
             <li>
                 <a href="{{ url(search_url, search_query|remove_filter_value('price')) }}">
-                    <span class="glyphicon glyphicon-remove-circle fa fa-times"></span> Remove selected
+                    <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> Remove selected
                 </a>
             </li>
         {% endif %}
