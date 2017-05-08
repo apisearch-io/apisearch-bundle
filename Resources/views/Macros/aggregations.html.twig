@@ -1,13 +1,23 @@
-{% macro printAggregation(search_url, search_query, result, aggregationName) %}
+{% trans_default_domain "filters" %}
+
+{% macro printAggregation(
+    search_url,
+    search_query,
+    result,
+    aggregationName,
+    aggregationValueTransFormat,
+    aggregationHeaderTransFormat
+) %}
+    {% import _self as _aggregations %}
     {% set aggregation = result.aggregation(aggregationName) %}
     {% if aggregation != null and not aggregation.isEmpty %}
         {{ aggregation.sortByName }}
-        <h6>{{ aggregationName }}</h6>
+        {{ _aggregations.printTitle(aggregationName, aggregationHeaderTransFormat) }}
         <ul>
             {% if aggregation.activeElements is not empty %}
                 <li>
                     <a href="{{ url(search_url, search_query|remove_filter_value(aggregationName)) }}">
-                        <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> Remove selected
+                        <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> {{ "labels.remove_selected"|trans }}
                     </a>
                 </li>
             {% endif %}
@@ -16,7 +26,7 @@
                 {% for activeElement in aggregation.activeElements %}
                     <li>
                         <a href="{{ url(search_url, search_query|remove_filter_value(aggregationName, activeElement.id)) }}">
-                            <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> {{ activeElement.name }}
+                            <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> {{ activeElement.name|trans }}
                         </a>
                     </li>
                 {% endfor %}
@@ -34,7 +44,7 @@
                         {% if not aggregation.hasLevels %}
                             <input type="checkbox"{% if counter.isUsed %} checked{% endif %} onclick='window.location.assign("{{ url }}")'>
                         {% endif %}
-                        {{ counter.name }} ({{ counter.n }})
+                        {{ _aggregations.printOptionValue(aggregationName, counter, aggregationValueTransFormat) }}
                     </a>
                 </li>
             {% endfor %}
@@ -43,8 +53,14 @@
 {% endmacro printAggregation %}
 
 
-{% macro printPriceRange(search_url, search_query, result) %}
-
+{% macro printPriceRange(
+    search_url,
+    search_query,
+    result,
+    aggregationValueTransFormat,
+    aggregationHeaderTransFormat
+) %}
+    {% import _self as _aggregations %}
     {% set aggregation = result.aggregation('price') %}
     {% set result_min_price = result.minPrice %}
     {% set result_max_price = result.maxPrice %}
@@ -53,11 +69,11 @@
         data-url-placeholder = "{{ url(search_url, search_query|remove_price_range_filter) }}"
         data-slider-max = "{{ result_max_price }}"
     >
-        <h4>Price</h4>
+        {{ _aggregations.printTitle('price', aggregationHeaderTransFormat) }}
         {% if app.request.query.has('price') %}
             <div>
                 <a href="{{ url(search_url, search_query|remove_price_range_filter) }}">
-                    <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> Remove filter
+                    <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> {{ "labels.remove_selected"|trans }}
                 </a>
             </div>
         {% endif %}
@@ -75,16 +91,23 @@
 
 {% endmacro printPriceRange %}
 
-{% macro printMultiplePriceRange(search_url, search_query, result) %}
+{% macro printMultiplePriceRange(
+    search_url,
+    search_query,
+    result,
+    aggregationValueTransFormat,
+    aggregationHeaderTransFormat
+) %}
 
+    {% import _self as _aggregations %}
     {% set aggregation = result.aggregation('price') %}
-    <h4>Price</h4>
+    {{ _aggregations.printTitle('price', aggregationHeaderTransFormat) }}
 
-    <ul class="nav nav-sidebar">
+    <ul>
         {% if aggregation.activeElements is not empty %}
             <li>
                 <a href="{{ url(search_url, search_query|remove_filter_value('price')) }}">
-                    <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> Remove selected
+                    <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> {{ "labels.remove_selected"|trans }}
                 </a>
             </li>
         {% endif %}
@@ -98,8 +121,7 @@
 
                 <a href="{{ url(search_url, edited_search_query) }}">
                     <input type="checkbox"{% if counter.isUsed %} checked{% endif %}/>
-                    {% set elems = counter.name|split('..') %}
-                    {{ elems.0 }} - {{ elems.1 }} EUR ({{ counter.n }})
+                    {{ _aggregations.printOptionValue('price', counter, aggregationValueTransFormat) }}
                 </a>
             </li>
         {% endfor %}
@@ -107,16 +129,24 @@
 
 {% endmacro printMultiplePriceRange %}
 
-{% macro printRatingRange(search_url, search_query, result) %}
-    {% set aggregation = result.aggregation('rating') %}
-    <h4>Rating</h4>
 
-    <ul class="nav nav-sidebar">
+{% macro printRatingRange(
+    search_url,
+    search_query,
+    result,
+    aggregationValueTransFormat,
+    aggregationHeaderTransFormat
+) %}
+    {% import _self as _aggregations %}
+    {% set aggregation = result.aggregation('rating') %}
+    {{ _aggregations.printTitle('rating', aggregationHeaderTransFormat) }}
+
+    <ul>
 
         {% if aggregation.activeElements is not empty %}
             <li>
                 <a href="{{ url(search_url, search_query|remove_filter_value('rating')) }}">
-                    <span class="glyphicon glyphicon-remove-circle fa fa-times"></span> Remove selected
+                    <span class="glyphicon glyphicon-remove-circle fa fa-times"></span> {{ "labels.remove_selected"|trans }}
                 </a>
             </li>
         {% endif %}
@@ -151,3 +181,30 @@
         {% endfor %}
     </ul>
 {% endmacro printRatingRange %}
+
+
+{% macro printTitle(aggregationName, aggregationHeaderTransFormat) %}
+    <h4>
+        {% set aggregationHeader = aggregationHeaderTransFormat
+            |default('fields.{{ field }}.label')
+            |replace({
+                '{{ field }}': aggregationName
+            })
+            |trans
+        %}
+        {{ aggregationHeader }}
+    </h4>
+{% endmacro printTitle %}
+
+
+{% macro printOptionValue(aggregationName, counter, aggregationValueTransFormat) %}
+    {% set aggregationValue = aggregationValueTransFormat
+        |default('fields.{{ field }}.options.{{ option }}')
+        |replace({
+            '{{ field }}': aggregationName,
+            '{{ option }}': counter.name|replace({'.': '~'})
+        })
+        |trans
+    %}
+    {{ aggregationValue }} ({{ counter.n }})
+{% endmacro printOptionValue %}
