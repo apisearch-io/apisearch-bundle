@@ -1,0 +1,40 @@
+fields:
+    indexed_metadata:
+        with_stock:
+            label: Stock
+            options:
+                0: Sin stock
+                1: Con stock
+        with_discount:
+            label: Descuento
+            options:
+                0: Sin descuento
+                1: Con descuento aplicado
+        with_image:
+            label: Imagen
+            options:
+                0: Sin imagen
+                1: Con imagen
+    type:
+        label: Tipo
+        options:
+            product: Productos
+            category: Categorias
+            manufacturer: Fabricantes
+            brand: Marcas
+            tag: Tags
+    price:
+        label: Precio (in €)
+    categories:
+        label: Categorias
+    rating:
+        label: Valoración
+    manufacturers:
+        label: Fabricantes
+    brand:
+        label: Marcas
+    family:
+        label: Tipo de producto
+
+labels:
+    remove_selected: Eliminar seleccionados

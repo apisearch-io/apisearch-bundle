@@ -33,6 +33,8 @@ fields:
         label: Manufacturers
     brand:
         label: Brand
+    family:
+        label: Product type
 
 labels:
     remove_selected: Remove selected
