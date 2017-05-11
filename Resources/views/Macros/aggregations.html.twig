@@ -5,6 +5,7 @@
     search_query,
     result,
     aggregationName,
+    maxElements,
     aggregationValueTransFormat,
     aggregationHeaderTransFormat
 ) %}
@@ -32,7 +33,7 @@
                 {% endfor %}
             {% endif %}
 
-            {% for name,counter in aggregation  %}
+            {% for counter in aggregation.counters|slice(0, maxElements|default(999))  %}
                 <li>
                     {% set edited_search_query = counter.used
                         ? search_query|remove_filter_value(aggregationName, counter.id)
