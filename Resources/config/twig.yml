@@ -3,8 +3,8 @@ services:
     #
     # Repositories
     #
-    search_bundle.twig_extension:
-        class: Puntmig\Search\Twig\QueryExtension
+    search_bundle.url_builder_extension:
+        class: Puntmig\Search\Twig\UrlBuilderExtension
         arguments:
             - "@search_bundle.url_builder"
         tags:

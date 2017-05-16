@@ -1,0 +1,9 @@
+services:
+
+    #
+    # Query services
+    #
+    search_bundle.url_builder:
+        class: Puntmig\Search\Url\UrlBuilder
+        arguments:
+            - "@router"

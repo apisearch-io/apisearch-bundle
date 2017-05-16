@@ -1,39 +1,41 @@
 {% trans_default_domain "filters" %}
 
-{% macro printOrderBy(search_url, search_query, result) %}
+{% macro printOrderBy(result) %}
 
     {% import _self as _order %}
     <ul class="nav nav-pills">
-        {{ _order.printOrderByElement(search_url, search_query, '_score', 'asc', 'By score') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'real_price', 'asc', 'First the cheapest') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'real_price', 'desc', 'First the more expensive') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'discount', 'asc', 'First the lowest discount') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'discount', 'desc', 'First the biggest discount') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'discount_percentage', 'asc', 'First the lowest discount %') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'discount_percentage', 'desc', 'First the biggest discount %') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'updated_at', 'asc', 'First the newest') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'updated_at', 'desc', 'First the oldest') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'manufacturers.name', 'asc', 'By manufacturer A/Z') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'manufacturers.name', 'desc', 'By manufacturer Z/A') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'brand.name', 'asc', 'By brand A/Z') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'brand.name', 'desc', 'By brand Z/A') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'rating', 'desc', 'Best rated first') }}
-        {{ _order.printOrderByElement(search_url, search_query, 'rating', 'asc', 'Worst rated first') }}
+        {{ _order.printOrderByElement(result, '_score', 'asc', 'By score') }}
+        {{ _order.printOrderByElement(result, 'sortable_name', 'asc', 'A-Z') }}
+        {{ _order.printOrderByElement(result, 'sortable_name', 'desc', 'Z-A') }}
+        {{ _order.printOrderByElement(result, 'real_price', 'asc', 'First the cheapest') }}
+        {{ _order.printOrderByElement(result, 'real_price', 'desc', 'First the more expensive') }}
+        {{ _order.printOrderByElement(result, 'discount', 'asc', 'First the lowest discount') }}
+        {{ _order.printOrderByElement(result, 'discount', 'desc', 'First the biggest discount') }}
+        {{ _order.printOrderByElement(result, 'discount_percentage', 'asc', 'First the lowest discount %') }}
+        {{ _order.printOrderByElement(result, 'discount_percentage', 'desc', 'First the biggest discount %') }}
+        {{ _order.printOrderByElement(result, 'updated_at', 'asc', 'First the newest') }}
+        {{ _order.printOrderByElement(result, 'updated_at', 'desc', 'First the oldest') }}
+        {{ _order.printOrderByElement(result, 'manufacturers.name', 'asc', 'By manufacturer A/Z') }}
+        {{ _order.printOrderByElement(result, 'manufacturers.name', 'desc', 'By manufacturer Z/A') }}
+        {{ _order.printOrderByElement(result, 'brand.name', 'asc', 'By brand A/Z') }}
+        {{ _order.printOrderByElement(result, 'brand.name', 'desc', 'By brand Z/A') }}
+        {{ _order.printOrderByElement(result, 'rating', 'desc', 'Best rated first') }}
+        {{ _order.printOrderByElement(result, 'rating', 'asc', 'Worst rated first') }}
     </ul>
 
 {% endmacro printOrderBy %}
 
-{% macro printOrderByElement(search_url, search_query, field, direction, message) %}
-    {% set sortBy = search_query|add_sort_by(field, direction) %}
+{% macro printOrderByElement(result, field, direction, message) %}
+    {% set sortBy = result|add_sort_by(field, direction) %}
     {% if sortBy is null %}
-        <li role="presentation" class="active">
-            <a href="#">
+        <li class="nav-item">
+            <a class="nav-link active" href="#">
                 {{ message }}
             </a>
         </li>
     {% else %}
-        <li role="presentation">
-            <a href="{{ url(search_url, search_query|add_sort_by(field, direction)) }}">
+        <li class="nav-item">
+            <a class="nav-link"  href="{{ sortBy }}">
                 {{ message }}
             </a>
         </li>

@@ -1,7 +1,0 @@
-services:
-
-    #
-    # Query services
-    #
-    search_bundle.url_builder:
-        class: Puntmig\Search\Query\UrlBuilder

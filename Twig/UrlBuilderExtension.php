@@ -19,12 +19,12 @@ namespace Puntmig\Search\Twig;
 use Twig_Extension;
 use Twig_SimpleFilter;
 
-use Puntmig\Search\Query\UrlBuilder;
+use Puntmig\Search\Url\UrlBuilder;
 
 /**
- * Class QueryExtension.
+ * Class UrlBuilderExtension.
  */
-class QueryExtension extends Twig_Extension
+class UrlBuilderExtension extends Twig_Extension
 {
     /**
      * @var UrlBuilder
@@ -70,6 +70,6 @@ class QueryExtension extends Twig_Extension
      */
     public function getName()
     {
-        return 'query_extension';
+        return 'url_builder_extension';
     }
 }

@@ -1,18 +1,18 @@
 {% trans_default_domain "filters" %}
 
-{% macro printPaginator(search_url, search_query, result) %}
+{% macro printPaginator(result) %}
 
     <nav aria-label="...">
         <ul class="pager">
-            {% set prevPage = search_query|add_prev_page(result) %}
-            {% set nextPage = search_query|add_next_page(result) %}
+            {% set prevPage = result|add_prev_page(result) %}
+            {% set nextPage = result|add_next_page(result) %}
             <li class="previous{% if prevPage is null %} disabled{% endif %}">
                 {% if prevPage is null %}
                     <a href="#">
                         <span aria-hidden="true">&larr;</span> Older
                     </a>
                 {% else %}
-                    <a href="{{ url(search_url, prevPage) }}">
+                    <a href="{{ prevPage }}">
                         <span aria-hidden="true">&larr;</span> Older
                     </a>
                 {% endif %}
@@ -23,7 +23,7 @@
                         Newer <span aria-hidden="true">&rarr;</span>
                     </a>
                 {% else %}
-                    <a href="{{ url(search_url, nextPage) }}">
+                    <a href="{{ nextPage }}">
                         Newer <span aria-hidden="true">&rarr;</span>
                     </a>
                 {% endif %}

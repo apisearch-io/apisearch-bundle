@@ -72,7 +72,7 @@ class PuntmigSearchExtension extends BaseExtension
         return [
             'commands',
             'repositories',
-            'query',
+            'url',
             'twig',
             'http',
         ];
