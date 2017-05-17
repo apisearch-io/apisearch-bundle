@@ -18,6 +18,7 @@ namespace Puntmig\Search\Twig;
 
 use Twig_Extension;
 use Twig_SimpleFilter;
+use Twig_SimpleFunction;
 
 use Puntmig\Search\Url\UrlBuilder;
 
@@ -58,6 +59,18 @@ class UrlBuilderExtension extends Twig_Extension
             new Twig_SimpleFilter('add_page', [$this->urlBuilder, 'addPage']),
             new Twig_SimpleFilter('add_next_page', [$this->urlBuilder, 'addNextPage']),
             new Twig_SimpleFilter('add_sort_by', [$this->urlBuilder, 'addSortBy']),
+        ];
+    }
+
+    /**
+     * Returns a list of filters to add to the existing list.
+     *
+     * @return Twig_SimpleFunction[] An array of filters
+     */
+    public function getFunctions()
+    {
+        return [
+            new Twig_SimpleFunction('set_routes_dictionary', [$this->urlBuilder, 'setRoutesDictionary']),
         ];
     }
 
