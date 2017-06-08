@@ -74,7 +74,7 @@ class PuntmigSearchExtension extends BaseExtension
             'repositories',
             'url',
             'twig',
-            'http',
+            'transformers',
         ];
     }
 
@@ -94,8 +94,7 @@ class PuntmigSearchExtension extends BaseExtension
     protected function getParametrizationValues(array $config) : array
     {
         return [
-            'search_bundle.endpoint' => $config['endpoint'],
-            'search_bundle.api_key' => $config['api_key'],
+            'puntmig_search.repository_configuration' => $config['repositories'],
         ];
     }
 

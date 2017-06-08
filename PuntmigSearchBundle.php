@@ -18,9 +18,13 @@ namespace Puntmig\Search;
 
 use Mmoreram\BaseBundle\BaseBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
+use Puntmig\Search\DependencyInjection\CompilerPass\ReadTransformerCompilerPass;
+use Puntmig\Search\DependencyInjection\CompilerPass\RepositoryCompilerPass;
+use Puntmig\Search\DependencyInjection\CompilerPass\WriteTransformerCompilerPass;
 use Puntmig\Search\DependencyInjection\PuntmigSearchExtension;
 
 /**
@@ -49,6 +53,20 @@ class PuntmigSearchBundle extends BaseBundle
     {
         return [
             FrameworkBundle::class,
+        ];
+    }
+
+    /**
+     * Return a CompilerPass instance array.
+     *
+     * @return CompilerPassInterface[]
+     */
+    public function getCompilerPasses() : array
+    {
+        return [
+            new RepositoryCompilerPass(),
+            new ReadTransformerCompilerPass(),
+            new WriteTransformerCompilerPass(),
         ];
     }
 }

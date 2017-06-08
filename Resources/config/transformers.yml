@@ -1,0 +1,4 @@
+services:
+
+    puntmig_search.transformer:
+        class: Puntmig\Search\Transformer\Transformer
