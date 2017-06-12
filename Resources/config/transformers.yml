@@ -2,3 +2,5 @@ services:
 
     puntmig_search.transformer:
         class: Puntmig\Search\Transformer\Transformer
+        arguments:
+            - "@event_dispatcher"
