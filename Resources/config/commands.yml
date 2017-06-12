@@ -6,6 +6,6 @@ services:
     search_bundle.reset_index_command:
         class: Puntmig\Search\Command\ResetIndexCommand
         arguments:
-            - "@search_bundle.http_repository"
+            - "@puntmig_search.repository_bucket"
         tags:
             - { name: console.command }

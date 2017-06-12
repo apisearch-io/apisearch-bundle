@@ -17,10 +17,11 @@ declare(strict_types=1);
 namespace Puntmig\Search\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Puntmig\Search\Repository\Repository;
+use Puntmig\Search\Repository\RepositoryBucket;
 
 /**
  * File header placeholder.
@@ -28,22 +29,22 @@ use Puntmig\Search\Repository\Repository;
 class ResetIndexCommand extends Command
 {
     /**
-     * @var Repository
+     * @var RepositoryBucket
      *
-     * Repository
+     * Repository bucket
      */
-    private $repository;
+    private $repositoryBucket;
 
     /**
      * ResetIndexCommand constructor.
      *
-     * @param Repository $repository
+     * @param RepositoryBucket $repositoryBucket
      */
-    public function __construct(Repository $repository)
+    public function __construct(RepositoryBucket $repositoryBucket)
     {
         parent::__construct();
 
-        $this->repository = $repository;
+        $this->repositoryBucket = $repositoryBucket;
     }
 
     /**
@@ -53,7 +54,12 @@ class ResetIndexCommand extends Command
     {
         $this
             ->setName('puntmig:search:reset-index')
-            ->setDescription('Reset your search index. Prepared a clean instance of the index and remove existing objects');
+            ->setDescription('Reset your search index. Prepared a clean instance of the index and remove existing objects')
+            ->addArgument(
+                'repository',
+                InputArgument::REQUIRED,
+                'Repository name'
+            );
     }
 
     /**
@@ -74,7 +80,9 @@ class ResetIndexCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this
-            ->repository
+            ->repositoryBucket->getRepositoryByName(
+                $input->getArgument('repository')
+            )
             ->reset();
     }
 }

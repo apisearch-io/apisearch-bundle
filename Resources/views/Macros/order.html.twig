@@ -5,22 +5,6 @@
     {% import _self as _order %}
     <ul class="nav nav-pills">
         {{ _order.printOrderByElement(result, '_score', 'asc', 'By score') }}
-        {{ _order.printOrderByElement(result, 'sortable_name', 'asc', 'A-Z') }}
-        {{ _order.printOrderByElement(result, 'sortable_name', 'desc', 'Z-A') }}
-        {{ _order.printOrderByElement(result, 'real_price', 'asc', 'First the cheapest') }}
-        {{ _order.printOrderByElement(result, 'real_price', 'desc', 'First the more expensive') }}
-        {{ _order.printOrderByElement(result, 'discount', 'asc', 'First the lowest discount') }}
-        {{ _order.printOrderByElement(result, 'discount', 'desc', 'First the biggest discount') }}
-        {{ _order.printOrderByElement(result, 'discount_percentage', 'asc', 'First the lowest discount %') }}
-        {{ _order.printOrderByElement(result, 'discount_percentage', 'desc', 'First the biggest discount %') }}
-        {{ _order.printOrderByElement(result, 'updated_at', 'asc', 'First the newest') }}
-        {{ _order.printOrderByElement(result, 'updated_at', 'desc', 'First the oldest') }}
-        {{ _order.printOrderByElement(result, 'manufacturers.name', 'asc', 'By manufacturer A/Z') }}
-        {{ _order.printOrderByElement(result, 'manufacturers.name', 'desc', 'By manufacturer Z/A') }}
-        {{ _order.printOrderByElement(result, 'brand.name', 'asc', 'By brand A/Z') }}
-        {{ _order.printOrderByElement(result, 'brand.name', 'desc', 'By brand Z/A') }}
-        {{ _order.printOrderByElement(result, 'rating', 'desc', 'Best rated first') }}
-        {{ _order.printOrderByElement(result, 'rating', 'asc', 'Worst rated first') }}
     </ul>
 
 {% endmacro printOrderBy %}

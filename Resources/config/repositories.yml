@@ -1,11 +1,4 @@
 services:
 
-    #
-    # Adapters
-    #
-    search_bundle.http_repository:
-        class: Puntmig\Search\Repository\HttpRepository
-        arguments:
-            - "@search_bundle.http_client"
-        calls:
-            - ["setKey", ["%search_bundle.api_key%"]]
+    puntmig_search.repository_bucket:
+        class: Puntmig\Search\Repository\RepositoryBucket
