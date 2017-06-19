@@ -12,45 +12,41 @@
     {% if aggregation != null and not aggregation.isEmpty %}
         {{ aggregation.sortByName }}
         {{ _aggregations.printTitle(aggregationName) }}
-        <div class="form-inline">
-            <div class="checkbox">
-                <ul>
-                    {% if aggregation.activeElements is not empty %}
-                        <li>
-                            <a href="{{ result|remove_filter_value(aggregationName) }}">
-                                <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> {{ "labels.remove_selected"|trans }}
-                            </a>
-                        </li>
-                    {% endif %}
+        <ul>
+            {% if aggregation.activeElements is not empty %}
+                <li>
+                    <a href="{{ result|remove_filter_value(aggregationName) }}">
+                        <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> {{ "labels.remove_selected"|trans }}
+                    </a>
+                </li>
+            {% endif %}
 
-                    {% if aggregation.hasLevels %}
-                        {% for activeElement in aggregation.activeElements %}
-                            <li>
-                                <a href="{{ result|remove_filter_value(aggregationName, activeElement.id) }}">
-                                    <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> {{ activeElement.name|trans }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    {% endif %}
+            {% if aggregation.hasLevels %}
+                {% for activeElement in aggregation.activeElements %}
+                    <li>
+                        <a href="{{ result|remove_filter_value(aggregationName, activeElement.id) }}">
+                            <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> {{ activeElement.name|trans }}
+                        </a>
+                    </li>
+                {% endfor %}
+            {% endif %}
 
-                    {% for counter in aggregation.counters|slice(0, maxElements|default(999))  %}
-                        <li>
-                            {% set edited_search_query = counter.used
-                                ? result|remove_filter_value(aggregationName, counter.id)
-                                : result|add_filter_value(aggregationName, counter.id)
-                            %}
+            {% for counter in aggregation.counters|slice(0, maxElements|default(999))  %}
+                <li>
+                    {% set edited_search_query = counter.used
+                        ? result|remove_filter_value(aggregationName, counter.id)
+                        : result|add_filter_value(aggregationName, counter.id)
+                    %}
 
-                            <a href="{{ edited_search_query }}">
-                                {% if not aggregation.hasLevels %}
-                                    <input type="checkbox"{% if counter.isUsed %} checked{% endif %} onclick='window.location.assign("{{ url }}")'>
-                                {% endif %}
-                                {{ _aggregations.printOptionValue(aggregationName, counter) }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+                    <a href="{{ edited_search_query }}">
+                        {% if not aggregation.hasLevels %}
+                            <input type="checkbox"{% if counter.isUsed %} checked{% endif %} onclick='window.location.assign("{{ url }}")'>
+                        {% endif %}
+                        {{ _aggregations.printOptionValue(aggregationName, counter) }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
     {% endif %}
 {% endmacro printAggregation %}
 
@@ -98,34 +94,29 @@
 
     {% if aggregation != null and not aggregation.isEmpty %}
         {{ _aggregations.printTitle('price') }}
-        <div class="form-inline">
-            <div class="checkbox">
+        <ul>
+            {% if aggregation.activeElements is not empty %}
+                <li>
+                    <a href="{{ result|remove_filter_value('price') }}">
+                        <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> {{ "labels.remove_selected"|trans }}
+                    </a>
+                </li>
+            {% endif %}
 
-                <ul>
-                    {% if aggregation.activeElements is not empty %}
-                        <li>
-                            <a href="{{ result|remove_filter_value('price') }}">
-                                <span class="glyphicon glyphicon-remove-circle fa fa-remove"></span> {{ "labels.remove_selected"|trans }}
-                            </a>
-                        </li>
-                    {% endif %}
+            {% for name,counter in aggregation  %}
+                <li>
+                    {% set edited_search_query = counter.used
+                        ? result|remove_filter_value('price', counter.id)
+                        : result|add_filter_value('price', counter.id)
+                    %}
 
-                    {% for name,counter in aggregation  %}
-                        <li>
-                            {% set edited_search_query = counter.used
-                                ? result|remove_filter_value('price', counter.id)
-                                : result|add_filter_value('price', counter.id)
-                            %}
-
-                            <a href="{{ edited_search_query }}">
-                                <input type="checkbox"{% if counter.isUsed %} checked{% endif %}/>
-                                {{ _aggregations.printOptionValue('price', counter) }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+                    <a href="{{ edited_search_query }}">
+                        <input type="checkbox"{% if counter.isUsed %} checked{% endif %}/>
+                        {{ _aggregations.printOptionValue('price', counter) }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
     {% endif %}
 
 {% endmacro printMultiplePriceRange %}
@@ -137,50 +128,44 @@
 
     {% if aggregation != null and not aggregation.isEmpty %}
         {{ _aggregations.printTitle('rating') }}
+        <ul>
+            {% if aggregation.activeElements is not empty %}
+                <li>
+                    <a href="{{ result|remove_filter_value('rating') }}">
+                        <span class="glyphicon glyphicon-remove-circle fa fa-times"></span> {{ "labels.remove_selected"|trans }}
+                    </a>
+                </li>
+            {% endif %}
 
-        <div class="form-inline">
-            <div class="checkbox">
-                <ul>
+            {% for name,counter in aggregation  %}
+                {% set elems = counter.name|split('..') %}
+                <li>
+                    {% set edited_search_query = counter.used
+                        ? result|remove_filter_value('rating', counter.id)
+                        : result|add_filter_value('rating', counter.id)
+                    %}
 
-                    {% if aggregation.activeElements is not empty %}
-                        <li>
-                            <a href="{{ result|remove_filter_value('rating') }}">
-                                <span class="glyphicon glyphicon-remove-circle fa fa-times"></span> {{ "labels.remove_selected"|trans }}
-                            </a>
-                        </li>
-                    {% endif %}
-
-                    {% for name,counter in aggregation  %}
-                        {% set elems = counter.name|split('..') %}
-                        <li>
-                            {% set edited_search_query = counter.used
-                                ? result|remove_filter_value('rating', counter.id)
-                                : result|add_filter_value('rating', counter.id)
-                            %}
-
-                            <a href="{{ edited_search_query }}">
-                                <input type="checkbox"{% if counter.isUsed %} checked{% endif %}/>
-                                <span style="font-size: 12px; color: #337ab7;">
-                                    {% set numStars = (elems.0|number_format) %}
-                                    {% set numEmptyStarts = 10-numStars %}
-                                    {% if numStars > 0 %}
-                                        {% for i in 1..numStars %}
-                                            <span class="glyphicon glyphicon-star fa fa-star" aria-hidden="true"></span>
-                                        {% endfor %}
-                                    {% endif %}
-                                    {% if numEmptyStarts > 0 %}
-                                        {% for i in 1..numEmptyStarts %}
-                                            <span class="glyphicon glyphicon-star-empty fa fa-star-o" aria-hidden="true"></span>
-                                        {% endfor %}
-                                    {% endif %}
-                                </span>
-                                ({{ counter.n }})
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+                    <a href="{{ edited_search_query }}">
+                        <input type="checkbox"{% if counter.isUsed %} checked{% endif %}/>
+                        <span style="font-size: 12px; color: #337ab7;">
+                            {% set numStars = (elems.0|number_format) %}
+                            {% set numEmptyStarts = 10-numStars %}
+                            {% if numStars > 0 %}
+                                {% for i in 1..numStars %}
+                                    <span class="glyphicon glyphicon-star fa fa-star" aria-hidden="true"></span>
+                                {% endfor %}
+                            {% endif %}
+                            {% if numEmptyStarts > 0 %}
+                                {% for i in 1..numEmptyStarts %}
+                                    <span class="glyphicon glyphicon-star-empty fa fa-star-o" aria-hidden="true"></span>
+                                {% endfor %}
+                            {% endif %}
+                        </span>
+                        ({{ counter.n }})
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
     {% endif %}
 {% endmacro printRatingRange %}
 
