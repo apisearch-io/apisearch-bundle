@@ -1,0 +1,89 @@
+<?php
+
+/*
+ * This file is part of the Search PHP Bundle.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * Feel free to edit as you please, and have fun.
+ *
+ * @author Marc Morera <yuhu@mmoreram.com>
+ * @author PuntMig Technologies
+ */
+
+declare(strict_types=1);
+
+namespace Puntmig\Search\Translator;
+
+use Symfony\Component\Translation\Translator as SymfonyTranslator;
+
+/**
+ * Class AggregationTranslator.
+ */
+class AggregationTranslator
+{
+    /**
+     * @var SymfonyTranslator
+     *
+     * Symfony Translator
+     */
+    private $symfonyTranslator;
+
+    /**
+     * Translator constructor.
+     *
+     * @param SymfonyTranslator $symfonyTranslator
+     */
+    public function __construct(SymfonyTranslator $symfonyTranslator)
+    {
+        $this->symfonyTranslator = $symfonyTranslator;
+    }
+
+    /**
+     * Translate title.
+     *
+     * @param string $title
+     * @param string $prefix
+     *
+     * @return string
+     */
+    public function translateTitle(
+        string $title,
+        string $prefix = ''
+    ) : string {
+        $key = ltrim("$prefix.aggregation.$title.label", '.');
+        $trans = $this
+            ->symfonyTranslator
+            ->trans($key, [], 'aggregations');
+
+        return $trans === $key
+            ? $title
+            : $trans;
+    }
+
+    /**
+     * Translate title.
+     *
+     * @param string $title
+     * @param string $option
+     * @param string $prefix
+     *
+     * @return string
+     */
+    public function translateOption(
+        string $title,
+        string $option,
+        string $prefix = ''
+    ) : string {
+        $option = str_replace('.', '~', $option);
+        $key = ltrim("$prefix.aggregation.$title.option.$option", '.');
+        $trans = $this
+            ->symfonyTranslator
+            ->trans($key, [], 'aggregations');
+
+        return $trans === $key
+            ? $option
+            : $trans;
+    }
+}

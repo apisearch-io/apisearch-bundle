@@ -73,16 +73,4 @@ class UrlBuilderExtension extends Twig_Extension
             new Twig_SimpleFunction('set_routes_dictionary', [$this->urlBuilder, 'setRoutesDictionary']),
         ];
     }
-
-    /**
-     * Returns the name of the extension.
-     *
-     * @return string The extension name
-     *
-     * @deprecated since 1.26 (to be removed in 2.0), not used anymore internally
-     */
-    public function getName()
-    {
-        return 'url_builder_extension';
-    }
 }

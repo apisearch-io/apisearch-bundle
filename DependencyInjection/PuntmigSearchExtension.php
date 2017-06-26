@@ -75,6 +75,7 @@ class PuntmigSearchExtension extends BaseExtension
             'url',
             'twig',
             'transformers',
+            'translator',
         ];
     }
 

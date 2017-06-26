@@ -1,4 +1,4 @@
-{% trans_default_domain "filters" %}
+{% trans_default_domain "aggregations" %}
 
 
 {% macro printAggregation(
@@ -171,10 +171,10 @@
 
 
 {% macro printTitle(aggregationName) %}
-    <p>{{ aggregationName|trans }}</p>
+    <p>{{ aggregationName|trans_title }}</p>
 {% endmacro printTitle %}
 
 
 {% macro printOptionValue(aggregationName, counter) %}
-    <label>{{ counter.name|trans }} ({{ counter.n }})</label>
+    <label>{{ aggregationName|trans_option(counter.name) }} ({{ counter.n }})</label>
 {% endmacro printOptionValue %}
