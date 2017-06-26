@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Puntmig\Search\Translator;
 
-use Symfony\Component\Translation\Translator as SymfonyTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class AggregationTranslator.
@@ -24,7 +24,7 @@ use Symfony\Component\Translation\Translator as SymfonyTranslator;
 class AggregationTranslator
 {
     /**
-     * @var SymfonyTranslator
+     * @var TranslatorInterface
      *
      * Symfony Translator
      */
@@ -33,9 +33,9 @@ class AggregationTranslator
     /**
      * Translator constructor.
      *
-     * @param SymfonyTranslator $symfonyTranslator
+     * @param TranslatorInterface $symfonyTranslator
      */
-    public function __construct(SymfonyTranslator $symfonyTranslator)
+    public function __construct(TranslatorInterface $symfonyTranslator)
     {
         $this->symfonyTranslator = $symfonyTranslator;
     }
