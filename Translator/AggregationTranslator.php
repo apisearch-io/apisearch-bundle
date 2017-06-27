@@ -33,9 +33,9 @@ class AggregationTranslator
     /**
      * Translator constructor.
      *
-     * @param TranslatorInterface $symfonyTranslator
+     * @param null|TranslatorInterface $symfonyTranslator
      */
-    public function __construct(TranslatorInterface $symfonyTranslator)
+    public function __construct(? TranslatorInterface $symfonyTranslator)
     {
         $this->symfonyTranslator = $symfonyTranslator;
     }

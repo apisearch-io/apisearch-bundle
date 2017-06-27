@@ -21,6 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 use Puntmig\Search\Http\GuzzleClient;
+use Puntmig\Search\Http\TestClient;
 use Puntmig\Search\Repository\HttpRepository;
 use Puntmig\Search\Repository\TransformableRepository;
 
@@ -58,9 +59,15 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $name,
         array $repositoryConfiguration
     ) {
-        $container
-            ->register('puntmig_search.client_' . $name, GuzzleClient::class)
-            ->addArgument($repositoryConfiguration['endpoint']);
+        if ($repositoryConfiguration['test']) {
+            $container
+                ->register('puntmig_search.client_' . $name, TestClient::class)
+                ->addArgument(new Reference('test.client'));
+        } else {
+            $container
+                ->register('puntmig_search.client_' . $name, GuzzleClient::class)
+                ->addArgument($repositoryConfiguration['endpoint']);
+        }
 
         $container
             ->register('puntmig_search.repository_' . $name, HttpRepository::class)

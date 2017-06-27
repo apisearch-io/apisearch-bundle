@@ -40,6 +40,9 @@ class PuntmigSearchConfiguration extends BaseConfiguration
                                 ->isRequired()
                             ->end()
                             ->scalarNode('endpoint')
-                                ->isRequired();
+                                ->isRequired()
+                            ->end()
+                            ->booleanNode('test')
+                                ->defaultFalse();
     }
 }

@@ -6,4 +6,4 @@ services:
     search_bundle.aggregation_translator:
         class: Puntmig\Search\Translator\AggregationTranslator
         arguments:
-            - "@translator"
+            - "@?translator"
