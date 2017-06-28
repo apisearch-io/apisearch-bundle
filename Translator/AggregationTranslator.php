@@ -76,8 +76,8 @@ class AggregationTranslator
         string $option,
         string $prefix = ''
     ) : string {
-        $option = str_replace('.', '~', $option);
-        $key = ltrim("$prefix.aggregation.$title.option.$option", '.');
+        $transformedOption = str_replace('.', '~', $option);
+        $key = ltrim("$prefix.aggregation.$title.option.$transformedOption", '.');
         $trans = $this
             ->symfonyTranslator
             ->trans($key, [], 'aggregations');
