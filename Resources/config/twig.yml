@@ -16,3 +16,8 @@ services:
             - "@search_bundle.aggregation_translator"
         tags:
             - { name: twig.extension }
+
+    search_bundle.method_accessor:
+        class: Puntmig\Search\Twig\MethodAccessorExtension
+        tags:
+            - { name: twig.extension }
