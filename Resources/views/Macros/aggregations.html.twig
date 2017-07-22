@@ -31,23 +31,39 @@
             {% endif %}
 
             {% for counter in aggregation|call('getCounters')|slice(0, maxElements|default(999))  %}
-                <li>
-                    {% set edited_search_query = counter|call('isUsed')
-                        ? result|remove_filter_value(aggregationName, counter|call('getId'))
-                        : result|add_filter_value(aggregationName, counter|call('getId'))
-                    %}
-
-                    <a href="{{ edited_search_query }}">
-                        {% if not aggregation|call('hasLevels') %}
-                            <input type="checkbox"{% if counter|call('isUsed') %} checked{% endif %} onclick='window.location.assign("{{ url }}")'>
-                        {% endif %}
-                        {{ _aggregations.printOptionValue(aggregationName, counter) }}
-                    </a>
-                </li>
+                {{ _aggregations.printAggregationOption(
+                    result,
+                    aggregationName,
+                    counter|call('getId')
+                ) }}
             {% endfor %}
         </ul>
     {% endif %}
 {% endmacro printAggregation %}
+
+
+{% macro printAggregationOption(
+    result,
+    aggregationName,
+    counterId
+) %}
+    {% import _self as _aggregations %}
+    {% set aggregation = result.aggregation(aggregationName) %}
+    {% set counter = aggregation|call('getCounters')[counterId] %}
+    <li>
+        {% set edited_search_query = counter|call('isUsed')
+            ? result|remove_filter_value(aggregationName, counterId)
+            : result|add_filter_value(aggregationName, counterId)
+        %}
+
+        <a href="{{ edited_search_query }}">
+            {% if not aggregation|call('hasLevels') %}
+                <input type="checkbox"{% if counter|call('isUsed') %} checked{% endif %} onclick='window.location.assign("{{ url }}")'>
+            {% endif %}
+            {{ _aggregations.printOptionValue(aggregationName, counter) }}
+        </a>
+    </li>
+{% endmacro printAggregationOption %}
 
 
 {% macro printPriceRange(result) %}
