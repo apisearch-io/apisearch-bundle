@@ -50,19 +50,21 @@
     {% import _self as _aggregations %}
     {% set aggregation = result.aggregation(aggregationName) %}
     {% set counter = aggregation|call('getCounters')[counterId] %}
-    <li>
-        {% set edited_search_query = counter|call('isUsed')
-            ? result|remove_filter_value(aggregationName, counterId)
-            : result|add_filter_value(aggregationName, counterId)
-        %}
+    {% if counter is not null %}
+        <li>
+            {% set edited_search_query = counter|call('isUsed')
+                ? result|remove_filter_value(aggregationName, counterId)
+                : result|add_filter_value(aggregationName, counterId)
+            %}
 
-        <a href="{{ edited_search_query }}">
-            {% if not aggregation|call('hasLevels') %}
-                <input type="checkbox"{% if counter|call('isUsed') %} checked{% endif %} onclick='window.location.assign("{{ url }}")'>
-            {% endif %}
-            {{ _aggregations.printOptionValue(aggregationName, counter) }}
-        </a>
-    </li>
+            <a href="{{ edited_search_query }}">
+                {% if not aggregation|call('hasLevels') %}
+                    <input type="checkbox"{% if counter|call('isUsed') %} checked{% endif %} onclick='window.location.assign("{{ url }}")'>
+                {% endif %}
+                {{ _aggregations.printOptionValue(aggregationName, counter) }}
+            </a>
+        </li>
+    {% endif %}
 {% endmacro printAggregationOption %}
 
 
