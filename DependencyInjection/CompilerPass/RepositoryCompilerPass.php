@@ -59,20 +59,26 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $name,
         array $repositoryConfiguration
     ) {
-        if ($repositoryConfiguration['test']) {
-            $container
+        $repositoryConfiguration['test']
+            ? $container
                 ->register('puntmig_search.client_' . $name, TestClient::class)
-                ->addArgument(new Reference('test.client'));
-        } else {
-            $container
+                ->addArgument(new Reference('test.client'))
+        : $container
                 ->register('puntmig_search.client_' . $name, GuzzleClient::class)
                 ->addArgument($repositoryConfiguration['endpoint']);
-        }
 
-        $container
-            ->register('puntmig_search.repository_' . $name, HttpRepository::class)
-            ->addArgument(new Reference('puntmig_search.client_' . $name))
-            ->addMethodCall('setKey', [$repositoryConfiguration['secret']]);
+        (
+            is_null($repositoryConfiguration['repository_service']) ||
+            ('puntmig_search.repository_' . $name == $repositoryConfiguration['repository_service'])
+        )
+            ? $container
+                ->register('puntmig_search.repository_' . $name, HttpRepository::class)
+                ->addArgument(new Reference('puntmig_search.client_' . $name))
+                ->addMethodCall('setKey', [$repositoryConfiguration['secret']])
+            : $container
+                ->addAliases([
+                    'puntmig_search.repository_' . $name => $repositoryConfiguration['repository_service']
+                ]);
 
         $container
             ->register('puntmig_search.repository_transformable_' . $name, TransformableRepository::class)

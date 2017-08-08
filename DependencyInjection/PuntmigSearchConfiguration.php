@@ -42,6 +42,9 @@ class PuntmigSearchConfiguration extends BaseConfiguration
                             ->scalarNode('endpoint')
                                 ->isRequired()
                             ->end()
+                            ->scalarNode('repository_service')
+                                ->defaultNull()
+                            ->end()
                             ->booleanNode('test')
                                 ->defaultFalse();
     }
