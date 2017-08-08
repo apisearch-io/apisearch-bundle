@@ -59,7 +59,7 @@
 
             <a href="{{ edited_search_query }}">
                 {% if not aggregation|call('hasLevels') %}
-                    <input type="checkbox"{% if counter|call('isUsed') %} checked{% endif %} onclick='window.location.assign("{{ url }}")'>
+                    <input type="checkbox"{% if counter|call('isUsed') %} checked{% endif %} onclick='window.location.assign("{{ edited_search_query }}")'>
                 {% endif %}
                 {{ _aggregations.printOptionValue(aggregationName, counter) }}
             </a>
