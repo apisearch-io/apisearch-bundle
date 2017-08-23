@@ -49,7 +49,7 @@ class PuntmigSearchBundle extends BaseBundle
      *
      * @return array
      */
-    public static function getBundleDependencies(KernelInterface $kernel) : array
+    public static function getBundleDependencies(KernelInterface $kernel): array
     {
         return [
             FrameworkBundle::class,
@@ -61,7 +61,7 @@ class PuntmigSearchBundle extends BaseBundle
      *
      * @return CompilerPassInterface[]
      */
-    public function getCompilerPasses() : array
+    public function getCompilerPasses(): array
     {
         return [
             new RepositoryCompilerPass(),

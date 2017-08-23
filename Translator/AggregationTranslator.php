@@ -51,7 +51,7 @@ class AggregationTranslator
     public function translateTitle(
         string $title,
         string $prefix = ''
-    ) : string {
+    ): string {
         $key = ltrim("$prefix.aggregation.$title.label", '.');
         $trans = $this
             ->symfonyTranslator
@@ -75,7 +75,7 @@ class AggregationTranslator
         string $title,
         string $option,
         string $prefix = ''
-    ) : string {
+    ): string {
         $transformedOption = str_replace('.', '~', $option);
         $key = ltrim("$prefix.aggregation.$title.option.$transformedOption", '.');
         $trans = $this

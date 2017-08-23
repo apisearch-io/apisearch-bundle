@@ -41,9 +41,9 @@ class PuntmigSearchExtension extends BaseExtension
      *
      * @return string
      */
-    protected function getConfigFilesLocation() : string
+    protected function getConfigFilesLocation(): string
     {
-        return __DIR__ . '/../Resources/config';
+        return __DIR__.'/../Resources/config';
     }
 
     /**
@@ -67,7 +67,7 @@ class PuntmigSearchExtension extends BaseExtension
      *
      * @return array Config files
      */
-    protected function getConfigFiles(array $config) : array
+    protected function getConfigFiles(array $config): array
     {
         return [
             'commands',
@@ -92,7 +92,7 @@ class PuntmigSearchExtension extends BaseExtension
      *
      * @return array
      */
-    protected function getParametrizationValues(array $config) : array
+    protected function getParametrizationValues(array $config): array
     {
         return [
             'puntmig_search.repository_configuration' => $config['repositories'],
@@ -111,7 +111,7 @@ class PuntmigSearchExtension extends BaseExtension
      *
      * @return ConfigurationInterface|null
      */
-    protected function getConfigurationInstance() : ? ConfigurationInterface
+    protected function getConfigurationInstance(): ? ConfigurationInterface
     {
         return new PuntmigSearchConfiguration($this->getAlias());
     }

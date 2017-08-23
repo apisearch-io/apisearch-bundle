@@ -77,10 +77,10 @@ class RepositoryCompilerPass implements CompilerPassInterface
         if ($repositoryConfiguration['http']) {
             $repositoryConfiguration['test']
                 ? $container
-                    ->register('puntmig_search.client_' . $name, TestClient::class)
+                    ->register('puntmig_search.client_'.$name, TestClient::class)
                     ->addArgument(new Reference('test.client'))
                 : $container
-                    ->register('puntmig_search.client_' . $name, GuzzleClient::class)
+                    ->register('puntmig_search.client_'.$name, GuzzleClient::class)
                     ->addArgument($repositoryConfiguration['endpoint']);
         }
     }
@@ -99,17 +99,17 @@ class RepositoryCompilerPass implements CompilerPassInterface
     ) {
         if (
             is_null($repositoryConfiguration['search']['repository_service']) ||
-            ('puntmig_search.repository_' . $name == $repositoryConfiguration['search']['repository_service'])
+            ('puntmig_search.repository_'.$name == $repositoryConfiguration['search']['repository_service'])
         ) {
             $repoDefinition = $repositoryConfiguration['search']['in_memory']
-                ? $container->register('puntmig_search.repository_' . $name, InMemoryRepository::class)
+                ? $container->register('puntmig_search.repository_'.$name, InMemoryRepository::class)
                 : $container
-                    ->register('puntmig_search.repository_' . $name, HttpRepository::class)
-                    ->addArgument(new Reference('puntmig_search.client_' . $name));
+                    ->register('puntmig_search.repository_'.$name, HttpRepository::class)
+                    ->addArgument(new Reference('puntmig_search.client_'.$name));
         } else {
             $container
                 ->addAliases([
-                    'puntmig_search.repository_' . $name => $repositoryConfiguration['search']['repository_service'],
+                    'puntmig_search.repository_'.$name => $repositoryConfiguration['search']['repository_service'],
                 ]);
 
             $repoDefinition = $container->getDefinition($repositoryConfiguration['search']['repository_service']);
@@ -120,9 +120,9 @@ class RepositoryCompilerPass implements CompilerPassInterface
         }
 
         $definition = $container
-            ->register('puntmig_search.repository_transformable_' . $name, TransformableRepository::class)
-            ->setDecoratedService('puntmig_search.repository_' . $name)
-            ->addArgument(new Reference('puntmig_search.repository_transformable_' . $name . '.inner'))
+            ->register('puntmig_search.repository_transformable_'.$name, TransformableRepository::class)
+            ->setDecoratedService('puntmig_search.repository_'.$name)
+            ->addArgument(new Reference('puntmig_search.repository_transformable_'.$name.'.inner'))
             ->addArgument(new Reference('puntmig_search.transformer'))
             ->setPublic(false);
 
@@ -134,7 +134,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
             ->getDefinition('puntmig_search.repository_bucket')
             ->addMethodCall(
                 'addRepository',
-                [$name, new Reference('puntmig_search.repository_' . $name)]
+                [$name, new Reference('puntmig_search.repository_'.$name)]
             );
     }
 
@@ -152,19 +152,19 @@ class RepositoryCompilerPass implements CompilerPassInterface
     ) {
         (
             is_null($repositoryConfiguration['event']['repository_service']) ||
-            ('puntmig_search.event_repository_' . $name == $repositoryConfiguration['event']['repository_service'])
+            ('puntmig_search.event_repository_'.$name == $repositoryConfiguration['event']['repository_service'])
         )
             ?
                 (
                     $repositoryConfiguration['event']['in_memory']
-                        ? $container->register('puntmig_search.event_repository_' . $name, InMemoryEventRepository::class)
+                        ? $container->register('puntmig_search.event_repository_'.$name, InMemoryEventRepository::class)
                         : $container
-                            ->register('puntmig_search.event_repository_' . $name, HttpEventRepository::class)
-                            ->addArgument(new Reference('puntmig_search.client_' . $name))
+                            ->register('puntmig_search.event_repository_'.$name, HttpEventRepository::class)
+                            ->addArgument(new Reference('puntmig_search.client_'.$name))
                 )
             : $container
                 ->addAliases([
-                    'puntmig_search.event_repository_' . $name => $repositoryConfiguration['event']['repository_service'],
+                    'puntmig_search.event_repository_'.$name => $repositoryConfiguration['event']['repository_service'],
                 ]);
     }
 }

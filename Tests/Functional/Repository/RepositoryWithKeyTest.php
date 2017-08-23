@@ -32,7 +32,7 @@ class RepositoryWithKeyTest extends BaseFunctionalTest
      *
      * @return KernelInterface
      */
-    protected static function getKernel() : KernelInterface
+    protected static function getKernel(): KernelInterface
     {
         return new BaseKernel([
             PuntmigSearchBundle::class,
