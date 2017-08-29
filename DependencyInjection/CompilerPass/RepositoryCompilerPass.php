@@ -105,7 +105,8 @@ class RepositoryCompilerPass implements CompilerPassInterface
                 ? $container->register('puntmig_search.repository_'.$name, InMemoryRepository::class)
                 : $container
                     ->register('puntmig_search.repository_'.$name, HttpRepository::class)
-                    ->addArgument(new Reference('puntmig_search.client_'.$name));
+                    ->addArgument(new Reference('puntmig_search.client_'.$name))
+                    ->addArgument($repositoryConfiguration['write_async']);
         } else {
             $container
                 ->addAliases([
