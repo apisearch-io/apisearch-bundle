@@ -3,8 +3,22 @@ services:
     #
     # Commands
     #
-    search_bundle.reset_index_command:
+    puntmig_search.reset_index_command:
         class: Puntmig\Search\Command\ResetIndexCommand
+        arguments:
+            - "@puntmig_search.repository_bucket"
+        tags:
+            - { name: console.command }
+
+    puntmig_search.export_index_command:
+        class: Puntmig\Search\Command\ExportIndexCommand
+        arguments:
+            - "@puntmig_search.repository_bucket"
+        tags:
+            - { name: console.command }
+
+    puntmig_search.import_index_command:
+        class: Puntmig\Search\Command\ImportIndexCommand
         arguments:
             - "@puntmig_search.repository_bucket"
         tags:

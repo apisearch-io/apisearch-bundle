@@ -3,7 +3,7 @@ services:
     #
     # Aggregation Translator
     #
-    search_bundle.aggregation_translator:
+    puntmig_search.aggregation_translator:
         class: Puntmig\Search\Translator\AggregationTranslator
         arguments:
             - "@?translator"
