@@ -16,14 +16,14 @@ declare(strict_types=1);
 
 namespace Puntmig\Search\Command;
 
-use Puntmig\Search\Model\Coordinate;
-use Puntmig\Search\Model\Item;
-use Puntmig\Search\Query\Query;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Puntmig\Search\Model\Coordinate;
+use Puntmig\Search\Model\Item;
+use Puntmig\Search\Query\Query;
 use Puntmig\Search\Repository\RepositoryBucket;
 
 /**
@@ -108,23 +108,22 @@ class ExportIndexCommand extends Command
                 $items
             );
 
-            $i++;
+            ++$i;
         }
 
         fclose($resource);
     }
 
     /**
-     * Echo items as CSV
+     * Echo items as CSV.
      *
-     * @param Resource $resource
-     * @param Item[] $items
+     * @param resource $resource
+     * @param Item[]   $items
      */
     private function writeItemsToResource(
         $resource,
         array $items
-    )
-    {
+    ) {
         foreach ($items as $item) {
             fputcsv($resource, [
                 $item->getId(),

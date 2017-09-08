@@ -16,15 +16,13 @@ declare(strict_types=1);
 
 namespace Puntmig\Search\Command;
 
-use Puntmig\Search\Model\Coordinate;
-use Puntmig\Search\Model\Item;
-use Puntmig\Search\Model\ItemUUID;
-use Puntmig\Search\Query\Query;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Puntmig\Search\Model\Coordinate;
+use Puntmig\Search\Model\Item;
 use Puntmig\Search\Repository\RepositoryBucket;
 
 /**
@@ -94,43 +92,50 @@ class ImportIndexCommand extends Command
             ->repositoryBucket
             ->getRepositoryByName($repositoryName);
 
-        if (($handle = fopen($file, "r")) !== FALSE) {
-            while (($data = fgetcsv($handle, 0, ",")) !== FALSE) {
+        if (($handle = fopen($file, 'r')) !== false) {
+            while (($data = fgetcsv($handle, 0, ',')) !== false) {
                 $itemAsArray = [
                     'uuid' => [
                         'id' => $data[0],
                         'type' => $data[1],
                     ],
-                    'metadata' => json_decode($this->jsonRemoveUnicodeSequences($data[2]), true),
-                    'indexed_metadata' => json_decode($this->jsonRemoveUnicodeSequences($data[3]), true),
-                    'searchable_metadata' => json_decode($this->jsonRemoveUnicodeSequences($data[4]), true),
-                    'exact_matching_metadata' => json_decode($this->jsonRemoveUnicodeSequences($data[5]), true),
-                    'suggest' => json_decode($this->jsonRemoveUnicodeSequences($data[6]), true),
+                    'metadata' => $this->fix(json_decode($data[2], true)),
+                    'indexed_metadata' => $this->fix(json_decode($data[3], true)),
+                    'searchable_metadata' => array_unique($this->fix(json_decode($data[4], true))),
+                    'exact_matching_metadata' => array_unique($this->fix(json_decode($data[5], true))),
+                    'suggest' => $this->fix(json_decode($data[6], true)),
                 ];
 
                 if (is_array($data[7])) {
                     $itemAsArray['coordinate'] = $data[7];
                 }
 
-                if (isset($itemAsArray['indexed_metadata']['rating'])) {
-                    $itemAsArray['indexed_metadata']['rating'] = ceil($itemAsArray['indexed_metadata']['rating'] / 2);
-                } else {
-                    $itemAsArray['indexed_metadata']['rating'] = 0;
+                if (isset($itemAsArray['metadata']['author'])) {
+                    foreach ($itemAsArray['metadata']['author'] as $author) {
+                        $itemAsArray['exact_matching_metadata'][] = $author['name'];
+                    }
                 }
 
                 $item = Item::createFromArray($itemAsArray);
                 $repository->addItem($item);
                 $repository->flush(500, true);
-
             }
             $repository->flush(500, false);
             fclose($handle);
         }
     }
 
-    function jsonRemoveUnicodeSequences($struct) {
-       return utf8_decode(preg_replace_callback("/\\\\u([a-f0-9]{4})/", function($x) {
-           return iconv('UCS-4LE','UTF-8',pack('V', hexdec('U' . $x[1])));
-        }, $struct));
+    /**
+     * Fix the data.
+     *
+     * Placeholder for custom
+     *
+     * @param array $data
+     *
+     * @return mixed
+     */
+    private function fix(array $data)
+    {
+        return $data;
     }
 }
