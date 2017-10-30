@@ -92,8 +92,8 @@ class ImportIndexCommand extends Command
             ->repositoryBucket
             ->getRepositoryByName($repositoryName);
 
-        if (($handle = fopen($file, 'r')) !== false) {
-            while (($data = fgetcsv($handle, 0, ',')) !== false) {
+        if (false !== ($handle = fopen($file, 'r'))) {
+            while (false !== ($data = fgetcsv($handle, 0, ','))) {
                 $itemAsArray = [
                     'uuid' => [
                         'id' => $data[0],

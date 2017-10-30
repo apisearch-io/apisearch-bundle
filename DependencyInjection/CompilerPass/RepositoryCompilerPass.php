@@ -99,7 +99,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
     ) {
         if (
             is_null($repositoryConfiguration['search']['repository_service']) ||
-            ('puntmig_search.repository_'.$name == $repositoryConfiguration['search']['repository_service'])
+            ($repositoryConfiguration['search']['repository_service'] == 'puntmig_search.repository_'.$name)
         ) {
             $repoDefinition = $repositoryConfiguration['search']['in_memory']
                 ? $container->register('puntmig_search.repository_'.$name, InMemoryRepository::class)
@@ -117,6 +117,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
         }
 
         if ($repositoryConfiguration['secret']) {
+            $repoDefinition->addMethodCall('setAppId', [$repositoryConfiguration['app_id']]);
             $repoDefinition->addMethodCall('setKey', [$repositoryConfiguration['secret']]);
         }
 
@@ -128,6 +129,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
             ->setPublic(false);
 
         if ($repositoryConfiguration['secret']) {
+            $definition->addMethodCall('setAppId', [$repositoryConfiguration['app_id']]);
             $definition->addMethodCall('setKey', [$repositoryConfiguration['secret']]);
         }
 
@@ -153,7 +155,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
     ) {
         (
             is_null($repositoryConfiguration['event']['repository_service']) ||
-            ('puntmig_search.event_repository_'.$name == $repositoryConfiguration['event']['repository_service'])
+            ($repositoryConfiguration['event']['repository_service'] == 'puntmig_search.event_repository_'.$name)
         )
             ?
                 (
