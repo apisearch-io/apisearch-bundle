@@ -118,18 +118,4 @@ class ImportIndexCommand extends Command
             fclose($handle);
         }
     }
-
-    /**
-     * Fix the data.
-     *
-     * Placeholder for custom
-     *
-     * @param array $data
-     *
-     * @return mixed
-     */
-    private function fix(array $data)
-    {
-        return $data;
-    }
 }
