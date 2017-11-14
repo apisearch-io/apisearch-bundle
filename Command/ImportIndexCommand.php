@@ -99,21 +99,15 @@ class ImportIndexCommand extends Command
                         'id' => $data[0],
                         'type' => $data[1],
                     ],
-                    'metadata' => $this->fix(json_decode($data[2], true)),
-                    'indexed_metadata' => $this->fix(json_decode($data[3], true)),
-                    'searchable_metadata' => array_unique($this->fix(json_decode($data[4], true))),
-                    'exact_matching_metadata' => array_unique($this->fix(json_decode($data[5], true))),
-                    'suggest' => $this->fix(json_decode($data[6], true)),
+                    'metadata' => json_decode($data[2], true),
+                    'indexed_metadata' => json_decode($data[3], true),
+                    'searchable_metadata' => json_decode($data[4], true),
+                    'exact_matching_metadata' => json_decode($data[5], true),
+                    'suggest' => json_decode($data[6], true),
                 ];
 
                 if (is_array($data[7])) {
                     $itemAsArray['coordinate'] = $data[7];
-                }
-
-                if (isset($itemAsArray['metadata']['author'])) {
-                    foreach ($itemAsArray['metadata']['author'] as $author) {
-                        $itemAsArray['exact_matching_metadata'][] = $author['name'];
-                    }
                 }
 
                 $item = Item::createFromArray($itemAsArray);

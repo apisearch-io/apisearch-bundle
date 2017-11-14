@@ -18,6 +18,7 @@ namespace Puntmig\Search\DependencyInjection\CompilerPass;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 use Puntmig\Search\Event\HttpEventRepository;
@@ -116,10 +117,10 @@ class RepositoryCompilerPass implements CompilerPassInterface
             $repoDefinition = $container->getDefinition($repositoryConfiguration['search']['repository_service']);
         }
 
-        if ($repositoryConfiguration['secret']) {
-            $repoDefinition->addMethodCall('setAppId', [$repositoryConfiguration['app_id']]);
-            $repoDefinition->addMethodCall('setKey', [$repositoryConfiguration['secret']]);
-        }
+        $this->injectRepositoryCredentials(
+            $repoDefinition,
+            $repositoryConfiguration
+        );
 
         $definition = $container
             ->register('puntmig_search.repository_transformable_'.$name, TransformableRepository::class)
@@ -128,10 +129,10 @@ class RepositoryCompilerPass implements CompilerPassInterface
             ->addArgument(new Reference('puntmig_search.transformer'))
             ->setPublic(false);
 
-        if ($repositoryConfiguration['secret']) {
-            $definition->addMethodCall('setAppId', [$repositoryConfiguration['app_id']]);
-            $definition->addMethodCall('setKey', [$repositoryConfiguration['secret']]);
-        }
+        $this->injectRepositoryCredentials(
+            $definition,
+            $repositoryConfiguration
+        );
 
         $container
             ->getDefinition('puntmig_search.repository_bucket')
@@ -153,21 +154,56 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $name,
         array $repositoryConfiguration
     ) {
-        (
+        if (
             is_null($repositoryConfiguration['event']['repository_service']) ||
             ($repositoryConfiguration['event']['repository_service'] == 'puntmig_search.event_repository_'.$name)
-        )
-            ?
-                (
-                    $repositoryConfiguration['event']['in_memory']
-                        ? $container->register('puntmig_search.event_repository_'.$name, InMemoryEventRepository::class)
-                        : $container
-                            ->register('puntmig_search.event_repository_'.$name, HttpEventRepository::class)
-                            ->addArgument(new Reference('puntmig_search.client_'.$name))
-                )
-            : $container
+        ) {
+            $repositoryConfiguration['event']['in_memory']
+                ? $container
+                    ->register('puntmig_search.event_repository_'.$name, InMemoryEventRepository::class)
+                    ->addMethodCall('setAppId', [
+                        $repositoryConfiguration['app_id'],
+                    ])
+                : $container
+                    ->register('puntmig_search.event_repository_'.$name, HttpEventRepository::class)
+                    ->addArgument(new Reference('puntmig_search.client_'.$name))
+                    ->addMethodCall('setCredentials', [
+                        $repositoryConfiguration['app_id'],
+                        $repositoryConfiguration['secret'],
+                    ]);
+        } else {
+            $repoDefinition = $container->getDefinition($repositoryConfiguration['event']['repository_service']);
+            $this->injectRepositoryCredentials(
+                $repoDefinition,
+                $repositoryConfiguration
+            );
+
+            $container
                 ->addAliases([
                     'puntmig_search.event_repository_'.$name => $repositoryConfiguration['event']['repository_service'],
                 ]);
+        }
+    }
+
+    /**
+     * Inject credentials in repository.
+     *
+     * @param Definition $definition
+     * @param array      $repositoryConfiguration
+     */
+    private function injectRepositoryCredentials(
+        Definition $definition,
+        array $repositoryConfiguration
+    ) {
+        if ($repositoryConfiguration['app_id']) {
+            $repositoryConfiguration['secret']
+                ? $definition->addMethodCall('setCredentials', [
+                    $repositoryConfiguration['app_id'],
+                    $repositoryConfiguration['secret'],
+                ])
+                : $definition->addMethodCall('setAppId', [
+                    $repositoryConfiguration['app_id'],
+                ]);
+        }
     }
 }
