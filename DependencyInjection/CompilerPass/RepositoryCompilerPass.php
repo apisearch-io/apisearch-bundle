@@ -82,7 +82,10 @@ class RepositoryCompilerPass implements CompilerPassInterface
                     ->addArgument(new Reference('test.client'))
                 : $container
                     ->register('puntmig_search.client_'.$name, GuzzleClient::class)
-                    ->addArgument($repositoryConfiguration['endpoint']);
+                    ->setArguments([
+                        $repositoryConfiguration['endpoint'],
+                        $repositoryConfiguration['version'],
+                    ]);
         }
     }
 
