@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace Puntmig\Search\Translator;
+namespace Apisearch\Translator;
 
 use Symfony\Component\Translation\TranslatorInterface;
 

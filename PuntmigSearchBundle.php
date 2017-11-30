@@ -16,16 +16,15 @@ declare(strict_types=1);
 
 namespace Puntmig\Search;
 
+use Apisearch\DependencyInjection\CompilerPass\ReadTransformerCompilerPass;
+use Apisearch\DependencyInjection\CompilerPass\RepositoryCompilerPass;
+use Apisearch\DependencyInjection\CompilerPass\WriteTransformerCompilerPass;
+use Apisearch\DependencyInjection\PuntmigSearchExtension;
 use Mmoreram\BaseBundle\BaseBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
-
-use Puntmig\Search\DependencyInjection\CompilerPass\ReadTransformerCompilerPass;
-use Puntmig\Search\DependencyInjection\CompilerPass\RepositoryCompilerPass;
-use Puntmig\Search\DependencyInjection\CompilerPass\WriteTransformerCompilerPass;
-use Puntmig\Search\DependencyInjection\PuntmigSearchExtension;
 
 /**
  * Class PuntmigSearchBundle.

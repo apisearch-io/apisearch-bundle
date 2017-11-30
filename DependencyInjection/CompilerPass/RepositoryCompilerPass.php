@@ -14,20 +14,19 @@
 
 declare(strict_types=1);
 
-namespace Puntmig\Search\DependencyInjection\CompilerPass;
+namespace Apisearch\DependencyInjection\CompilerPass;
 
+use Apisearch\Event\HttpEventRepository;
+use Apisearch\Event\InMemoryEventRepository;
+use Apisearch\Http\GuzzleClient;
+use Apisearch\Http\TestClient;
+use Apisearch\Repository\HttpRepository;
+use Apisearch\Repository\InMemoryRepository;
+use Apisearch\Repository\TransformableRepository;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-
-use Puntmig\Search\Event\HttpEventRepository;
-use Puntmig\Search\Event\InMemoryEventRepository;
-use Puntmig\Search\Http\GuzzleClient;
-use Puntmig\Search\Http\TestClient;
-use Puntmig\Search\Repository\HttpRepository;
-use Puntmig\Search\Repository\InMemoryRepository;
-use Puntmig\Search\Repository\TransformableRepository;
 
 /**
  * File header placeholder.
@@ -41,7 +40,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $repositoryConfigurations = $container->getParameter('puntmig_search.repository_configuration');
+        $repositoryConfigurations = $container->getParameter('apisearch.repository_configuration');
         foreach ($repositoryConfigurations as $name => $repositoryConfiguration) {
             $this->createClient(
                 $container,
@@ -78,10 +77,10 @@ class RepositoryCompilerPass implements CompilerPassInterface
         if ($repositoryConfiguration['http']) {
             $repositoryConfiguration['test']
                 ? $container
-                    ->register('puntmig_search.client_'.$name, TestClient::class)
+                    ->register('apisearch.client_'.$name, TestClient::class)
                     ->addArgument(new Reference('test.client'))
                 : $container
-                    ->register('puntmig_search.client_'.$name, GuzzleClient::class)
+                    ->register('apisearch.client_'.$name, GuzzleClient::class)
                     ->setArguments([
                         $repositoryConfiguration['endpoint'],
                         $repositoryConfiguration['version'],
@@ -103,18 +102,18 @@ class RepositoryCompilerPass implements CompilerPassInterface
     ) {
         if (
             is_null($repositoryConfiguration['search']['repository_service']) ||
-            ($repositoryConfiguration['search']['repository_service'] == 'puntmig_search.repository_'.$name)
+            ($repositoryConfiguration['search']['repository_service'] == 'apisearch.repository_'.$name)
         ) {
             $repoDefinition = $repositoryConfiguration['search']['in_memory']
-                ? $container->register('puntmig_search.repository_'.$name, InMemoryRepository::class)
+                ? $container->register('apisearch.repository_'.$name, InMemoryRepository::class)
                 : $container
-                    ->register('puntmig_search.repository_'.$name, HttpRepository::class)
-                    ->addArgument(new Reference('puntmig_search.client_'.$name))
+                    ->register('apisearch.repository_'.$name, HttpRepository::class)
+                    ->addArgument(new Reference('apisearch.client_'.$name))
                     ->addArgument($repositoryConfiguration['write_async']);
         } else {
             $container
                 ->addAliases([
-                    'puntmig_search.repository_'.$name => $repositoryConfiguration['search']['repository_service'],
+                    'apisearch.repository_'.$name => $repositoryConfiguration['search']['repository_service'],
                 ]);
 
             $repoDefinition = $container->getDefinition($repositoryConfiguration['search']['repository_service']);
@@ -126,10 +125,10 @@ class RepositoryCompilerPass implements CompilerPassInterface
         );
 
         $definition = $container
-            ->register('puntmig_search.repository_transformable_'.$name, TransformableRepository::class)
-            ->setDecoratedService('puntmig_search.repository_'.$name)
-            ->addArgument(new Reference('puntmig_search.repository_transformable_'.$name.'.inner'))
-            ->addArgument(new Reference('puntmig_search.transformer'))
+            ->register('apisearch.repository_transformable_'.$name, TransformableRepository::class)
+            ->setDecoratedService('apisearch.repository_'.$name)
+            ->addArgument(new Reference('apisearch.repository_transformable_'.$name.'.inner'))
+            ->addArgument(new Reference('apisearch.transformer'))
             ->setPublic(false);
 
         $this->injectRepositoryCredentials(
@@ -138,10 +137,10 @@ class RepositoryCompilerPass implements CompilerPassInterface
         );
 
         $container
-            ->getDefinition('puntmig_search.repository_bucket')
+            ->getDefinition('apisearch.repository_bucket')
             ->addMethodCall(
                 'addRepository',
-                [$name, new Reference('puntmig_search.repository_'.$name)]
+                [$name, new Reference('apisearch.repository_'.$name)]
             );
     }
 
@@ -159,17 +158,17 @@ class RepositoryCompilerPass implements CompilerPassInterface
     ) {
         if (
             is_null($repositoryConfiguration['event']['repository_service']) ||
-            ($repositoryConfiguration['event']['repository_service'] == 'puntmig_search.event_repository_'.$name)
+            ($repositoryConfiguration['event']['repository_service'] == 'apisearch.event_repository_'.$name)
         ) {
             $repositoryConfiguration['event']['in_memory']
                 ? $container
-                    ->register('puntmig_search.event_repository_'.$name, InMemoryEventRepository::class)
+                    ->register('apisearch.event_repository_'.$name, InMemoryEventRepository::class)
                     ->addMethodCall('setAppId', [
                         $repositoryConfiguration['app_id'],
                     ])
                 : $container
-                    ->register('puntmig_search.event_repository_'.$name, HttpEventRepository::class)
-                    ->addArgument(new Reference('puntmig_search.client_'.$name))
+                    ->register('apisearch.event_repository_'.$name, HttpEventRepository::class)
+                    ->addArgument(new Reference('apisearch.client_'.$name))
                     ->addMethodCall('setCredentials', [
                         $repositoryConfiguration['app_id'],
                         $repositoryConfiguration['secret'],
@@ -183,7 +182,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
 
             $container
                 ->addAliases([
-                    'puntmig_search.event_repository_'.$name => $repositoryConfiguration['event']['repository_service'],
+                    'apisearch.event_repository_'.$name => $repositoryConfiguration['event']['repository_service'],
                 ]);
         }
     }

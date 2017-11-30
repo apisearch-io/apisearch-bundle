@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace Puntmig\Search\DependencyInjection\CompilerPass;
+namespace Apisearch\DependencyInjection\CompilerPass;
 
 use Mmoreram\BaseBundle\CompilerPass\TagCompilerPass;
 
@@ -30,7 +30,7 @@ class ReadTransformerCompilerPass extends TagCompilerPass
      */
     public function getCollectorServiceName(): string
     {
-        return 'puntmig_search.transformer';
+        return 'apisearch.transformer';
     }
 
     /**
@@ -50,6 +50,6 @@ class ReadTransformerCompilerPass extends TagCompilerPass
      */
     public function getTagName(): string
     {
-        return 'puntmig_search.read_transformer';
+        return 'apisearch.read_transformer';
     }
 }

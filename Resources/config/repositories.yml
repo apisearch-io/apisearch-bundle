@@ -1,4 +1,4 @@
 services:
 
-    puntmig_search.repository_bucket:
-        class: Puntmig\Search\Repository\RepositoryBucket
+    apisearch.repository_bucket:
+        class: Apisearch\Repository\RepositoryBucket

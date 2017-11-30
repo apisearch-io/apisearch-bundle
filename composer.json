@@ -1,21 +1,28 @@
 {
-    "name": "puntmig/search-bundle",
-    "type": "project",
+    "name": "apisearch-io/apisearch-bundle",
+    "type": "symfony-bundle",
     "license": "MIT",
     "authors": [
         {
             "name": "Marc Morera",
             "email": "yuhu@mmoreram.com"
+        },
+        {
+            "name": "Puntmig Team",
+            "email": "hello@puntmig.com"
         }
     ],
     "require": {
         "php": ">=7.1",
-        "symfony/framework-bundle": "*",
-        "symfony/http-kernel": "*",
-        "twig/twig": "*",
-        "mmoreram/base-bundle": "*",
-        "mmoreram/symfony-bundle-dependencies": "*",
-        "puntmig/php-search": "dev-master"
+        "symfony/framework-bundle": "^3.0|^4.0",
+        "symfony/http-kernel": "^3.0|^4.0",
+        "mmoreram/base-bundle": "^1.0.7",
+        "mmoreram/symfony-bundle-dependencies": "^2.0.0",
+        "apisearch-io/php-client": "dev-master"
+    },
+    "suggested": {
+        "twig/twig": "In case you use Twig engine",
+        "symfony/translator": "^3.0|^4.0 in case you use Macros translations"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.6.4",
@@ -24,7 +31,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Puntmig\\Search\\": ""
+            "Apisearch\\": ""
         }
     },
     "scripts": {

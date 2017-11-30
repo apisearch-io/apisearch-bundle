@@ -3,23 +3,23 @@ services:
     #
     # Commands
     #
-    puntmig_search.reset_index_command:
-        class: Puntmig\Search\Command\ResetIndexCommand
+    apisearch.reset_index_command:
+        class: Apisearch\Command\ResetIndexCommand
         arguments:
-            - "@puntmig_search.repository_bucket"
+            - "@apisearch.repository_bucket"
         tags:
             - { name: console.command }
 
-    puntmig_search.export_index_command:
-        class: Puntmig\Search\Command\ExportIndexCommand
+    apisearch.export_index_command:
+        class: Apisearch\Command\ExportIndexCommand
         arguments:
-            - "@puntmig_search.repository_bucket"
+            - "@apisearch.repository_bucket"
         tags:
             - { name: console.command }
 
-    puntmig_search.import_index_command:
-        class: Puntmig\Search\Command\ImportIndexCommand
+    apisearch.import_index_command:
+        class: Apisearch\Command\ImportIndexCommand
         arguments:
-            - "@puntmig_search.repository_bucket"
+            - "@apisearch.repository_bucket"
         tags:
             - { name: console.command }

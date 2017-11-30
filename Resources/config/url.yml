@@ -3,7 +3,7 @@ services:
     #
     # Query services
     #
-    puntmig_search.url_builder:
-        class: Puntmig\Search\Url\UrlBuilder
+    apisearch.url_builder:
+        class: Apisearch\Url\UrlBuilder
         arguments:
             - "@router"

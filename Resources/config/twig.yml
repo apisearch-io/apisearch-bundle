@@ -3,21 +3,21 @@ services:
     #
     # Repositories
     #
-    puntmig_search.url_builder_extension:
-        class: Puntmig\Search\Twig\UrlBuilderExtension
+    apisearch.url_builder_extension:
+        class: Apisearch\Twig\UrlBuilderExtension
         arguments:
-            - "@puntmig_search.url_builder"
+            - "@apisearch.url_builder"
         tags:
             - { name: twig.extension }
 
-    puntmig_search.aggregation_translation_extension:
-        class: Puntmig\Search\Twig\AggregationTranslationExtension
+    apisearch.aggregation_translation_extension:
+        class: Apisearch\Twig\AggregationTranslationExtension
         arguments:
-            - "@puntmig_search.aggregation_translator"
+            - "@apisearch.aggregation_translator"
         tags:
             - { name: twig.extension }
 
-    puntmig_search.method_accessor:
-        class: Puntmig\Search\Twig\MethodAccessorExtension
+    apisearch.method_accessor:
+        class: Apisearch\Twig\MethodAccessorExtension
         tags:
             - { name: twig.extension }

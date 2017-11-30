@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace Puntmig\Search\DependencyInjection;
+namespace Apisearch\DependencyInjection;
 
 use Mmoreram\BaseBundle\DependencyInjection\BaseExtension;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -95,7 +95,7 @@ class PuntmigSearchExtension extends BaseExtension
     protected function getParametrizationValues(array $config): array
     {
         return [
-            'puntmig_search.repository_configuration' => $config['repositories'],
+            'apisearch.repository_configuration' => $config['repositories'],
         ];
     }
 

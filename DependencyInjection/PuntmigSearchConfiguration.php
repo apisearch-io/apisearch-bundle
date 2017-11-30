@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace Puntmig\Search\DependencyInjection;
+namespace Apisearch\DependencyInjection;
 
 use Mmoreram\BaseBundle\DependencyInjection\BaseConfiguration;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;

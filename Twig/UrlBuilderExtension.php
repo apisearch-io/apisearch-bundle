@@ -14,13 +14,12 @@
 
 declare(strict_types=1);
 
-namespace Puntmig\Search\Twig;
+namespace Apisearch\Twig;
 
+use Apisearch\Url\UrlBuilder;
 use Twig_Extension;
 use Twig_SimpleFilter;
 use Twig_SimpleFunction;
-
-use Puntmig\Search\Url\UrlBuilder;
 
 /**
  * Class UrlBuilderExtension.

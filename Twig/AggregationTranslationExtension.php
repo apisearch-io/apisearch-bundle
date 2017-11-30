@@ -14,12 +14,11 @@
 
 declare(strict_types=1);
 
-namespace Puntmig\Search\Twig;
+namespace Apisearch\Twig;
 
+use Apisearch\Translator\AggregationTranslator;
 use Twig_Extension;
 use Twig_SimpleFilter;
-
-use Puntmig\Search\Translator\AggregationTranslator;
 
 /**
  * Class AggregationTranslationExtension.
