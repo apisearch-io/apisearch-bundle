@@ -37,7 +37,7 @@ By default, this configuration creates a TransformableRepository instance,
 wrapping a HttpRepository instance configured by given endpoint and api secret.
 
 This repository is retrievable by using the service named
-`puntmig_search.repository_search`. The name will always follow this pattern, so
+`apisearch.repository_search`. The name will always follow this pattern, so
 the last `_search` will be always filled with the key of the configured
 repository This service is public so can be asked to the container from any
 controller or command.
@@ -48,7 +48,7 @@ services:
     my_service:
         class: My\Service\Namespace
         arguments:
-            - "@puntmig_search.repository_search"
+            - "@apisearch.repository_search"
 ```
 
 You can disable HTTP clients if you're not going to work with the HTTP layer.
@@ -95,7 +95,7 @@ search_bundle:
 
 You can use the event repository as well. By default, and with the previous
 default configuration snippet, one event repository will be created and added in
-the container with name `puntmig_search.event_repository_search`. As well, the
+the container with name `apisearch.event_repository_search`. As well, the
 last `_search` is just appended, given the repository key.
 
 ```yml
@@ -104,7 +104,7 @@ services:
     my_service:
         class: My\Service\Namespace
         arguments:
-            - "@puntmig_search.event_repository_search"
+            - "@apisearch.event_repository_search"
 ```
 
 You can use as well another Event Repository implementation. Yours for example.
@@ -138,8 +138,8 @@ services:
     product_transformer:
         class: App\Transformer\ProductTransformer
         tags:
-            - { name: puntmig_search.write_transformer }
-            - { name: puntmig_search.read_transformer }
+            - { name: apisearch.write_transformer }
+            - { name: apisearch.read_transformer }
 ```
 
 That's it. The first one to subscribe this transformer as a WriteTransformer and
@@ -171,7 +171,7 @@ class SearchController extends Controller
             ->aggregateBy('color', 'color', Filter::AT_LEAST_ONE)
             
         $result = $this
-            ->get('puntmig_search.repository_search')
+            ->get('apisearch.repository_search')
             ->query($query);
             
         return $this->render('MyBundle:Search:search.html.twig', [
@@ -241,7 +241,7 @@ class SearchController extends Controller
             ->aggregateBy('color', 'color')
             
         $result = $this
-            ->get('puntmig_search.repository_search')
+            ->get('apisearch.repository_search')
             ->query($query);
             
         return $this->render('MyBundle:Search:search.html.twig', [

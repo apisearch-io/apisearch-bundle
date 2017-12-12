@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace Puntmig\Search;
+namespace Apisearch;
 
 use Apisearch\DependencyInjection\CompilerPass\ReadTransformerCompilerPass;
 use Apisearch\DependencyInjection\CompilerPass\RepositoryCompilerPass;
@@ -27,9 +27,9 @@ use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
- * Class PuntmigSearchBundle.
+ * Class ApisearchBundle.
  */
-class PuntmigSearchBundle extends BaseBundle
+class ApisearchBundle extends BaseBundle
 {
     /**
      * Returns the bundle's container extension.
