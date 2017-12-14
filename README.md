@@ -189,7 +189,7 @@ built internally, you'll notice that, in fact, any kind of view can be build on
 top of that object. You can take this base macros as an example as well.
 
 ```jinja
-{% import "PuntmigSearchBundle:Macros:aggregations.html.twig" as _aggregations %}
+{% import "ApisearchBundle:Macros:aggregations.html.twig" as _aggregations %}
 
 {{ _aggregations.printAggregation(result, 'size') }}
 {{ _aggregations.printAggregation(result, 'color') }}

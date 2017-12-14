@@ -62,6 +62,11 @@ class ImportIndexCommand extends Command
                 'Repository name'
             )
             ->addArgument(
+                'index',
+                InputArgument::REQUIRED,
+                'Index name'
+            )
+            ->addArgument(
                 'file',
                 InputArgument::REQUIRED,
                 'File'
@@ -86,10 +91,14 @@ class ImportIndexCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $repositoryName = $input->getArgument('repository');
+        $indexName = $input->getArgument('index');
         $file = $input->getArgument('file');
         $repository = $this
             ->repositoryBucket
-            ->getRepositoryByName($repositoryName);
+            ->findRepository(
+                $repositoryName,
+                $indexName
+            );
 
         if (false !== ($handle = fopen($file, 'r'))) {
             while (false !== ($data = fgetcsv($handle, 0, ','))) {

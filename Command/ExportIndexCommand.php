@@ -63,6 +63,11 @@ class ExportIndexCommand extends Command
                 'Repository name'
             )
             ->addArgument(
+                'index',
+                InputArgument::REQUIRED,
+                'Index name'
+            )
+            ->addArgument(
                 'file',
                 InputArgument::REQUIRED,
                 'File'
@@ -87,6 +92,7 @@ class ExportIndexCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $repositoryName = $input->getArgument('repository');
+        $indexName = $input->getArgument('index');
         $file = $input->getArgument('file');
         $resource = fopen($file, 'w');
 
@@ -94,7 +100,10 @@ class ExportIndexCommand extends Command
         while (true) {
             $items = $this
                 ->repositoryBucket
-                ->getRepositoryByName($repositoryName)
+                ->findRepository(
+                    $repositoryName,
+                    $indexName
+                )
                 ->query(Query::create('', $i, 10000))
                 ->getItems();
 

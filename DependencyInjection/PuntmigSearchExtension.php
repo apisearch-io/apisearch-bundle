@@ -33,7 +33,7 @@ class PuntmigSearchExtension extends BaseExtension
      */
     public function getAlias()
     {
-        return 'puntmig_search';
+        return 'apisearch';
     }
 
     /**

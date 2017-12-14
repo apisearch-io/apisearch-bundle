@@ -22,6 +22,7 @@ use Apisearch\Http\GuzzleClient;
 use Apisearch\Http\TestClient;
 use Apisearch\Repository\HttpRepository;
 use Apisearch\Repository\InMemoryRepository;
+use Apisearch\Repository\RepositoryReference;
 use Apisearch\Repository\TransformableRepository;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -42,23 +43,36 @@ class RepositoryCompilerPass implements CompilerPassInterface
     {
         $repositoryConfigurations = $container->getParameter('apisearch.repository_configuration');
         foreach ($repositoryConfigurations as $name => $repositoryConfiguration) {
-            $this->createClient(
-                $container,
-                $name,
-                $repositoryConfiguration
-            );
+            foreach ($repositoryConfiguration['indexes'] as $index) {
 
-            $this->createSearchRepository(
-                $container,
-                $name,
-                $repositoryConfiguration
-            );
+                $this->createRepositoryReferenceServiceReference(
+                    $container,
+                    $name,
+                    $repositoryConfiguration,
+                    $index
+                );
 
-            $this->createEventRepository(
-                $container,
-                $name,
-                $repositoryConfiguration
-            );
+                $this->createClient(
+                    $container,
+                    $name,
+                    $repositoryConfiguration,
+                    $index
+                );
+
+                $this->createSearchRepository(
+                    $container,
+                    $name,
+                    $repositoryConfiguration,
+                    $index
+                );
+
+                $this->createEventRepository(
+                    $container,
+                    $name,
+                    $repositoryConfiguration,
+                    $index
+                );
+            }
         }
     }
 
@@ -68,19 +82,22 @@ class RepositoryCompilerPass implements CompilerPassInterface
      * @param ContainerBuilder $container
      * @param string           $name
      * @param array            $repositoryConfiguration
+     * @param string           $index
      */
     private function createClient(
         ContainerBuilder $container,
         string $name,
-        array $repositoryConfiguration
+        array $repositoryConfiguration,
+        string $index
     ) {
         if ($repositoryConfiguration['http']) {
+            $clientName = "apisearch.client_$name.$index";
             $repositoryConfiguration['test']
                 ? $container
-                    ->register('apisearch.client_'.$name, TestClient::class)
+                    ->register($clientName, TestClient::class)
                     ->addArgument(new Reference('test.client'))
                 : $container
-                    ->register('apisearch.client_'.$name, GuzzleClient::class)
+                    ->register($clientName, GuzzleClient::class)
                     ->setArguments([
                         $repositoryConfiguration['endpoint'],
                         $repositoryConfiguration['version'],
@@ -98,22 +115,27 @@ class RepositoryCompilerPass implements CompilerPassInterface
     private function createSearchRepository(
         ContainerBuilder $container,
         string $name,
-        array $repositoryConfiguration
+        array $repositoryConfiguration,
+        string $index
     ) {
+        $repositoryName = "apisearch.repository_$name.$index";
+        $repositoryTransformableName = "apisearch.repository_transformable_$name.$index";
+        $clientName = "apisearch.client_$name.$index";
+
         if (
             is_null($repositoryConfiguration['search']['repository_service']) ||
-            ($repositoryConfiguration['search']['repository_service'] == 'apisearch.repository_'.$name)
+            ($repositoryConfiguration['search']['repository_service'] == $repositoryName)
         ) {
             $repoDefinition = $repositoryConfiguration['search']['in_memory']
-                ? $container->register('apisearch.repository_'.$name, InMemoryRepository::class)
+                ? $container->register($repositoryName, InMemoryRepository::class)
                 : $container
-                    ->register('apisearch.repository_'.$name, HttpRepository::class)
-                    ->addArgument(new Reference('apisearch.client_'.$name))
+                    ->register($repositoryName, HttpRepository::class)
+                    ->addArgument(new Reference($clientName))
                     ->addArgument($repositoryConfiguration['write_async']);
         } else {
             $container
                 ->addAliases([
-                    'apisearch.repository_'.$name => $repositoryConfiguration['search']['repository_service'],
+                    $repositoryName => $repositoryConfiguration['search']['repository_service'],
                 ]);
 
             $repoDefinition = $container->getDefinition($repositoryConfiguration['search']['repository_service']);
@@ -121,26 +143,30 @@ class RepositoryCompilerPass implements CompilerPassInterface
 
         $this->injectRepositoryCredentials(
             $repoDefinition,
-            $repositoryConfiguration
+            $name,
+            $repositoryConfiguration,
+            $index
         );
 
         $definition = $container
-            ->register('apisearch.repository_transformable_'.$name, TransformableRepository::class)
-            ->setDecoratedService('apisearch.repository_'.$name)
-            ->addArgument(new Reference('apisearch.repository_transformable_'.$name.'.inner'))
+            ->register($repositoryTransformableName, TransformableRepository::class)
+            ->setDecoratedService($repositoryName)
+            ->addArgument(new Reference($repositoryTransformableName.'.inner'))
             ->addArgument(new Reference('apisearch.transformer'))
             ->setPublic(false);
 
         $this->injectRepositoryCredentials(
             $definition,
-            $repositoryConfiguration
+            $name,
+            $repositoryConfiguration,
+            $index
         );
 
         $container
             ->getDefinition('apisearch.repository_bucket')
             ->addMethodCall(
                 'addRepository',
-                [$name, new Reference('apisearch.repository_'.$name)]
+                [$name, $index, new Reference($repositoryName)]
             );
     }
 
@@ -150,39 +176,49 @@ class RepositoryCompilerPass implements CompilerPassInterface
      * @param ContainerBuilder $container
      * @param string           $name
      * @param array            $repositoryConfiguration
+     * @param string           $index
      */
     private function createEventRepository(
         ContainerBuilder $container,
         string $name,
-        array $repositoryConfiguration
+        array $repositoryConfiguration,
+        string $index
     ) {
+        $eventRepositoryName = "apisearch.event_repository_$name.$index";
+        $clientName = "apisearch.client_$name.$index";
+
         if (
             is_null($repositoryConfiguration['event']['repository_service']) ||
-            ($repositoryConfiguration['event']['repository_service'] == 'apisearch.event_repository_'.$name)
+            ($repositoryConfiguration['event']['repository_service'] == $eventRepositoryName)
         ) {
+
+            $repositoryReferenceName = "apisearch.repository_reference.$name.$index";
+            $repositoryReferenceReference = new Reference($repositoryReferenceName);
             $repositoryConfiguration['event']['in_memory']
                 ? $container
-                    ->register('apisearch.event_repository_'.$name, InMemoryEventRepository::class)
-                    ->addMethodCall('setAppId', [
-                        $repositoryConfiguration['app_id'],
+                    ->register($eventRepositoryName, InMemoryEventRepository::class)
+                    ->addMethodCall('setRepositoryReference', [
+                        $repositoryReferenceReference
                     ])
                 : $container
-                    ->register('apisearch.event_repository_'.$name, HttpEventRepository::class)
-                    ->addArgument(new Reference('apisearch.client_'.$name))
+                    ->register($eventRepositoryName, HttpEventRepository::class)
+                    ->addArgument(new Reference($clientName))
                     ->addMethodCall('setCredentials', [
-                        $repositoryConfiguration['app_id'],
-                        $repositoryConfiguration['secret'],
+                        $repositoryReferenceReference,
+                        $repositoryConfiguration['token'],
                     ]);
         } else {
             $repoDefinition = $container->getDefinition($repositoryConfiguration['event']['repository_service']);
             $this->injectRepositoryCredentials(
                 $repoDefinition,
-                $repositoryConfiguration
+                $name,
+                $repositoryConfiguration,
+                $index
             );
 
             $container
                 ->addAliases([
-                    'apisearch.event_repository_'.$name => $repositoryConfiguration['event']['repository_service'],
+                    $eventRepositoryName => $repositoryConfiguration['event']['repository_service'],
                 ]);
         }
     }
@@ -191,21 +227,59 @@ class RepositoryCompilerPass implements CompilerPassInterface
      * Inject credentials in repository.
      *
      * @param Definition $definition
+     * @param string $name
      * @param array      $repositoryConfiguration
+     * @param string     $index
      */
     private function injectRepositoryCredentials(
         Definition $definition,
-        array $repositoryConfiguration
+        string $name,
+        array $repositoryConfiguration,
+        string $index
     ) {
         if ($repositoryConfiguration['app_id']) {
-            $repositoryConfiguration['secret']
+            $repositoryReferenceName = "apisearch.repository_reference.$name.$index";
+            $repositoryReferenceReference = new Reference($repositoryReferenceName);
+
+            $repositoryConfiguration['token']
                 ? $definition->addMethodCall('setCredentials', [
-                    $repositoryConfiguration['app_id'],
-                    $repositoryConfiguration['secret'],
+                    $repositoryReferenceReference,
+                    $repositoryConfiguration['token'],
                 ])
-                : $definition->addMethodCall('setAppId', [
-                    $repositoryConfiguration['app_id'],
+                : $definition->addMethodCall('setRepositoryReference', [
+                    $repositoryReferenceReference
                 ]);
         }
+    }
+
+    /**
+     * Crate Repository Reference service reference
+     *
+     * @param ContainerBuilder $container
+     * @param string           $name
+     * @param array      $repositoryConfiguration
+     * @param string     $index
+     *
+     * @return Definition
+     */
+    private function createRepositoryReferenceServiceReference(
+        ContainerBuilder $container,
+        string $name,
+        array $repositoryConfiguration,
+        string $index
+    ) : Definition
+    {
+        $repositoryReferenceName = "apisearch.repository_reference.$name.$index";
+        $reference = $container->register($repositoryReferenceName, RepositoryReference::class);
+        $reference
+            ->setPublic(false)
+            ->setFactory([
+                RepositoryReference::class,
+                'create'
+            ])
+            ->addArgument($repositoryConfiguration['app_id'])
+            ->addArgument($index);
+
+        return $reference;
     }
 }
