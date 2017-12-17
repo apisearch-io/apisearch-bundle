@@ -96,6 +96,7 @@ class PuntmigSearchExtension extends BaseExtension
     {
         return [
             'apisearch.repository_configuration' => $config['repositories'],
+            'apisearch.middleware_domain_events_service' => $config['middleware_domain_events_service'],
         ];
     }
 

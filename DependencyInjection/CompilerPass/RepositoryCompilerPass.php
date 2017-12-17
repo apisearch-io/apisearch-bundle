@@ -44,7 +44,6 @@ class RepositoryCompilerPass implements CompilerPassInterface
         $repositoryConfigurations = $container->getParameter('apisearch.repository_configuration');
         foreach ($repositoryConfigurations as $name => $repositoryConfiguration) {
             foreach ($repositoryConfiguration['indexes'] as $index) {
-
                 $this->createRepositoryReferenceServiceReference(
                     $container,
                     $name,
@@ -95,7 +94,10 @@ class RepositoryCompilerPass implements CompilerPassInterface
             $repositoryConfiguration['test']
                 ? $container
                     ->register($clientName, TestClient::class)
-                    ->addArgument(new Reference('test.client'))
+                    ->setArguments([
+                        new Reference('test.client'),
+                        $repositoryConfiguration['version'],
+                    ])
                 : $container
                     ->register($clientName, GuzzleClient::class)
                     ->setArguments([
@@ -191,14 +193,13 @@ class RepositoryCompilerPass implements CompilerPassInterface
             is_null($repositoryConfiguration['event']['repository_service']) ||
             ($repositoryConfiguration['event']['repository_service'] == $eventRepositoryName)
         ) {
-
             $repositoryReferenceName = "apisearch.repository_reference.$name.$index";
             $repositoryReferenceReference = new Reference($repositoryReferenceName);
             $repositoryConfiguration['event']['in_memory']
                 ? $container
                     ->register($eventRepositoryName, InMemoryEventRepository::class)
                     ->addMethodCall('setRepositoryReference', [
-                        $repositoryReferenceReference
+                        $repositoryReferenceReference,
                     ])
                 : $container
                     ->register($eventRepositoryName, HttpEventRepository::class)
@@ -227,7 +228,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
      * Inject credentials in repository.
      *
      * @param Definition $definition
-     * @param string $name
+     * @param string     $name
      * @param array      $repositoryConfiguration
      * @param string     $index
      */
@@ -247,18 +248,18 @@ class RepositoryCompilerPass implements CompilerPassInterface
                     $repositoryConfiguration['token'],
                 ])
                 : $definition->addMethodCall('setRepositoryReference', [
-                    $repositoryReferenceReference
+                    $repositoryReferenceReference,
                 ]);
         }
     }
 
     /**
-     * Crate Repository Reference service reference
+     * Crate Repository Reference service reference.
      *
      * @param ContainerBuilder $container
      * @param string           $name
-     * @param array      $repositoryConfiguration
-     * @param string     $index
+     * @param array            $repositoryConfiguration
+     * @param string           $index
      *
      * @return Definition
      */
@@ -267,15 +268,14 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $name,
         array $repositoryConfiguration,
         string $index
-    ) : Definition
-    {
+    ): Definition {
         $repositoryReferenceName = "apisearch.repository_reference.$name.$index";
         $reference = $container->register($repositoryReferenceName, RepositoryReference::class);
         $reference
             ->setPublic(false)
             ->setFactory([
                 RepositoryReference::class,
-                'create'
+                'create',
             ])
             ->addArgument($repositoryConfiguration['app_id'])
             ->addArgument($index);

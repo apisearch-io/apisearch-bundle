@@ -33,6 +33,9 @@ class PuntmigSearchConfiguration extends BaseConfiguration
     {
         $rootNode
             ->children()
+                ->scalarNode('middleware_domain_events_service')
+                    ->defaultValue('apisearch.server.middleware.queue_events')
+                ->end()
                 ->arrayNode('repositories')
                     ->prototype('array')
                         ->children()
