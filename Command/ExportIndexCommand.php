@@ -55,7 +55,7 @@ class ExportIndexCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('puntmig:search:export-index')
+            ->setName('apisearch:export-index')
             ->setDescription('Export your index')
             ->addArgument(
                 'repository',

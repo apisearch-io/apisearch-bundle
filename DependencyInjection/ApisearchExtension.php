@@ -20,9 +20,9 @@ use Mmoreram\BaseBundle\DependencyInjection\BaseExtension;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
- * Class PuntmigSearchExtension.
+ * Class ApisearchExtension.
  */
-class PuntmigSearchExtension extends BaseExtension
+class ApisearchExtension extends BaseExtension
 {
     /**
      * Returns the recommended alias to use in XML.
@@ -75,6 +75,7 @@ class PuntmigSearchExtension extends BaseExtension
             'url',
             'twig',
             'transformers',
+            'exporters',
             'translator',
         ];
     }
@@ -96,7 +97,6 @@ class PuntmigSearchExtension extends BaseExtension
     {
         return [
             'apisearch.repository_configuration' => $config['repositories'],
-            'apisearch.middleware_domain_events_service' => $config['middleware_domain_events_service'],
         ];
     }
 
@@ -114,6 +114,6 @@ class PuntmigSearchExtension extends BaseExtension
      */
     protected function getConfigurationInstance(): ? ConfigurationInterface
     {
-        return new PuntmigSearchConfiguration($this->getAlias());
+        return new ApisearchConfiguration($this->getAlias());
     }
 }

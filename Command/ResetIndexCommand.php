@@ -52,7 +52,7 @@ class ResetIndexCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('puntmig:search:reset-index')
+            ->setName('apisearch:reset-index')
             ->setDescription('Reset your search index. Prepared a clean instance of the index and remove existing objects')
             ->addArgument(
                 'repository',

@@ -1,0 +1,22 @@
+services:
+
+    #
+    # Exporters
+    #
+    apisearch.exporter_collection:
+        class: Apisearch\Exporter\ExporterCollection
+
+    apisearch.exporter_json:
+        class: Apisearch\Exporter\JSONExporter
+        tags:
+            - { name: apisearch.exporter }
+
+    apisearch.exporter_csv:
+        class: Apisearch\Exporter\CSVExporter
+        tags:
+            - { name: apisearch.exporter }
+
+    apisearch.index_exporter:
+        class: Apisearch\Exporter\IndexExporter
+        arguments:
+            - "@apisearch.exporter_collection"

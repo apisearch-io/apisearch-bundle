@@ -114,7 +114,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
      * @param ContainerBuilder $container
      * @param string           $name
      * @param array            $repositoryConfiguration
-     * @param string $indexName
+     * @param string           $indexName
      */
     private function createSearchRepository(
         ContainerBuilder $container,

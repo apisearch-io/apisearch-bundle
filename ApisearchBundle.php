@@ -16,10 +16,11 @@ declare(strict_types=1);
 
 namespace Apisearch;
 
+use Apisearch\DependencyInjection\ApisearchExtension;
+use Apisearch\DependencyInjection\CompilerPass\ExporterCompilerPass;
 use Apisearch\DependencyInjection\CompilerPass\ReadTransformerCompilerPass;
 use Apisearch\DependencyInjection\CompilerPass\RepositoryCompilerPass;
 use Apisearch\DependencyInjection\CompilerPass\WriteTransformerCompilerPass;
-use Apisearch\DependencyInjection\PuntmigSearchExtension;
 use Mmoreram\BaseBundle\BaseBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -38,7 +39,7 @@ class ApisearchBundle extends BaseBundle
      */
     public function getContainerExtension()
     {
-        return new PuntmigSearchExtension();
+        return new ApisearchExtension();
     }
 
     /**
@@ -66,6 +67,7 @@ class ApisearchBundle extends BaseBundle
             new RepositoryCompilerPass(),
             new ReadTransformerCompilerPass(),
             new WriteTransformerCompilerPass(),
+            new ExporterCompilerPass(),
         ];
     }
 }

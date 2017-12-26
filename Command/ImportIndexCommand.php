@@ -54,7 +54,7 @@ class ImportIndexCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('puntmig:search:import-index')
+            ->setName('apisearch:import-index')
             ->setDescription('Import your index')
             ->addArgument(
                 'repository',
