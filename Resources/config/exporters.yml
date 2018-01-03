@@ -16,6 +16,11 @@ services:
         tags:
             - { name: apisearch.exporter }
 
+    apisearch.exporter_yaml:
+        class: Apisearch\Exporter\YamlExporter
+        tags:
+            - { name: apisearch.exporter }
+
     apisearch.index_exporter:
         class: Apisearch\Exporter\IndexExporter
         arguments:
