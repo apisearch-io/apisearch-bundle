@@ -63,11 +63,6 @@ class ResetIndexCommand extends Command
                 'index',
                 InputArgument::REQUIRED,
                 'Index name'
-            )
-            ->addArgument(
-                'language',
-                InputArgument::OPTIONAL,
-                'Language base for the repository'
             );
     }
 
@@ -93,8 +88,6 @@ class ResetIndexCommand extends Command
                 $input->getArgument('repository'),
                 $input->getArgument('index')
             )
-            ->reset(
-                $input->getArgument('language')
-            );
+            ->resetIndex();
     }
 }
