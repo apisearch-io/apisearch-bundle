@@ -4,7 +4,7 @@ services:
     # Http clients
     #
     search_bundle.test_client:
-        class: Mmoreram\SearchBundle\Http\TestClient
+        class: Puntmig\Search\Http\TestClient
         arguments:
             - "@test.client"
 
