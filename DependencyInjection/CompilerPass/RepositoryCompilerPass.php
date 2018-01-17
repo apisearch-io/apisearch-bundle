@@ -17,9 +17,11 @@ declare(strict_types=1);
 namespace Apisearch\DependencyInjection\CompilerPass;
 
 use Apisearch\Event\HttpEventRepository;
+use Apisearch\Log\HttpLogRepository;
 use Apisearch\Event\InMemoryEventRepository;
 use Apisearch\Http\GuzzleClient;
 use Apisearch\Http\TestClient;
+use Apisearch\Log\InMemoryLogRepository;
 use Apisearch\Repository\HttpRepository;
 use Apisearch\Repository\InMemoryRepository;
 use Apisearch\Repository\RepositoryReference;
@@ -66,11 +68,24 @@ class RepositoryCompilerPass implements CompilerPassInterface
                     $indexName
                 );
 
-                $this->createEventRepository(
+                $this->createStandardRepository(
                     $container,
                     $name,
                     $repositoryConfiguration,
-                    $indexName
+                    $indexName,
+                    'event',
+                    InMemoryEventRepository::class,
+                    HttpEventRepository::class
+                );
+
+                $this->createStandardRepository(
+                    $container,
+                    $name,
+                    $repositoryConfiguration,
+                    $indexName,
+                    'log',
+                    InMemoryLogRepository::class,
+                    HttpLogRepository::class
                 );
             }
         }
@@ -175,43 +190,49 @@ class RepositoryCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * Create event repository.
+     * Create standard repository.
      *
      * @param ContainerBuilder $container
      * @param string           $name
      * @param array            $repositoryConfiguration
      * @param string           $indexName
+     * @param string           $prefix
+     * @param string $inMemoryRepositoryNamespace
+     * @param string $httpRepositoryNamespace
      */
-    private function createEventRepository(
+    private function createStandardRepository(
         ContainerBuilder $container,
         string $name,
         array $repositoryConfiguration,
-        string $indexName
+        string $indexName,
+        string $prefix,
+        string $inMemoryRepositoryNamespace,
+        string $httpRepositoryNamespace
     ) {
-        $eventRepositoryName = "apisearch.event_repository_$name.$indexName";
+        $repositoryName = "apisearch.{$prefix}_repository_$name.$indexName";
         $clientName = "apisearch.client_$name.$indexName";
 
         if (
-            is_null($repositoryConfiguration['event']['repository_service']) ||
-            ($repositoryConfiguration['event']['repository_service'] == $eventRepositoryName)
+            is_null($repositoryConfiguration[$prefix]['repository_service']) ||
+            ($repositoryConfiguration[$prefix]['repository_service'] == $repositoryName)
         ) {
             $repositoryReferenceName = "apisearch.repository_reference.$name.$indexName";
             $repositoryReferenceReference = new Reference($repositoryReferenceName);
-            $repositoryConfiguration['event']['in_memory']
+            $repositoryConfiguration[$prefix]['in_memory']
                 ? $container
-                    ->register($eventRepositoryName, InMemoryEventRepository::class)
+                    ->register($repositoryName, $inMemoryRepositoryNamespace)
                     ->addMethodCall('setRepositoryReference', [
                         $repositoryReferenceReference,
                     ])
                 : $container
-                    ->register($eventRepositoryName, HttpEventRepository::class)
+                    ->register($repositoryName, $httpRepositoryNamespace)
                     ->addArgument(new Reference($clientName))
                     ->addMethodCall('setCredentials', [
                         $repositoryReferenceReference,
                         $repositoryConfiguration['token'],
                     ]);
         } else {
-            $repoDefinition = $container->getDefinition($repositoryConfiguration['event']['repository_service']);
+            $repoDefinition = $container->getDefinition($repositoryConfiguration[$prefix]['repository_service']);
             $this->injectRepositoryCredentials(
                 $repoDefinition,
                 $name,
@@ -221,7 +242,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
 
             $container
                 ->addAliases([
-                    $eventRepositoryName => $repositoryConfiguration['event']['repository_service'],
+                    $repositoryName => $repositoryConfiguration[$prefix]['repository_service'],
                 ]);
         }
     }
