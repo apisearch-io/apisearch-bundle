@@ -83,6 +83,17 @@ class ApisearchConfiguration extends BaseConfiguration
                                         ->defaultFalse()
                                     ->end()
                                 ->end()
+                            ->end()
+                            ->arrayNode('log')
+                                ->addDefaultsIfNotSet()
+                                ->children()
+                                    ->scalarNode('repository_service')
+                                        ->defaultNull()
+                                    ->end()
+                                    ->booleanNode('in_memory')
+                                        ->defaultFalse()
+                                    ->end()
+                                ->end()
                             ->end();
     }
 }
