@@ -16,11 +16,13 @@ declare(strict_types=1);
 
 namespace Apisearch\DependencyInjection\CompilerPass;
 
+use Apisearch\App\HttpAppRepository;
+use Apisearch\App\InMemoryAppRepository;
 use Apisearch\Event\HttpEventRepository;
-use Apisearch\Log\HttpLogRepository;
 use Apisearch\Event\InMemoryEventRepository;
 use Apisearch\Http\GuzzleClient;
 use Apisearch\Http\TestClient;
+use Apisearch\Log\HttpLogRepository;
 use Apisearch\Log\InMemoryLogRepository;
 use Apisearch\Repository\HttpRepository;
 use Apisearch\Repository\InMemoryRepository;
@@ -45,50 +47,119 @@ class RepositoryCompilerPass implements CompilerPassInterface
     {
         $repositoryConfigurations = $container->getParameter('apisearch.repository_configuration');
         foreach ($repositoryConfigurations as $name => $repositoryConfiguration) {
+            $this->createAppRepositories(
+                $container,
+                $name,
+                $repositoryConfiguration
+            );
+
             foreach ($repositoryConfiguration['indexes'] as $indexName => $indexId) {
-                $this->createRepositoryReferenceServiceReference(
+                $this->createIndexRepositories(
                     $container,
                     $name,
                     $repositoryConfiguration,
                     $indexId,
                     $indexName
                 );
-
-                $this->createClient(
-                    $container,
-                    $name,
-                    $repositoryConfiguration,
-                    $indexName
-                );
-
-                $this->createSearchRepository(
-                    $container,
-                    $name,
-                    $repositoryConfiguration,
-                    $indexName
-                );
-
-                $this->createStandardRepository(
-                    $container,
-                    $name,
-                    $repositoryConfiguration,
-                    $indexName,
-                    'event',
-                    InMemoryEventRepository::class,
-                    HttpEventRepository::class
-                );
-
-                $this->createStandardRepository(
-                    $container,
-                    $name,
-                    $repositoryConfiguration,
-                    $indexName,
-                    'log',
-                    InMemoryLogRepository::class,
-                    HttpLogRepository::class
-                );
             }
         }
+    }
+
+    /**
+     * Create app repositories.
+     *
+     * @param ContainerBuilder $container
+     * @param string           $name
+     * @param array            $repositoryConfiguration
+     */
+    private function createAppRepositories(
+        ContainerBuilder $container,
+        string $name,
+        array $repositoryConfiguration
+    ) {
+        $this->createRepositoryReferenceServiceReference(
+            $container,
+            $name,
+            $repositoryConfiguration,
+            '',
+            ''
+        );
+
+        $this->createClient(
+            $container,
+            $name,
+            $repositoryConfiguration,
+            ''
+        );
+
+        $this->createStandardRepository(
+            $container,
+            $name,
+            $repositoryConfiguration,
+            '',
+            'app',
+            InMemoryAppRepository::class,
+            HttpAppRepository::class
+        );
+    }
+
+    /**
+     * Create app repositories.
+     *
+     * @param ContainerBuilder $container
+     * @param string           $name
+     * @param array            $repositoryConfiguration
+     * @param string           $indexId
+     * @param string           $indexName
+     */
+    private function createIndexRepositories(
+        ContainerBuilder $container,
+        string $name,
+        array $repositoryConfiguration,
+        $indexId,
+        $indexName
+    ) {
+        $this->createRepositoryReferenceServiceReference(
+            $container,
+            $name,
+            $repositoryConfiguration,
+            $indexId,
+            $indexName
+        );
+
+        $this->createClient(
+            $container,
+            $name,
+            $repositoryConfiguration,
+            $indexName
+        );
+
+        $this->createSearchRepository(
+            $container,
+            $name,
+            $repositoryConfiguration,
+            $indexName
+        );
+
+        $this->createStandardRepository(
+            $container,
+            $name,
+            $repositoryConfiguration,
+            $indexName,
+            'event',
+            InMemoryEventRepository::class,
+            HttpEventRepository::class
+        );
+
+        $this->createStandardRepository(
+            $container,
+            $name,
+            $repositoryConfiguration,
+            $indexName,
+            'log',
+            InMemoryLogRepository::class,
+            HttpLogRepository::class
+        );
     }
 
     /**
@@ -106,7 +177,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $indexName
     ) {
         if ($repositoryConfiguration['http']) {
-            $clientName = "apisearch.client_$name.$indexName";
+            $clientName = rtrim("apisearch.client_$name.$indexName", '.');
             $repositoryConfiguration['test']
                 ? $container
                     ->register($clientName, TestClient::class)
@@ -197,8 +268,8 @@ class RepositoryCompilerPass implements CompilerPassInterface
      * @param array            $repositoryConfiguration
      * @param string           $indexName
      * @param string           $prefix
-     * @param string $inMemoryRepositoryNamespace
-     * @param string $httpRepositoryNamespace
+     * @param string           $inMemoryRepositoryNamespace
+     * @param string           $httpRepositoryNamespace
      */
     private function createStandardRepository(
         ContainerBuilder $container,
@@ -209,14 +280,14 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $inMemoryRepositoryNamespace,
         string $httpRepositoryNamespace
     ) {
-        $repositoryName = "apisearch.{$prefix}_repository_$name.$indexName";
-        $clientName = "apisearch.client_$name.$indexName";
+        $repositoryName = rtrim("apisearch.{$prefix}_repository_$name.$indexName", '.');
+        $clientName = rtrim("apisearch.client_$name.$indexName", '.');
 
         if (
             is_null($repositoryConfiguration[$prefix]['repository_service']) ||
             ($repositoryConfiguration[$prefix]['repository_service'] == $repositoryName)
         ) {
-            $repositoryReferenceName = "apisearch.repository_reference.$name.$indexName";
+            $repositoryReferenceName = rtrim("apisearch.repository_reference.$name.$indexName", '.');
             $repositoryReferenceReference = new Reference($repositoryReferenceName);
             $repositoryConfiguration[$prefix]['in_memory']
                 ? $container
@@ -262,7 +333,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $indexName
     ) {
         if ($repositoryConfiguration['app_id']) {
-            $repositoryReferenceName = "apisearch.repository_reference.$name.$indexName";
+            $repositoryReferenceName = rtrim("apisearch.repository_reference.$name.$indexName", '.');
             $repositoryReferenceReference = new Reference($repositoryReferenceName);
 
             $repositoryConfiguration['token']
@@ -294,7 +365,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $indexId,
         string $indexName
     ): Definition {
-        $repositoryReferenceName = "apisearch.repository_reference.$appName.$indexName";
+        $repositoryReferenceName = rtrim("apisearch.repository_reference.$appName.$indexName", '.');
         $reference = $container->register($repositoryReferenceName, RepositoryReference::class);
         $reference
             ->setPublic(false)
