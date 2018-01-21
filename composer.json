@@ -18,7 +18,7 @@
         "symfony/http-kernel": "^3.0|^4.0",
         "mmoreram/base-bundle": "^1.0.7",
         "mmoreram/symfony-bundle-dependencies": "^2.0.0",
-        "apisearch-io/php-client": "^0.1.0"
+        "apisearch-io/php-client": "^0.1.5"
     },
     "suggested": {
         "twig/twig": "In case you use Twig engine",
