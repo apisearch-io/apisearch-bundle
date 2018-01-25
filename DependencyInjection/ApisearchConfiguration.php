@@ -16,14 +16,27 @@ declare(strict_types=1);
 
 namespace Apisearch\DependencyInjection;
 
-use Mmoreram\BaseBundle\DependencyInjection\BaseConfiguration;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
  * File header placeholder.
  */
-class ApisearchConfiguration extends BaseConfiguration
+class ApisearchConfiguration implements ConfigurationInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getConfigTreeBuilder()
+    {
+        $treeBuilder = new TreeBuilder();
+        $rootNode = $treeBuilder->root('apisearch');
+        $this->setupTree($rootNode);
+
+        return $treeBuilder;
+    }
+
     /**
      * Configure the root node.
      *
