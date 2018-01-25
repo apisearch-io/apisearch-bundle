@@ -21,17 +21,30 @@ use Apisearch\DependencyInjection\CompilerPass\ExporterCompilerPass;
 use Apisearch\DependencyInjection\CompilerPass\ReadTransformerCompilerPass;
 use Apisearch\DependencyInjection\CompilerPass\RepositoryCompilerPass;
 use Apisearch\DependencyInjection\CompilerPass\WriteTransformerCompilerPass;
-use Mmoreram\BaseBundle\BaseBundle;
-use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * Class ApisearchBundle.
  */
-class ApisearchBundle extends BaseBundle
+class ApisearchBundle extends Bundle
 {
+    /**
+     * Builds bundle.
+     *
+     * @param ContainerBuilder $container Container
+     */
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new RepositoryCompilerPass());
+        $container->addCompilerPass(new ReadTransformerCompilerPass());
+        $container->addCompilerPass(new WriteTransformerCompilerPass());
+        $container->addCompilerPass(new ExporterCompilerPass());
+    }
+
     /**
      * Returns the bundle's container extension.
      *
@@ -40,34 +53,5 @@ class ApisearchBundle extends BaseBundle
     public function getContainerExtension()
     {
         return new ApisearchExtension();
-    }
-
-    /**
-     * Return all bundle dependencies.
-     *
-     * Values can be a simple bundle namespace or its instance
-     *
-     * @return array
-     */
-    public static function getBundleDependencies(KernelInterface $kernel): array
-    {
-        return [
-            FrameworkBundle::class,
-        ];
-    }
-
-    /**
-     * Return a CompilerPass instance array.
-     *
-     * @return CompilerPassInterface[]
-     */
-    public function getCompilerPasses(): array
-    {
-        return [
-            new RepositoryCompilerPass(),
-            new ReadTransformerCompilerPass(),
-            new WriteTransformerCompilerPass(),
-            new ExporterCompilerPass(),
-        ];
     }
 }
