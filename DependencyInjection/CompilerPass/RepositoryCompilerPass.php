@@ -28,6 +28,8 @@ use Apisearch\Repository\HttpRepository;
 use Apisearch\Repository\InMemoryRepository;
 use Apisearch\Repository\RepositoryReference;
 use Apisearch\Repository\TransformableRepository;
+use Apisearch\User\HttpUserRepository;
+use Apisearch\User\InMemoryUserRepository;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -100,6 +102,16 @@ class RepositoryCompilerPass implements CompilerPassInterface
             'app',
             InMemoryAppRepository::class,
             HttpAppRepository::class
+        );
+
+        $this->createStandardRepository(
+            $container,
+            $name,
+            $repositoryConfiguration,
+            '',
+            'user',
+            InMemoryUserRepository::class,
+            HttpUserRepository::class
         );
     }
 
