@@ -16,8 +16,6 @@ declare(strict_types=1);
 
 namespace Apisearch\DependencyInjection\CompilerPass;
 
-use Mmoreram\BaseBundle\CompilerPass\TagCompilerPass;
-
 /**
  * Class WriteTransformerCompilerPass.
  */
