@@ -21,6 +21,7 @@ use Apisearch\App\InMemoryAppRepository;
 use Apisearch\Event\HttpEventRepository;
 use Apisearch\Event\InMemoryEventRepository;
 use Apisearch\Http\GuzzleClient;
+use Apisearch\Http\RetryMap;
 use Apisearch\Http\TestClient;
 use Apisearch\Log\HttpLogRepository;
 use Apisearch\Log\InMemoryLogRepository;
@@ -87,11 +88,16 @@ class RepositoryCompilerPass implements CompilerPassInterface
             ''
         );
 
+        $this->createClientRetryMap(
+            $container,
+            $name,
+            $repositoryConfiguration
+        );
+
         $this->createClient(
             $container,
             $name,
-            $repositoryConfiguration,
-            ''
+            $repositoryConfiguration
         );
 
         $this->createStandardRepository(
@@ -139,13 +145,6 @@ class RepositoryCompilerPass implements CompilerPassInterface
             $indexName
         );
 
-        $this->createClient(
-            $container,
-            $name,
-            $repositoryConfiguration,
-            $indexName
-        );
-
         $this->createSearchRepository(
             $container,
             $name,
@@ -175,35 +174,67 @@ class RepositoryCompilerPass implements CompilerPassInterface
     }
 
     /**
+     * Create client retry map.
+     *
+     * @param ContainerBuilder $container
+     * @param string           $name
+     * @param array            $repositoryConfiguration
+     */
+    private function createClientRetryMap(
+        ContainerBuilder $container,
+        string $name,
+        array $repositoryConfiguration
+    ) {
+        if (!$this->repositoryIsHttp($repositoryConfiguration)) {
+            return;
+        }
+
+        $clientRetryMapName = rtrim("apisearch.retry_map_$name", '.');
+        $container
+                ->register($clientRetryMapName, RetryMap::class)
+                ->setFactory([
+                    RetryMap::class,
+                    'createFromArray',
+                ])
+                ->setArgument(0, $repositoryConfiguration['http']['retry_map']);
+    }
+
+    /**
      * Create client.
      *
      * @param ContainerBuilder $container
      * @param string           $name
      * @param array            $repositoryConfiguration
-     * @param string           $indexName
      */
     private function createClient(
         ContainerBuilder $container,
         string $name,
-        array $repositoryConfiguration,
-        string $indexName
+        array $repositoryConfiguration
     ) {
-        if ($repositoryConfiguration['http']) {
-            $clientName = rtrim("apisearch.client_$name.$indexName", '.');
-            $repositoryConfiguration['test']
-                ? $container
-                    ->register($clientName, TestClient::class)
-                    ->setArguments([
-                        new Reference('test.client'),
-                        $repositoryConfiguration['version'],
-                    ])
-                : $container
-                    ->register($clientName, GuzzleClient::class)
-                    ->setArguments([
-                        $repositoryConfiguration['endpoint'],
-                        $repositoryConfiguration['version'],
-                    ]);
+        if (!$this->repositoryIsHttp($repositoryConfiguration)) {
+            return;
         }
+
+        $clientName = rtrim("apisearch.client_$name", '.');
+        $clientRetryMapName = rtrim("apisearch.retry_map_$name", '.');
+        ('http_test' === $repositoryConfiguration['adapter'])
+            ? $container
+                ->register($clientName, TestClient::class)
+                ->setArguments([
+                    new Reference('test.client'),
+                    $repositoryConfiguration['version'],
+                    new reference($clientRetryMapName),
+                ])
+                ->setPublic($this->repositoryIsTest($repositoryConfiguration))
+            : $container
+                ->register($clientName, GuzzleClient::class)
+                ->setArguments([
+                    new Reference('apisearch.guzzle_client_adapter'),
+                    $repositoryConfiguration['endpoint'],
+                    $repositoryConfiguration['version'],
+                    new reference($clientRetryMapName),
+                ])
+                ->setPublic($this->repositoryIsTest($repositoryConfiguration));
     }
 
     /**
@@ -222,18 +253,18 @@ class RepositoryCompilerPass implements CompilerPassInterface
     ) {
         $repositoryName = "apisearch.repository_$name.$indexName";
         $repositoryTransformableName = "apisearch.repository_transformable_$name.$indexName";
-        $clientName = "apisearch.client_$name.$indexName";
+        $clientName = "apisearch.client_$name";
 
         if (
             is_null($repositoryConfiguration['search']['repository_service']) ||
             ($repositoryConfiguration['search']['repository_service'] == $repositoryName)
         ) {
-            $repoDefinition = $repositoryConfiguration['search']['in_memory']
+            $repoDefinition = 'in_memory' === $repositoryConfiguration['adapter']
                 ? $container->register($repositoryName, InMemoryRepository::class)
                 : $container
                     ->register($repositoryName, HttpRepository::class)
                     ->addArgument(new Reference($clientName))
-                    ->addArgument($repositoryConfiguration['write_async']);
+                    ->setPublic($this->repositoryIsTest($repositoryConfiguration));
         } else {
             $container
                 ->addAliases([
@@ -255,7 +286,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
             ->setDecoratedService($repositoryName)
             ->addArgument(new Reference($repositoryTransformableName.'.inner'))
             ->addArgument(new Reference('apisearch.transformer'))
-            ->setPublic(false);
+            ->setPublic($this->repositoryIsTest($repositoryConfiguration));
 
         $this->injectRepositoryCredentials(
             $definition,
@@ -269,7 +300,8 @@ class RepositoryCompilerPass implements CompilerPassInterface
             ->addMethodCall(
                 'addRepository',
                 [$name, $indexName, new Reference($repositoryName)]
-            );
+            )
+            ->setPublic($this->repositoryIsTest($repositoryConfiguration));
     }
 
     /**
@@ -293,7 +325,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $httpRepositoryNamespace
     ) {
         $repositoryName = rtrim("apisearch.{$prefix}_repository_$name.$indexName", '.');
-        $clientName = rtrim("apisearch.client_$name.$indexName", '.');
+        $clientName = rtrim("apisearch.client_$name", '.');
 
         if (
             is_null($repositoryConfiguration[$prefix]['repository_service']) ||
@@ -301,19 +333,21 @@ class RepositoryCompilerPass implements CompilerPassInterface
         ) {
             $repositoryReferenceName = rtrim("apisearch.repository_reference.$name.$indexName", '.');
             $repositoryReferenceReference = new Reference($repositoryReferenceName);
-            $repositoryConfiguration[$prefix]['in_memory']
+            'in_memory' === $repositoryConfiguration['adapter']
                 ? $container
                     ->register($repositoryName, $inMemoryRepositoryNamespace)
                     ->addMethodCall('setRepositoryReference', [
                         $repositoryReferenceReference,
                     ])
+                    ->setPublic($this->repositoryIsTest($repositoryConfiguration))
                 : $container
                     ->register($repositoryName, $httpRepositoryNamespace)
                     ->addArgument(new Reference($clientName))
                     ->addMethodCall('setCredentials', [
                         $repositoryReferenceReference,
                         $repositoryConfiguration['token'],
-                    ]);
+                    ])
+                    ->setPublic($this->repositoryIsTest($repositoryConfiguration));
         } else {
             $repoDefinition = $container->getDefinition($repositoryConfiguration[$prefix]['repository_service']);
             $this->injectRepositoryCredentials(
@@ -380,14 +414,38 @@ class RepositoryCompilerPass implements CompilerPassInterface
         $repositoryReferenceName = rtrim("apisearch.repository_reference.$appName.$indexName", '.');
         $reference = $container->register($repositoryReferenceName, RepositoryReference::class);
         $reference
-            ->setPublic(false)
             ->setFactory([
                 RepositoryReference::class,
                 'create',
             ])
             ->addArgument($repositoryConfiguration['app_id'])
-            ->addArgument($indexId);
+            ->addArgument($indexId)
+            ->setPublic($this->repositoryIsTest($repositoryConfiguration));
 
         return $reference;
+    }
+
+    /**
+     * Is test.
+     *
+     * @param array $repositoryConfiguration
+     *
+     * @return bool
+     */
+    private function repositoryIsTest(array $repositoryConfiguration)
+    {
+        return $repositoryConfiguration['test'];
+    }
+
+    /**
+     * Is http.
+     *
+     * @param array $repositoryConfiguration
+     *
+     * @return bool
+     */
+    private function repositoryIsHttp(array $repositoryConfiguration)
+    {
+        return in_array($repositoryConfiguration['adapter'], ['http', 'http_test']);
     }
 }

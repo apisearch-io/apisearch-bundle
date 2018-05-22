@@ -44,6 +44,7 @@ class ApisearchExtension extends Extension implements PrependExtensionInterface
             'repositories',
             'url',
             'twig',
+            'http',
             'transformers',
             'exporters',
             'translator',
