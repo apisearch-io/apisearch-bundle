@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Apisearch\Tests\Functional;
 
 use Apisearch\ApisearchBundle;
+use Apisearch\Exception\MockException;
 use Apisearch\Http\Retry;
 use Mmoreram\BaseBundle\BaseBundle;
 use Mmoreram\BaseBundle\Kernel\BaseKernel;
@@ -88,6 +89,13 @@ class ApisearchConfigurationTest extends BaseFunctionalTest
                                 'default' => 'xxx',
                             ],
                         ],
+                        'main3' => [
+                            'adapter' => 'service',
+                            'test' => true,
+                            'indexes' => [
+                                'default' => 'xxx',
+                            ],
+                        ],
                     ],
                 ],
             ],
@@ -142,12 +150,33 @@ class ApisearchConfigurationTest extends BaseFunctionalTest
     /**
      * Test main2 repository configuration.
      */
-    public function testSomething()
+    public function testMain2()
     {
         $repositoriesConfiguration = self::getParameter('apisearch.repository_configuration');
         $this->assertEquals(
             'in_memory',
             $repositoriesConfiguration['main2']['adapter']
         );
+        static::get('apisearch.repository_main2.default');
+    }
+
+    /**
+     * Test main3 repository configuration.
+     */
+    public function testMain3()
+    {
+        $repositoriesConfiguration = self::getParameter('apisearch.repository_configuration');
+        $this->assertEquals(
+            'service',
+            $repositoriesConfiguration['main3']['adapter']
+        );
+
+        $repository = static::get('apisearch.repository_main3.default');
+        try {
+            $repository->flush();
+            $this->fail('A mock exception should be thrown here.');
+        } catch (MockException $e) {
+            // Silent pass
+        }
     }
 }

@@ -255,27 +255,24 @@ class RepositoryCompilerPass implements CompilerPassInterface
         $repositoryTransformableName = "apisearch.repository_transformable_$name.$indexName";
         $clientName = "apisearch.client_$name";
 
-        if (
-            is_null($repositoryConfiguration['search']['repository_service']) ||
-            ($repositoryConfiguration['search']['repository_service'] == $repositoryName)
-        ) {
-            $repoDefinition = 'in_memory' === $repositoryConfiguration['adapter']
-                ? $container->register($repositoryName, InMemoryRepository::class)
+        if (!$this->repositoryIsService($repositoryConfiguration)) {
+            $repositoryDefinition = 'in_memory' === $repositoryConfiguration['adapter']
+                ? $container
+                    ->register($repositoryName, InMemoryRepository::class)
+                    ->setPublic($this->repositoryIsTest($repositoryConfiguration))
                 : $container
                     ->register($repositoryName, HttpRepository::class)
                     ->addArgument(new Reference($clientName))
                     ->setPublic($this->repositoryIsTest($repositoryConfiguration));
         } else {
-            $container
-                ->addAliases([
-                    $repositoryName => $repositoryConfiguration['search']['repository_service'],
-                ]);
-
-            $repoDefinition = $container->getDefinition($repositoryConfiguration['search']['repository_service']);
+            $container->setAlias($repositoryName, $repositoryConfiguration['search']['repository_service']);
+            $aliasDefinition = $container->getAlias($repositoryName);
+            $aliasDefinition->setPublic($this->repositoryIsTest($repositoryConfiguration));
+            $repositoryDefinition = $container->getDefinition($repositoryConfiguration['search']['repository_service']);
         }
 
         $this->injectRepositoryCredentials(
-            $repoDefinition,
+            $repositoryDefinition,
             $name,
             $repositoryConfiguration,
             $indexName
@@ -327,10 +324,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
         $repositoryName = rtrim("apisearch.{$prefix}_repository_$name.$indexName", '.');
         $clientName = rtrim("apisearch.client_$name", '.');
 
-        if (
-            is_null($repositoryConfiguration[$prefix]['repository_service']) ||
-            ($repositoryConfiguration[$prefix]['repository_service'] == $repositoryName)
-        ) {
+        if (!$this->repositoryIsService($repositoryConfiguration)) {
             $repositoryReferenceName = rtrim("apisearch.repository_reference.$name.$indexName", '.');
             $repositoryReferenceReference = new Reference($repositoryReferenceName);
             'in_memory' === $repositoryConfiguration['adapter']
@@ -357,10 +351,9 @@ class RepositoryCompilerPass implements CompilerPassInterface
                 $indexName
             );
 
-            $container
-                ->addAliases([
-                    $repositoryName => $repositoryConfiguration[$prefix]['repository_service'],
-                ]);
+            $container->setAlias($repositoryName, $repositoryConfiguration[$prefix]['repository_service']);
+            $aliasDefinition = $container->getAlias($repositoryName);
+            $aliasDefinition->setPublic($this->repositoryIsTest($repositoryConfiguration));
         }
     }
 
@@ -447,5 +440,17 @@ class RepositoryCompilerPass implements CompilerPassInterface
     private function repositoryIsHttp(array $repositoryConfiguration)
     {
         return in_array($repositoryConfiguration['adapter'], ['http', 'http_test']);
+    }
+
+    /**
+     * Is Service.
+     *
+     * @param array $repositoryConfiguration
+     *
+     * @return bool
+     */
+    private function repositoryIsService(array $repositoryConfiguration)
+    {
+        return in_array($repositoryConfiguration['adapter'], ['service']);
     }
 }
