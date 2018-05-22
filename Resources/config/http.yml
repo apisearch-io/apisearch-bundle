@@ -1,0 +1,9 @@
+services:
+
+    #
+    # Commands
+    #
+    apisearch.guzzle_client_adapter:
+        class: GuzzleHttp\Client
+        arguments:
+            - { defaults: { timeout: 5, http_errors: false } }
