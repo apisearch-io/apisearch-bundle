@@ -20,7 +20,6 @@ use Apisearch\Model\Coordinate;
 use Apisearch\Model\Item;
 use Apisearch\Query\Query;
 use Apisearch\Repository\RepositoryBucket;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,7 +27,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * ExportIndexCommand.
  */
-class ExportIndexCommand extends Command
+class ExportIndexCommand extends ApisearchCommand
 {
     /**
      * @var RepositoryBucket
