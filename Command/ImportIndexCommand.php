@@ -16,10 +16,8 @@ declare(strict_types=1);
 
 namespace Apisearch\Command;
 
-use Apisearch\Model\Coordinate;
 use Apisearch\Model\Item;
 use Apisearch\Repository\RepositoryBucket;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,7 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * ImportIndexCommand.
  */
-class ImportIndexCommand extends Command
+class ImportIndexCommand extends ApisearchCommand
 {
     /**
      * @var RepositoryBucket
