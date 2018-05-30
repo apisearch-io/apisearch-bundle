@@ -103,7 +103,7 @@ class ExportIndexCommand extends ApisearchCommand
                     $repositoryName,
                     $indexName
                 )
-                ->query(Query::create('', $i, 10000))
+                ->query(Query::create('', $i, 100))
                 ->getItems();
 
             if (empty($items)) {
