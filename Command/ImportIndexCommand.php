@@ -17,7 +17,6 @@ declare(strict_types=1);
 namespace Apisearch\Command;
 
 use Apisearch\Model\Item;
-use Apisearch\Repository\RepositoryBucket;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,27 +24,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * ImportIndexCommand.
  */
-class ImportIndexCommand extends ApisearchCommand
+class ImportIndexCommand extends WithRepositoryBucketCommand
 {
-    /**
-     * @var RepositoryBucket
-     *
-     * Repository bucket
-     */
-    private $repositoryBucket;
-
-    /**
-     * ResetIndexCommand constructor.
-     *
-     * @param RepositoryBucket $repositoryBucket
-     */
-    public function __construct(RepositoryBucket $repositoryBucket)
-    {
-        parent::__construct();
-
-        $this->repositoryBucket = $repositoryBucket;
-    }
-
     /**
      * Configures the current command.
      */
@@ -72,21 +52,24 @@ class ImportIndexCommand extends ApisearchCommand
     }
 
     /**
-     * Executes the current command.
+     * Dispatch domain event.
      *
-     * This method is not abstract because you can use this class
-     * as a concrete class. In this case, instead of defining the
-     * execute() method, you set the code to execute by passing
-     * a Closure to the setCode() method.
-     *
-     * @param InputInterface  $input  An InputInterface instance
-     * @param OutputInterface $output An OutputInterface instance
-     *
-     * @return null|int null or 0 if everything went fine, or an error code
-     *
-     * @see setCode()
+     * @return string
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getHeader(): string
+    {
+        return 'Import index';
+    }
+
+    /**
+     * Dispatch domain event.
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return mixed|null
+     */
+    protected function runCommand(InputInterface $input, OutputInterface $output)
     {
         $repositoryName = $input->getArgument('repository');
         $indexName = $input->getArgument('index');
@@ -123,5 +106,20 @@ class ImportIndexCommand extends ApisearchCommand
             $repository->flush(500, false);
             fclose($handle);
         }
+    }
+
+    /**
+     * Get success message.
+     *
+     * @param InputInterface $input
+     * @param mixed          $result
+     *
+     * @return string
+     */
+    protected function getSuccessMessage(
+        InputInterface $input,
+        $result
+    ): string {
+        return 'Index imported properly';
     }
 }

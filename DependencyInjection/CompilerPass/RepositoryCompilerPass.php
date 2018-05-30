@@ -178,6 +178,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
      *
      * @param ContainerBuilder $container
      * @param string           $name
+     * @param string           $name
      * @param array            $repositoryConfiguration
      */
     private function createClientRetryMap(
@@ -355,6 +356,14 @@ class RepositoryCompilerPass implements CompilerPassInterface
             $aliasDefinition = $container->getAlias($repositoryName);
             $aliasDefinition->setPublic($this->repositoryIsTest($repositoryConfiguration));
         }
+
+        $container
+            ->getDefinition("apisearch.{$prefix}_repository_bucket")
+            ->addMethodCall(
+                'addRepository',
+                [$name, new Reference($repositoryName)]
+            )
+            ->setPublic($this->repositoryIsTest($repositoryConfiguration));
     }
 
     /**
