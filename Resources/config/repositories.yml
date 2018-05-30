@@ -5,6 +5,8 @@ services:
 
     apisearch.app_repository_bucket:
         class: Apisearch\App\AppRepositoryBucket
+        arguments:
+            - "%apisearch.repository_configuration%"
 
     apisearch.user_repository_bucket:
         class: Apisearch\User\UserRepositoryBucket

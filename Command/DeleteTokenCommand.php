@@ -16,16 +16,15 @@ declare(strict_types=1);
 
 namespace Apisearch\Command;
 
-use Apisearch\Token\Token;
-use Symfony\Component\Console\Helper\Table;
+use Apisearch\Token\TokenUUID;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class PrintTokensCommand.
+ * Class DeleteTokenCommand.
  */
-class PrintTokensCommand extends WithAppRepositoryBucketCommand
+class DeleteTokenCommand extends WithAppRepositoryBucketCommand
 {
     /**
      * Configures the current command.
@@ -33,12 +32,17 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
     protected function configure()
     {
         $this
-            ->setName('apisearch:print-tokens')
-            ->setDescription('Print all tokens of an app-id')
+            ->setName('apisearch:delete-token')
+            ->setDescription('Delete a token')
+            ->addArgument(
+                'uuid',
+                InputArgument::REQUIRED,
+                'UUID'
+            )
             ->addArgument(
                 'repository',
                 InputArgument::REQUIRED,
-                'Repository name'
+                'Repository Name'
             );
     }
 
@@ -49,7 +53,7 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
      */
     protected function getHeader(): string
     {
-        return 'Print tokens';
+        return 'Create token';
     }
 
     /**
@@ -64,7 +68,10 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
         InputInterface $input,
         $result
     ): string {
-        return '';
+        return sprintf(
+            'Token with UUID <%s> added properly',
+            $input->getArgument('uuid')
+        );
     }
 
     /**
@@ -78,37 +85,10 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
         $repository = $input->getArgument('repository');
-        $tokens = $this
+        $this
             ->repositoryBucket->findRepository($repository)
-            ->getTokens();
-
-        $indexArray = $this
-            ->repositoryBucket
-            ->getConfiguration()[$repository]['indexes'] ?? [];
-
-        /**
-         * @var Token
-         */
-        $table = new Table($output);
-        $table->setHeaders(['UUID', 'Indices', 'Seconds Valid', 'Max hits per query', 'HTTP Referrers', 'endpoints', 'plugins', 'ttl']);
-        foreach ($tokens as $token) {
-            $indicesReversed = array_flip($indexArray);
-            $indices = array_map(function (string $index) use ($indicesReversed) {
-                return $indicesReversed[$index] ?? null;
-            }, $token->getIndices());
-            $indices = array_filter($indices);
-
-            $table->addRow([
-                $token->getTokenUUID()->composeUUID(),
-                implode(', ', $indices),
-                $token->getSecondsValid(),
-                $token->getMaxHitsPerQuery(),
-                implode(', ', $token->getHttpReferrers()),
-                implode(', ', $token->getEndpoints()),
-                implode(', ', $token->getPlugins()),
-                $token->getTtl(),
-            ]);
-        }
-        $table->render();
+            ->deleteToken(
+                TokenUUID::createById($input->getArgument('uuid'))
+            );
     }
 }
