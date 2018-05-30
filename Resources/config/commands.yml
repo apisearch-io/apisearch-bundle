@@ -23,3 +23,10 @@ services:
             - "@apisearch.repository_bucket"
         tags:
             - { name: console.command }
+
+    apisearch.print_tokens_command:
+        class: Apisearch\Command\PrintTokensCommand
+        arguments:
+            - "@apisearch.app_repository_bucket"
+        tags:
+            - { name: console.command }

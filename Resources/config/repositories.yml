@@ -3,6 +3,18 @@ services:
     apisearch.repository_bucket:
         class: Apisearch\Repository\RepositoryBucket
 
+    apisearch.app_repository_bucket:
+        class: Apisearch\App\AppRepositoryBucket
+
+    apisearch.user_repository_bucket:
+        class: Apisearch\User\UserRepositoryBucket
+
+    apisearch.event_repository_bucket:
+        class: Apisearch\Event\EventRepositoryBucket
+
+    apisearch.log_repository_bucket:
+        class: Apisearch\Log\LogRepositoryBucket
+
     #
     # Mocks
     #
