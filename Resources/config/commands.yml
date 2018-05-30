@@ -30,3 +30,17 @@ services:
             - "@apisearch.app_repository_bucket"
         tags:
             - { name: console.command }
+
+    apisearch.add_token_command:
+        class: Apisearch\Command\AddTokenCommand
+        arguments:
+            - "@apisearch.app_repository_bucket"
+        tags:
+            - { name: console.command }
+
+    apisearch.delete_token_command:
+        class: Apisearch\Command\DeleteTokenCommand
+        arguments:
+            - "@apisearch.app_repository_bucket"
+        tags:
+            - { name: console.command }
