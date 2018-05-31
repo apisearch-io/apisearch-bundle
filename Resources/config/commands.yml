@@ -10,6 +10,24 @@ services:
         tags:
             - { name: console.command }
 
+    apisearch.create_index_command:
+        class: Apisearch\Command\CreateIndexCommand
+        arguments:
+            - "@apisearch.repository_bucket"
+            - "@apisearch.event_repository_bucket"
+            - "@apisearch.log_repository_bucket"
+        tags:
+            - { name: console.command }
+
+    apisearch.delete_index_command:
+        class: Apisearch\Command\DeleteIndexCommand
+        arguments:
+            - "@apisearch.repository_bucket"
+            - "@apisearch.event_repository_bucket"
+            - "@apisearch.log_repository_bucket"
+        tags:
+            - { name: console.command }
+
     apisearch.export_index_command:
         class: Apisearch\Command\ExportIndexCommand
         arguments:
