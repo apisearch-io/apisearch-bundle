@@ -18,6 +18,7 @@ namespace Apisearch\Command;
 
 use Apisearch\Token\Token;
 use Apisearch\Token\TokenUUID;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -37,14 +38,15 @@ class AddTokenCommand extends WithAppRepositoryBucketCommand
             ->setName('apisearch:add-token')
             ->setDescription('Add a token')
             ->addArgument(
-                'uuid',
-                InputArgument::REQUIRED,
-                'UUID'
-            )
-            ->addArgument(
                 'repository',
                 InputArgument::REQUIRED,
                 'Repository name'
+            )
+            ->addArgument(
+                'uuid',
+                InputArgument::OPTIONAL,
+                'Token UUID. If none defined, a new one will be generated',
+                Uuid::uuid4()->toString()
             )
             ->addOption(
                 'index',
