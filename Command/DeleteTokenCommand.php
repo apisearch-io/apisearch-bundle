@@ -84,9 +84,10 @@ class DeleteTokenCommand extends WithAppRepositoryBucketCommand
      */
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        $repository = $input->getArgument('repository');
+        $this->getRepositoryAndIndices($input, $output);
+
         $this
-            ->repositoryBucket->findRepository($repository)
+            ->repositoryBucket->findRepository($input->getArgument('repository'))
             ->deleteToken(
                 TokenUUID::createById($input->getArgument('uuid'))
             );

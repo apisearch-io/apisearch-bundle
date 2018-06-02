@@ -43,6 +43,7 @@ abstract class ApisearchFormattedCommand extends ApisearchCommand
                 $input,
                 $output
             );
+
             $successfulMessage = $this->getSuccessMessage($input, $result);
             if (!empty($successfulMessage)) {
                 $this->printMessage(

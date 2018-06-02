@@ -101,7 +101,7 @@ class DeleteIndexCommand extends WithRepositoryBucketCommand
      */
     protected function getHeader(): string
     {
-        return 'Create index';
+        return 'Delete index';
     }
 
     /**
@@ -131,7 +131,7 @@ class DeleteIndexCommand extends WithRepositoryBucketCommand
         }
 
         if ($input->getOption('with-events')) {
-            $this->createEvents(
+            $this->deleteEvents(
                 $repository,
                 $index,
                 $output
@@ -139,7 +139,7 @@ class DeleteIndexCommand extends WithRepositoryBucketCommand
         }
 
         if ($input->getOption('with-logs')) {
-            $this->createLogs(
+            $this->deleteLogs(
                 $repository,
                 $index,
                 $output
@@ -159,25 +159,25 @@ class DeleteIndexCommand extends WithRepositoryBucketCommand
         InputInterface $input,
         $result
     ): string {
-        return 'Indices created properly';
+        return 'Indices deleted properly';
     }
 
     /**
-     * Create events index.
+     * Delete events index.
      *
-     * @param string          $repositoryName
+     * @param string          $repository
      * @param string          $index
      * @param OutputInterface $output
      */
-    private function createEvents(
-        string $repositoryName,
+    protected function deleteEvents(
+        string $repository,
         string $index,
         OutputInterface $output
     ) {
         try {
             $this
                 ->eventRepositoryBucket
-                ->findRepository($repositoryName, $index)
+                ->findRepository($repository, $index)
                 ->deleteIndex();
         } catch (ResourceNotAvailableException $exception) {
             $this->printInfoMessage(
@@ -189,21 +189,21 @@ class DeleteIndexCommand extends WithRepositoryBucketCommand
     }
 
     /**
-     * Create logs index.
+     * Delete logs index.
      *
-     * @param string          $repositoryName
+     * @param string          $repository
      * @param string          $index
      * @param OutputInterface $output
      */
-    private function createLogs(
-        string $repositoryName,
+    protected function deleteLogs(
+        string $repository,
         string $index,
         OutputInterface $output
     ) {
         try {
             $this
                 ->logRepositoryBucket
-                ->findRepository($repositoryName, $index)
+                ->findRepository($repository, $index)
                 ->deleteIndex();
         } catch (ResourceNotAvailableException $exception) {
             $this->printInfoMessage(

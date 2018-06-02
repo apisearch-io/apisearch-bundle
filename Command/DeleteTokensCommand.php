@@ -78,9 +78,6 @@ class DeleteTokensCommand extends WithAppRepositoryBucketCommand
         InputInterface $input,
         $result
     ): string {
-        return sprintf(
-            'All Tokens deleted properly',
-            $input->getArgument('uuid')
-        );
+        return 'All Tokens deleted properly';
     }
 }
