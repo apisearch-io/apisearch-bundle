@@ -137,25 +137,18 @@ class AddTokenCommand extends WithAppRepositoryBucketCommand
      */
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        $repository = $input->getArgument('repository');
-        $indexArray = $this
-            ->repositoryBucket
-            ->getConfiguration()[$repository]['indexes'] ?? [];
-
-        $indices = array_map(function (string $index) use ($indexArray) {
-            return $indexArray[$index] ?? null;
-        }, $input->getOption('index'));
-        $indices = array_filter($indices);
+        list($app_id, $indices) = $this->getRepositoryAndIndices($input, $output);
+        $endpoints = $this->getEndpoints($input, $output);
 
         $this
-            ->repositoryBucket->findRepository($repository)
+            ->repositoryBucket->findRepository($input->getArgument('repository'))
             ->addToken(
                 new Token(
                     TokenUUID::createById($input->getArgument('uuid')),
-                    (string) $input->getArgument('repository'),
+                    (string) $app_id,
                     $indices,
                     $input->getOption('http-referrer'),
-                    $input->getOption('endpoint'),
+                    $endpoints,
                     $input->getOption('plugin'),
                     (int) $input->getOption('seconds-valid'),
                     (int) $input->getOption('max-hits-per-query'),

@@ -16,8 +16,11 @@ declare(strict_types=1);
 
 namespace Apisearch\Command;
 
+use Apisearch\Http\Endpoints;
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Component\Stopwatch\StopwatchEvent;
@@ -259,6 +262,33 @@ abstract class ApisearchCommand extends Command
         return $this
             ->stopwatch
             ->stop($eventName);
+    }
+
+    /**
+     * Get endpoint compositions given their names.
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return array
+     *
+     * @throws Exception
+     */
+    protected function getEndpoints(
+        InputInterface $input,
+        OutputInterface $output
+    ): array {
+        $endpointsName = $input->getOption('endpoint');
+        $endpoints = Endpoints::compose($endpointsName);
+
+        if (count($endpointsName) > count($endpoints)) {
+            throw new Exception(sprintf(
+                'Endpoint not found. Endpoints available: %s',
+                implode(', ', array_keys(Endpoints::all()))
+            ));
+        }
+
+        return $endpoints;
     }
 
     /**
