@@ -62,3 +62,10 @@ services:
             - "@apisearch.app_repository_bucket"
         tags:
             - { name: console.command }
+
+    apisearch.delete_all_tokens_command:
+        class: Apisearch\Command\DeleteTokensCommand
+        arguments:
+            - "@apisearch.app_repository_bucket"
+        tags:
+            - { name: console.command }
