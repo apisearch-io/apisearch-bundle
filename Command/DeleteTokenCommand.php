@@ -35,14 +35,14 @@ class DeleteTokenCommand extends WithAppRepositoryBucketCommand
             ->setName('apisearch:delete-token')
             ->setDescription('Delete a token')
             ->addArgument(
-                'uuid',
-                InputArgument::REQUIRED,
-                'UUID'
-            )
-            ->addArgument(
                 'repository',
                 InputArgument::REQUIRED,
                 'Repository Name'
+            )
+            ->addArgument(
+                'uuid',
+                InputArgument::REQUIRED,
+                'UUID'
             );
     }
 
@@ -53,7 +53,7 @@ class DeleteTokenCommand extends WithAppRepositoryBucketCommand
      */
     protected function getHeader(): string
     {
-        return 'Create token';
+        return 'Delete token';
     }
 
     /**
@@ -69,7 +69,7 @@ class DeleteTokenCommand extends WithAppRepositoryBucketCommand
         $result
     ): string {
         return sprintf(
-            'Token with UUID <%s> added properly',
+            'Token with UUID <%s> deleted properly',
             $input->getArgument('uuid')
         );
     }
