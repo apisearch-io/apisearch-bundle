@@ -95,18 +95,6 @@ class CreateIndexCommand extends WithRepositoryBucketCommand
                 'Store searchable metadata'
             )
             ->addOption(
-                'with-events',
-                null,
-                InputOption::VALUE_NONE,
-                'Create events as well'
-            )
-            ->addOption(
-                'with-logs',
-                null,
-                InputOption::VALUE_NONE,
-                'Create logs as well'
-            )
-            ->addOption(
                 'synonym',
                 null,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
@@ -157,22 +145,6 @@ class CreateIndexCommand extends WithRepositoryBucketCommand
                 'Index is already created. Skipping.'
             );
         }
-
-        if ($input->getOption('with-events')) {
-            $this->createEvents(
-                $repository,
-                $index,
-                $output
-            );
-        }
-
-        if ($input->getOption('with-logs')) {
-            $this->createLogs(
-                $repository,
-                $index,
-                $output
-            );
-        }
     }
 
     /**
@@ -188,57 +160,5 @@ class CreateIndexCommand extends WithRepositoryBucketCommand
         $result
     ): string {
         return 'Indices created properly';
-    }
-
-    /**
-     * Create events index.
-     *
-     * @param string          $repositoryName
-     * @param string          $index
-     * @param OutputInterface $output
-     */
-    private function createEvents(
-        string $repositoryName,
-        string $index,
-        OutputInterface $output
-    ) {
-        try {
-            $this
-                ->eventRepositoryBucket
-                ->findRepository($repositoryName, $index)
-                ->createIndex();
-        } catch (ResourceNotAvailableException $exception) {
-            $this->printInfoMessage(
-                $output,
-                $this->getHeader(),
-                'Events index is already created. Skipping.'
-            );
-        }
-    }
-
-    /**
-     * Create logs index.
-     *
-     * @param string          $repositoryName
-     * @param string          $index
-     * @param OutputInterface $output
-     */
-    private function createLogs(
-        string $repositoryName,
-        string $index,
-        OutputInterface $output
-    ) {
-        try {
-            $this
-                ->logRepositoryBucket
-                ->findRepository($repositoryName, $index)
-                ->createIndex();
-        } catch (ResourceNotAvailableException $exception) {
-            $this->printInfoMessage(
-                $output,
-                $this->getHeader(),
-                'Logs index is already created. Skipping.'
-            );
-        }
     }
 }

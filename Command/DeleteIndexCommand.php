@@ -22,7 +22,6 @@ use Apisearch\Log\LogRepositoryBucket;
 use Apisearch\Repository\RepositoryBucket;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -79,18 +78,6 @@ class DeleteIndexCommand extends WithRepositoryBucketCommand
                 'index',
                 InputArgument::REQUIRED,
                 'Index'
-            )
-            ->addOption(
-                'with-events',
-                null,
-                InputOption::VALUE_NONE,
-                'Create events as well'
-            )
-            ->addOption(
-                'with-logs',
-                null,
-                InputOption::VALUE_NONE,
-                'Create logs as well'
             );
     }
 
@@ -129,22 +116,6 @@ class DeleteIndexCommand extends WithRepositoryBucketCommand
                 'Index not found. Skipping.'
             );
         }
-
-        if ($input->getOption('with-events')) {
-            $this->deleteEvents(
-                $repository,
-                $index,
-                $output
-            );
-        }
-
-        if ($input->getOption('with-logs')) {
-            $this->deleteLogs(
-                $repository,
-                $index,
-                $output
-            );
-        }
     }
 
     /**
@@ -160,57 +131,5 @@ class DeleteIndexCommand extends WithRepositoryBucketCommand
         $result
     ): string {
         return 'Indices deleted properly';
-    }
-
-    /**
-     * Delete events index.
-     *
-     * @param string          $repository
-     * @param string          $index
-     * @param OutputInterface $output
-     */
-    protected function deleteEvents(
-        string $repository,
-        string $index,
-        OutputInterface $output
-    ) {
-        try {
-            $this
-                ->eventRepositoryBucket
-                ->findRepository($repository, $index)
-                ->deleteIndex();
-        } catch (ResourceNotAvailableException $exception) {
-            $this->printInfoMessage(
-                $output,
-                $this->getHeader(),
-                'Events index not found. Skipping.'
-            );
-        }
-    }
-
-    /**
-     * Delete logs index.
-     *
-     * @param string          $repository
-     * @param string          $index
-     * @param OutputInterface $output
-     */
-    protected function deleteLogs(
-        string $repository,
-        string $index,
-        OutputInterface $output
-    ) {
-        try {
-            $this
-                ->logRepositoryBucket
-                ->findRepository($repository, $index)
-                ->deleteIndex();
-        } catch (ResourceNotAvailableException $exception) {
-            $this->printInfoMessage(
-                $output,
-                $this->getHeader(),
-                'Logs index not found. Skipping.'
-            );
-        }
     }
 }
