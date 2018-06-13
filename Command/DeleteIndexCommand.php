@@ -16,10 +16,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Command;
 
-use Apisearch\Event\EventRepositoryBucket;
 use Apisearch\Exception\ResourceNotAvailableException;
-use Apisearch\Log\LogRepositoryBucket;
-use Apisearch\Repository\RepositoryBucket;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,38 +26,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class DeleteIndexCommand extends WithRepositoryBucketCommand
 {
-    /**
-     * @var EventRepositoryBucket
-     *
-     * Event repository bucket
-     */
-    private $eventRepositoryBucket;
-
-    /**
-     * @var LogRepositoryBucket
-     *
-     * Log repository bucket
-     */
-    private $logRepositoryBucket;
-
-    /**
-     * CreateIndexCommand constructor.
-     *
-     * @param RepositoryBucket      $repositoryBucket
-     * @param EventRepositoryBucket $eventRepositoryBucket
-     * @param LogRepositoryBucket   $logRepositoryBucket
-     */
-    public function __construct(
-        RepositoryBucket $repositoryBucket,
-        EventRepositoryBucket $eventRepositoryBucket,
-        LogRepositoryBucket $logRepositoryBucket
-    ) {
-        parent::__construct($repositoryBucket);
-
-        $this->eventRepositoryBucket = $eventRepositoryBucket;
-        $this->logRepositoryBucket = $logRepositoryBucket;
-    }
-
     /**
      * Configures the current command.
      */
