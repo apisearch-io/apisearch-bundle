@@ -87,6 +87,7 @@ abstract class ApisearchCommand extends Command
         $formatter->setStyle('failLine', new OutputFormatterStyle('red'));
         $formatter->setStyle('info', new OutputFormatterStyle('blue'));
         $formatter->setStyle('body', new OutputFormatterStyle('white'));
+        $formatter->setStyle('strong', new OutputFormatterStyle(null, null, ['bold']));
 
         return $this;
     }

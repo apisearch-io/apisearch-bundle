@@ -122,7 +122,7 @@ class AddTokenCommand extends WithAppRepositoryBucketCommand
         $result
     ): string {
         return sprintf(
-            'Token with UUID <%s> added properly',
+            'Token with UUID <strong>%s</strong> added properly',
             $input->getArgument('uuid')
         );
     }
