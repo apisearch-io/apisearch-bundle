@@ -1,0 +1,50 @@
+<?php
+
+/*
+ * This file is part of the Search PHP Bundle.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * Feel free to edit as you please, and have fun.
+ *
+ * @author Marc Morera <yuhu@mmoreram.com>
+ */
+
+declare(strict_types=1);
+
+namespace Apisearch\Tests\Functional;
+
+use Apisearch\Model\Item;
+use Apisearch\Transformer\ReadTransformer;
+
+/**
+ * Class ProductReadTransformer.
+ */
+class ProductReadTransformer implements ReadTransformer
+{
+    /**
+     * The item should be converted by this transformer.
+     *
+     * @param Item $item
+     *
+     * @return bool
+     */
+    public function isValidItem(Item $item): bool
+    {
+        return true;
+    }
+
+    /**
+     * Create object by item.
+     *
+     * @param Item $item
+     *
+     * @return mixed
+     */
+    public function fromItem(Item $item)
+    {
+        return [
+        ];
+    }
+}

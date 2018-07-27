@@ -9,7 +9,6 @@
  * Feel free to edit as you please, and have fun.
  *
  * @author Marc Morera <yuhu@mmoreram.com>
- * @author PuntMig Technologies
  */
 
 declare(strict_types=1);
@@ -17,27 +16,14 @@ declare(strict_types=1);
 namespace Apisearch\DependencyInjection;
 
 use Apisearch\Http\Retry;
+use Mmoreram\BaseBundle\DependencyInjection\BaseConfiguration;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
-use Symfony\Component\Config\Definition\Builder\TreeBuilder;
-use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
  * File header placeholder.
  */
-class ApisearchConfiguration implements ConfigurationInterface
+class ApisearchConfiguration extends BaseConfiguration
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getConfigTreeBuilder()
-    {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('apisearch');
-        $this->setupTree($rootNode);
-
-        return $treeBuilder;
-    }
-
     /**
      * Configure the root node.
      *

@@ -9,37 +9,54 @@
  * Feel free to edit as you please, and have fun.
  *
  * @author Marc Morera <yuhu@mmoreram.com>
- * @author PuntMig Technologies
  */
 
 declare(strict_types=1);
 
 namespace Apisearch\DependencyInjection;
 
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\Extension;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Mmoreram\BaseBundle\DependencyInjection\BaseExtension;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
  * Class ApisearchExtension.
  */
-class ApisearchExtension extends Extension implements PrependExtensionInterface
+class ApisearchExtension extends BaseExtension
 {
     /**
-     * Loads a specific configuration.
+     * Get the Config file location.
      *
-     * @throws \InvalidArgumentException When provided tag is not defined in this extension
+     * @return string
      */
-    public function load(array $configs, ContainerBuilder $container)
+    protected function getConfigFilesLocation(): string
     {
-        $loader = new YamlFileLoader(
-            $container,
-            new FileLocator(__DIR__.'/../Resources/config')
-        );
+        return __DIR__.'/../Resources/config';
+    }
 
-        $confiFiles = [
+    /**
+     * Config files to load.
+     *
+     * Each array position can be a simple file name if must be loaded always,
+     * or an array, with the filename in the first position, and a boolean in
+     * the second one.
+     *
+     * As a parameter, this method receives all loaded configuration, to allow
+     * setting this boolean value from a configuration value.
+     *
+     * return array(
+     *      'file1.yml',
+     *      'file2.yml',
+     *      ['file3.yml', $config['my_boolean'],
+     *      ...
+     * );
+     *
+     * @param array $config Config definitions
+     *
+     * @return array Config files
+     */
+    protected function getConfigFiles(array $config): array
+    {
+        return [
             'commands',
             'repositories',
             'url',
@@ -49,33 +66,54 @@ class ApisearchExtension extends Extension implements PrependExtensionInterface
             'exporters',
             'translator',
         ];
-
-        foreach ($confiFiles as $configFile) {
-            $loader->load("$configFile.yml");
-        }
     }
 
     /**
-     * Allow an extension to prepend the extension configurations.
+     * Return a new Configuration instance.
      *
-     * @param ContainerBuilder $container
+     * If object returned by this method is an instance of
+     * ConfigurationInterface, extension will use the Configuration to read all
+     * bundle config definitions.
+     *
+     * Also will call getParametrizationValues method to load some config values
+     * to internal parameters.
+     *
+     * @return ConfigurationInterface|null
      */
-    public function prepend(ContainerBuilder $container)
+    protected function getConfigurationInstance(): ? ConfigurationInterface
     {
-        $configurationInstance = new ApisearchConfiguration();
-        $configuration = $container->getExtensionConfig('apisearch');
-        $configuration = $this->processConfiguration(
-            $configurationInstance,
-            $configuration
-        );
-        $configuration = $container
-            ->getParameterBag()
-            ->resolveValue($configuration);
+        return new ApisearchConfiguration($this->getAlias());
+    }
 
-        $container
-            ->getParameterBag()
-            ->add([
-                'apisearch.repository_configuration' => $configuration['repositories'],
-            ]);
+    /**
+     * Load Parametrization definition.
+     *
+     * return array(
+     *      'parameter1' => $config['parameter1'],
+     *      'parameter2' => $config['parameter2'],
+     *      ...
+     * );
+     *
+     * @param array $config Bundles config values
+     *
+     * @return array
+     */
+    protected function getParametrizationValues(array $config): array
+    {
+        return [
+            'apisearch.repository_configuration' => $config['repositories'],
+        ];
+    }
+
+    /**
+     * Returns the recommended alias to use in XML.
+     *
+     * This alias is also the mandatory prefix to use when using YAML.
+     *
+     * @return string The alias
+     */
+    public function getAlias()
+    {
+        return 'apisearch';
     }
 }
