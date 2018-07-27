@@ -9,20 +9,17 @@
  * Feel free to edit as you please, and have fun.
  *
  * @author Marc Morera <yuhu@mmoreram.com>
- * @author PuntMig Technologies
  */
 
 declare(strict_types=1);
 
-namespace Apisearch\Tests\Functional;
+namespace Apisearch\Tests\Functional\DependencyInjection;
 
 use Apisearch\ApisearchBundle;
 use Apisearch\Exception\MockException;
 use Apisearch\Http\Retry;
-use Mmoreram\BaseBundle\BaseBundle;
 use Mmoreram\BaseBundle\Kernel\BaseKernel;
 use Mmoreram\BaseBundle\Tests\BaseFunctionalTest;
-use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -39,9 +36,7 @@ class ApisearchConfigurationTest extends BaseFunctionalTest
     {
         return new BaseKernel(
             [
-                BaseBundle::class,
                 ApisearchBundle::class,
-                FrameworkBundle::class,
             ], [
                 'parameters' => [
                     'kernel.secret' => 'sdhjshjkds',
