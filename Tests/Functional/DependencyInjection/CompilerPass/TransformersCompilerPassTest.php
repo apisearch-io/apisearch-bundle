@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Search PHP Bundle.
+ * This file is part of the Apisearch Bundle.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -73,6 +73,14 @@ class TransformersCompilerPassTest extends BaseFunctionalTest
                             'test' => true,
                             'indexes' => [
                                 'default' => 'xxx',
+                            ],
+                        ],
+                        'another' => [
+                            'adapter' => 'service',
+                            'test' => true,
+                            'app_id' => 12345,
+                            'indices' => [
+                                'default' => 67890,
                             ],
                         ],
                     ],
