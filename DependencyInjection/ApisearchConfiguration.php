@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Search PHP Bundle.
+ * This file is part of the Apisearch Bundle.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -76,6 +76,12 @@ class ApisearchConfiguration extends BaseConfiguration
                                 ->defaultValue('v1')
                             ->end()
                             ->arrayNode('indexes')
+                                ->setDeprecated('The "%node%" option is deprecated and will be removed at v1.0.0. Use "indices" instead.')
+                                ->scalarPrototype()
+                                    ->cannotBeEmpty()
+                                ->end()
+                            ->end()
+                            ->arrayNode('indices')
                                 ->scalarPrototype()
                                     ->cannotBeEmpty()
                                 ->end()

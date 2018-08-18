@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Search PHP Bundle.
+ * This file is part of the Apisearch Bundle.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -55,7 +55,16 @@ class RepositoryCompilerPass implements CompilerPassInterface
                 $repositoryConfiguration
             );
 
-            foreach ($repositoryConfiguration['indexes'] as $indexName => $indexId) {
+            /*
+             * @deprecated 1.0.0 Will only use indices instead of indexes. Remove
+             *             this convalidation
+             */
+            if (!empty($repositoryConfiguration['indexes'])) {
+                $repositoryConfiguration['indices'] = $repositoryConfiguration['indexes'];
+            }
+
+            foreach ($repositoryConfiguration['indices'] as $indexName => $indexId) {
+                $indexId = (string) $indexId;
                 $this->createIndexRepositories(
                     $container,
                     $name,
@@ -419,7 +428,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
                 RepositoryReference::class,
                 'create',
             ])
-            ->addArgument($repositoryConfiguration['app_id'])
+            ->addArgument((string) $repositoryConfiguration['app_id'])
             ->addArgument($indexId)
             ->setPublic($this->repositoryIsTest($repositoryConfiguration));
 
