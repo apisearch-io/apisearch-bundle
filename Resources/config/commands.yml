@@ -10,6 +10,13 @@ services:
         tags:
             - { name: console.command }
 
+    apisearch.print_indices_command:
+        class: Apisearch\Command\PrintIndicesCommand
+        arguments:
+            - "@apisearch.repository_bucket"
+        tags:
+            - { name: console.command }
+
     apisearch.create_index_command:
         class: Apisearch\Command\CreateIndexCommand
         arguments:

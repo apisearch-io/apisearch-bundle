@@ -15,16 +15,16 @@ declare(strict_types=1);
 
 namespace Apisearch\Command;
 
-use Apisearch\Model\Token;
+use Apisearch\Model\Index;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class PrintTokensCommand.
+ * Class PrintIndicesCommand.
  */
-class PrintTokensCommand extends WithAppRepositoryBucketCommand
+class PrintIndicesCommand extends WithAppRepositoryBucketCommand
 {
     /**
      * Configures the current command.
@@ -32,8 +32,8 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
     protected function configure()
     {
         $this
-            ->setName('apisearch:print-tokens')
-            ->setDescription('Print all tokens of an app-id')
+            ->setName('apisearch:print-indices')
+            ->setDescription('Print all indices')
             ->addArgument(
                 'app-name',
                 InputArgument::REQUIRED,
@@ -52,36 +52,23 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
         $appName = $input->getArgument('app-name');
-        $tokens = $this
+        $indices = $this
             ->repositoryBucket
             ->findRepository($appName)
-            ->getTokens();
+            ->getIndices();
 
-        $indexArray = $this
-                ->repositoryBucket
-                ->getConfiguration()[$appName]['indexes'] ?? [];
-
-        /**
-         * @var Token
-         */
         $table = new Table($output);
-        $table->setHeaders(['UUID', 'Indices', 'Seconds Valid', 'Max hits per query', 'HTTP Referrers', 'endpoints', 'plugins', 'ttl']);
-        foreach ($tokens as $token) {
-            $indicesReversed = array_flip($indexArray);
-            $indices = array_map(function (string $index) use ($indicesReversed) {
-                return $indicesReversed[$index] ?? null;
-            }, $token->getIndices());
-            $indices = array_filter($indices);
-
+        $table->setHeaders(['UUID', 'App Id', 'Is Ok?', 'Doc Count', 'Size']);
+        /**
+         * @var Index $index
+         */
+        foreach ($indices as $index) {
             $table->addRow([
-                $token->getTokenUUID()->composeUUID(),
-                implode(', ', $indices),
-                $token->getSecondsValid(),
-                $token->getMaxHitsPerQuery(),
-                implode(', ', $token->getHttpReferrers()),
-                implode(', ', $token->getEndpoints()),
-                implode(', ', $token->getPlugins()),
-                $token->getTtl(),
+                $index->getUUID()->composeUUID(),
+                $index->getAppUUID()->composeUUID(),
+                $index->isOK() ? 'Yes' : 'No',
+                $index->getDocCount(),
+                $index->getSize(),
             ]);
         }
         $table->render();
@@ -94,7 +81,7 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
      */
     protected function getHeader(): string
     {
-        return 'Print tokens';
+        return 'Print indices';
     }
 
     /**
