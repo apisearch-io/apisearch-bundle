@@ -17,6 +17,7 @@ namespace Apisearch\Command;
 
 use Apisearch\Config\ImmutableConfig;
 use Apisearch\Exception\ResourceNotAvailableException;
+use Apisearch\Model\IndexUUID;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -25,7 +26,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class CreateIndexCommand.
  */
-class CreateIndexCommand extends WithRepositoryBucketCommand
+class CreateIndexCommand extends WithAppRepositoryBucketCommand
 {
     /**
      * Configures the current command.
@@ -36,9 +37,9 @@ class CreateIndexCommand extends WithRepositoryBucketCommand
             ->setName('apisearch:create-index')
             ->setDescription('Create an index')
             ->addArgument(
-                'repository',
+                'app-name',
                 InputArgument::REQUIRED,
-                'Repository'
+                'App name'
             )
             ->addArgument(
                 'index',
@@ -86,14 +87,15 @@ class CreateIndexCommand extends WithRepositoryBucketCommand
      */
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        $repository = $input->getArgument('repository');
+        $appName = $input->getArgument('app-name');
         $index = $input->getArgument('index');
 
         try {
             $this
                 ->repositoryBucket
-                ->findRepository($repository, $index)
+                ->findRepository($appName)
                 ->createIndex(
+                    new IndexUUID($index),
                     ImmutableConfig::createFromArray([
                         'language' => $input->getOption('language'),
                         'store_searchable_metadata' => !$input->getOption('no-store-searchable-metadata'),

@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Apisearch\Command;
 
 use Apisearch\Exception\ResourceNotAvailableException;
+use Apisearch\Model\IndexUUID;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,7 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class DeleteIndexCommand.
  */
-class DeleteIndexCommand extends WithRepositoryBucketCommand
+class DeleteIndexCommand extends WithAppRepositoryBucketCommand
 {
     /**
      * Configures the current command.
@@ -34,9 +35,9 @@ class DeleteIndexCommand extends WithRepositoryBucketCommand
             ->setName('apisearch:delete-index')
             ->setDescription('Delete an index')
             ->addArgument(
-                'repository',
+                'app-name',
                 InputArgument::REQUIRED,
-                'Repository'
+                'App name'
             )
             ->addArgument(
                 'index',
@@ -65,14 +66,14 @@ class DeleteIndexCommand extends WithRepositoryBucketCommand
      */
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        $repository = $input->getArgument('repository');
+        $appName = $input->getArgument('app-name');
         $index = $input->getArgument('index');
 
         try {
             $this
                 ->repositoryBucket
-                ->findRepository($repository, $index)
-                ->deleteIndex();
+                ->findRepository($appName)
+                ->deleteIndex(new IndexUUID($index));
         } catch (ResourceNotAvailableException $exception) {
             $this->printInfoMessage(
                 $output,

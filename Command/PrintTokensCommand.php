@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Command;
 
-use Apisearch\Token\Token;
+use Apisearch\Model\Token;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,9 +35,9 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
             ->setName('apisearch:print-tokens')
             ->setDescription('Print all tokens of an app-id')
             ->addArgument(
-                'repository',
+                'app-name',
                 InputArgument::REQUIRED,
-                'Repository name'
+                'App name'
             );
     }
 
@@ -51,14 +51,14 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
      */
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        $repository = $input->getArgument('repository');
+        $appName = $input->getArgument('app-name');
         $tokens = $this
-            ->repositoryBucket->findRepository($repository)
+            ->repositoryBucket->findRepository($appName)
             ->getTokens();
 
         $indexArray = $this
                 ->repositoryBucket
-                ->getConfiguration()[$repository]['indexes'] ?? [];
+                ->getConfiguration()[$appName]['indexes'] ?? [];
 
         /**
          * @var Token

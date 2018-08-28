@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Command;
 
+use Apisearch\Model\IndexUUID;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,7 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Class ResetIndexCommand.
  */
-class ResetIndexCommand extends WithRepositoryBucketCommand
+class ResetIndexCommand extends WithAppRepositoryBucketCommand
 {
     /**
      * Configures the current command.
@@ -33,9 +34,9 @@ class ResetIndexCommand extends WithRepositoryBucketCommand
             ->setName('apisearch:reset-index')
             ->setDescription('Reset your search index. Prepared a clean instance of the index and remove existing objects')
             ->addArgument(
-                'repository',
+                'app-name',
                 InputArgument::REQUIRED,
-                'Repository name'
+                'App name'
             )
             ->addArgument(
                 'index',
@@ -64,12 +65,13 @@ class ResetIndexCommand extends WithRepositoryBucketCommand
      */
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
+        $appName = $input->getArgument('app-name');
+        $index = $input->getArgument('index');
+
         $this
-            ->repositoryBucket->findRepository(
-                $input->getArgument('repository'),
-                $input->getArgument('index')
-            )
-            ->resetIndex();
+            ->repositoryBucket
+            ->findRepository($appName)
+            ->resetIndex(new IndexUUID($index));
     }
 
     /**

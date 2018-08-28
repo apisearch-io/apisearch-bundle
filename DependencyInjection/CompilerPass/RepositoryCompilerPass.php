@@ -24,6 +24,9 @@ use Apisearch\Http\RetryMap;
 use Apisearch\Http\TestClient;
 use Apisearch\Log\HttpLogRepository;
 use Apisearch\Log\InMemoryLogRepository;
+use Apisearch\Model\AppUUID;
+use Apisearch\Model\IndexUUID;
+use Apisearch\Model\TokenUUID;
 use Apisearch\Repository\HttpRepository;
 use Apisearch\Repository\InMemoryRepository;
 use Apisearch\Repository\RepositoryReference;
@@ -314,7 +317,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
      * Create standard repository.
      *
      * @param ContainerBuilder $container
-     * @param string           $name
+     * @param string           $appName
      * @param array            $repositoryConfiguration
      * @param string           $indexName
      * @param string           $prefix
@@ -323,18 +326,28 @@ class RepositoryCompilerPass implements CompilerPassInterface
      */
     private function createStandardRepository(
         ContainerBuilder $container,
-        string $name,
+        string $appName,
         array $repositoryConfiguration,
         string $indexName,
         string $prefix,
         string $inMemoryRepositoryNamespace,
         string $httpRepositoryNamespace
     ) {
-        $repositoryName = rtrim("apisearch.{$prefix}_repository_$name.$indexName", '.');
-        $clientName = rtrim("apisearch.client_$name", '.');
+        $repositoryName = rtrim("apisearch.{$prefix}_repository_$appName.$indexName", '.');
+        $tokenUUIDName = rtrim("apisearch.token_uuid.$appName");
+        $clientName = rtrim("apisearch.client_$appName", '.');
+
+        $tokenUUIDReference = $container->register($tokenUUIDName, TokenUUID::class);
+        $tokenUUIDReference
+            ->setFactory([
+                TokenUUID::class,
+                'createById',
+            ])
+            ->addArgument((string) $repositoryConfiguration['token'])
+            ->setPrivate(true);
 
         if (!$this->repositoryIsService($repositoryConfiguration)) {
-            $repositoryReferenceName = rtrim("apisearch.repository_reference.$name.$indexName", '.');
+            $repositoryReferenceName = rtrim("apisearch.repository_reference.$appName.$indexName", '.');
             $repositoryReferenceReference = new Reference($repositoryReferenceName);
             'in_memory' === $repositoryConfiguration['adapter']
                 ? $container
@@ -348,14 +361,14 @@ class RepositoryCompilerPass implements CompilerPassInterface
                     ->addArgument(new Reference($clientName))
                     ->addMethodCall('setCredentials', [
                         $repositoryReferenceReference,
-                        $repositoryConfiguration['token'],
+                        new Reference($tokenUUIDName),
                     ])
                     ->setPublic($this->repositoryIsTest($repositoryConfiguration));
         } else {
             $repoDefinition = $container->getDefinition($repositoryConfiguration[$prefix]['repository_service']);
             $this->injectRepositoryCredentials(
                 $repoDefinition,
-                $name,
+                $appName,
                 $repositoryConfiguration,
                 $indexName
             );
@@ -369,7 +382,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
             ->getDefinition("apisearch.{$prefix}_repository_bucket")
             ->addMethodCall(
                 'addRepository',
-                [$name, new Reference($repositoryName)]
+                [$appName, new Reference($repositoryName)]
             )
             ->setPublic($this->repositoryIsTest($repositoryConfiguration));
     }
@@ -378,24 +391,25 @@ class RepositoryCompilerPass implements CompilerPassInterface
      * Inject credentials in repository.
      *
      * @param Definition $definition
-     * @param string     $name
+     * @param string     $appName
      * @param array      $repositoryConfiguration
      * @param string     $indexName
      */
     private function injectRepositoryCredentials(
         Definition $definition,
-        string $name,
+        string $appName,
         array $repositoryConfiguration,
         string $indexName
     ) {
         if ($repositoryConfiguration['app_id']) {
-            $repositoryReferenceName = rtrim("apisearch.repository_reference.$name.$indexName", '.');
+            $repositoryReferenceName = rtrim("apisearch.repository_reference.$appName.$indexName", '.');
+            $tokenUUIDName = rtrim("apisearch.token_uuid.$appName");
             $repositoryReferenceReference = new Reference($repositoryReferenceName);
 
             $repositoryConfiguration['token']
                 ? $definition->addMethodCall('setCredentials', [
                     $repositoryReferenceReference,
-                    $repositoryConfiguration['token'],
+                    new Reference($tokenUUIDName),
                 ])
                 : $definition->addMethodCall('setRepositoryReference', [
                     $repositoryReferenceReference,
@@ -422,14 +436,32 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $indexName
     ): Definition {
         $repositoryReferenceName = rtrim("apisearch.repository_reference.$appName.$indexName", '.');
+        $appUUIDReference = $container->register("apisearch.app_uuid.$appName", AppUUID::class);
+        $appUUIDReference
+            ->setFactory([
+                AppUUID::class,
+                'createById',
+            ])
+            ->addArgument((string) $repositoryConfiguration['app_id'])
+            ->setPrivate(true);
+
+        $indexUUIDReference = $container->register("apisearch.index_uuid.$appName.$indexName", IndexUUID::class);
+        $indexUUIDReference
+            ->setFactory([
+                IndexUUID::class,
+                'createById',
+            ])
+            ->addArgument((string) $indexId)
+            ->setPrivate(true);
+
         $reference = $container->register($repositoryReferenceName, RepositoryReference::class);
         $reference
             ->setFactory([
                 RepositoryReference::class,
                 'create',
             ])
-            ->addArgument((string) $repositoryConfiguration['app_id'])
-            ->addArgument($indexId)
+            ->addArgument(new Reference("apisearch.app_uuid.$appName"))
+            ->addArgument(new Reference("apisearch.index_uuid.$appName.$indexName"))
             ->setPublic($this->repositoryIsTest($repositoryConfiguration));
 
         return $reference;
