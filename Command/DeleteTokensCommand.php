@@ -33,9 +33,9 @@ class DeleteTokensCommand extends WithAppRepositoryBucketCommand
             ->setName('apisearch:delete-all-token')
             ->setDescription('Delete all tokens')
             ->addArgument(
-                'repository',
+                'app-name',
                 InputArgument::REQUIRED,
-                'Repository name'
+                'App name'
             );
     }
 
@@ -49,9 +49,9 @@ class DeleteTokensCommand extends WithAppRepositoryBucketCommand
      */
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        $repository = $input->getArgument('repository');
+        $appName = $input->getArgument('app-name');
         $this
-            ->repositoryBucket->findRepository($repository)
+            ->repositoryBucket->findRepository($appName)
             ->deleteTokens();
     }
 

@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Command;
 
-use Apisearch\Token\TokenUUID;
+use Apisearch\Model\TokenUUID;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,9 +34,9 @@ class DeleteTokenCommand extends WithAppRepositoryBucketCommand
             ->setName('apisearch:delete-token')
             ->setDescription('Delete a token')
             ->addArgument(
-                'repository',
+                'app-name',
                 InputArgument::REQUIRED,
-                'Repository Name'
+                'App Name'
             )
             ->addArgument(
                 'uuid',
@@ -86,7 +86,7 @@ class DeleteTokenCommand extends WithAppRepositoryBucketCommand
         $this->getRepositoryAndIndices($input, $output);
 
         $this
-            ->repositoryBucket->findRepository($input->getArgument('repository'))
+            ->repositoryBucket->findRepository($input->getArgument('app-name'))
             ->deleteToken(
                 TokenUUID::createById($input->getArgument('uuid'))
             );

@@ -6,21 +6,21 @@ services:
     apisearch.reset_index_command:
         class: Apisearch\Command\ResetIndexCommand
         arguments:
-            - "@apisearch.repository_bucket"
+            - "@apisearch.app_repository_bucket"
         tags:
             - { name: console.command }
 
     apisearch.create_index_command:
         class: Apisearch\Command\CreateIndexCommand
         arguments:
-            - "@apisearch.repository_bucket"
+            - "@apisearch.app_repository_bucket"
         tags:
             - { name: console.command }
 
     apisearch.delete_index_command:
         class: Apisearch\Command\DeleteIndexCommand
         arguments:
-            - "@apisearch.repository_bucket"
+            - "@apisearch.app_repository_bucket"
         tags:
             - { name: console.command }
 

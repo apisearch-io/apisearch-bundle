@@ -34,9 +34,9 @@ class ImportIndexCommand extends WithRepositoryBucketCommand
             ->setName('apisearch:import-index')
             ->setDescription('Import your index')
             ->addArgument(
-                'repository',
+                'app-name',
                 InputArgument::REQUIRED,
-                'Repository name'
+                'App name'
             )
             ->addArgument(
                 'index',
@@ -70,13 +70,13 @@ class ImportIndexCommand extends WithRepositoryBucketCommand
      */
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        $repositoryName = $input->getArgument('repository');
+        $appName = $input->getArgument('app-name');
         $indexName = $input->getArgument('index');
         $file = $input->getArgument('file');
         $repository = $this
             ->repositoryBucket
             ->findRepository(
-                $repositoryName,
+                $appName,
                 $indexName
             );
 

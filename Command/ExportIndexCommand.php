@@ -36,9 +36,9 @@ class ExportIndexCommand extends WithRepositoryBucketCommand
             ->setName('apisearch:export-index')
             ->setDescription('Export your index')
             ->addArgument(
-                'repository',
+                'app-name',
                 InputArgument::REQUIRED,
-                'Repository name'
+                'App name'
             )
             ->addArgument(
                 'index',
@@ -72,7 +72,7 @@ class ExportIndexCommand extends WithRepositoryBucketCommand
      */
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        $repositoryName = $input->getArgument('repository');
+        $appName = $input->getArgument('app-name');
         $indexName = $input->getArgument('index');
         $file = $input->getArgument('file');
         $resource = fopen($file, 'w');
@@ -82,7 +82,7 @@ class ExportIndexCommand extends WithRepositoryBucketCommand
             $items = $this
                 ->repositoryBucket
                 ->findRepository(
-                    $repositoryName,
+                    $appName,
                     $indexName
                 )
                 ->query(Query::create('', $i, 100))
