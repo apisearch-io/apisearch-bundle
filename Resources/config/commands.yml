@@ -14,6 +14,7 @@ services:
         class: Apisearch\Command\CreateIndexCommand
         arguments:
             - "@apisearch.app_repository_bucket"
+            - "@apisearch.synonym_reader"
         tags:
             - { name: console.command }
 
@@ -21,6 +22,14 @@ services:
         class: Apisearch\Command\DeleteIndexCommand
         arguments:
             - "@apisearch.app_repository_bucket"
+        tags:
+            - { name: console.command }
+
+    apisearch.configure_index_command:
+        class: Apisearch\Command\ConfigureIndexCommand
+        arguments:
+            - "@apisearch.app_repository_bucket"
+            - "@apisearch.synonym_reader"
         tags:
             - { name: console.command }
 

@@ -27,9 +27,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class CreateIndexCommand.
+ * Class ConfigureIndexCommand.
  */
-class CreateIndexCommand extends WithAppRepositoryBucketCommand
+class ConfigureIndexCommand extends WithAppRepositoryBucketCommand
 {
     /**
      * @var SynonymReader
@@ -59,8 +59,8 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
     protected function configure()
     {
         $this
-            ->setName('apisearch:create-index')
-            ->setDescription('Create an index')
+            ->setName('apisearch:configure-index')
+            ->setDescription('Configure an index')
             ->addArgument(
                 'app-name',
                 InputArgument::REQUIRED,
@@ -106,7 +106,7 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
      */
     protected function getHeader(): string
     {
-        return 'Create index';
+        return 'Configure index';
     }
 
     /**
@@ -146,7 +146,7 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
             $this
                 ->repositoryBucket
                 ->findRepository($appName)
-                ->createIndex(
+                ->configureIndex(
                     $indexUUID,
                     Config::createFromArray([
                         'language' => $input->getOption('language'),
@@ -160,7 +160,7 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
             $this->printInfoMessage(
                 $output,
                 $this->getHeader(),
-                'Index is already created. Skipping.'
+                'Index not found. Skipping.'
             );
         }
     }
@@ -177,6 +177,6 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
         InputInterface $input,
         $result
     ): string {
-        return 'Index created properly';
+        return 'Index configured properly';
     }
 }

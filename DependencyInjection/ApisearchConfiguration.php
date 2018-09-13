@@ -33,6 +33,9 @@ class ApisearchConfiguration extends BaseConfiguration
     {
         $rootNode
             ->children()
+                ->booleanNode('load_commands')
+                    ->defaultTrue()
+                ->end()
                 ->arrayNode('repositories')
                     ->prototype('array')
                         ->children()

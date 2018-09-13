@@ -1,0 +1,7 @@
+services:
+
+    #
+    # Model
+    #
+    apisearch.synonym_reader:
+        class: Apisearch\Config\SynonymReader
