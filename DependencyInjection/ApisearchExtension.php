@@ -56,8 +56,7 @@ class ApisearchExtension extends BaseExtension
      */
     protected function getConfigFiles(array $config): array
     {
-        return [
-            'commands',
+        $files = [
             'repositories',
             'url',
             'twig',
@@ -65,7 +64,14 @@ class ApisearchExtension extends BaseExtension
             'transformers',
             'exporters',
             'translator',
+            'model',
         ];
+
+        if ($config['load_commands']) {
+            $files[] = 'commands';
+        }
+
+        return $files;
     }
 
     /**

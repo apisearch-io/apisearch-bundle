@@ -73,7 +73,7 @@ class DeleteIndexCommand extends WithAppRepositoryBucketCommand
             $this
                 ->repositoryBucket
                 ->findRepository($appName)
-                ->deleteIndex(new IndexUUID($index));
+                ->deleteIndex(IndexUUID::createById($index));
         } catch (ResourceNotAvailableException $exception) {
             $this->printInfoMessage(
                 $output,
@@ -95,6 +95,6 @@ class DeleteIndexCommand extends WithAppRepositoryBucketCommand
         InputInterface $input,
         $result
     ): string {
-        return 'Indices deleted properly';
+        return 'Index deleted properly';
     }
 }
