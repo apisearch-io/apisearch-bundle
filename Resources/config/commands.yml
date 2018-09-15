@@ -13,7 +13,7 @@ services:
     apisearch.print_indices_command:
         class: Apisearch\Command\PrintIndicesCommand
         arguments:
-            - "@apisearch.repository_bucket"
+            - "@apisearch.app_repository_bucket"
         tags:
             - { name: console.command }
 
