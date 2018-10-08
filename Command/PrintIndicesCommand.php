@@ -58,7 +58,7 @@ class PrintIndicesCommand extends WithAppRepositoryBucketCommand
             ->getIndices();
 
         $table = new Table($output);
-        $table->setHeaders(['UUID', 'App Id', 'Is Ok?', 'Doc Count', 'Size']);
+        $table->setHeaders(['UUID', 'App ID', 'Doc Count', 'Size', 'Ok?', 'shards', 'replicas']);
         /**
          * @var Index
          */
@@ -66,9 +66,13 @@ class PrintIndicesCommand extends WithAppRepositoryBucketCommand
             $table->addRow([
                 $index->getUUID()->composeUUID(),
                 $index->getAppUUID()->composeUUID(),
-                $index->isOK() ? 'Yes' : 'No',
                 $index->getDocCount(),
                 $index->getSize(),
+                $index->isOK()
+                    ? 'Yes'
+                    : 'No',
+                $index->getShards(),
+                $index->getReplicas(),
             ]);
         }
         $table->render();
