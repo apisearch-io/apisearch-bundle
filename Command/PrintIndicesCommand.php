@@ -60,7 +60,7 @@ class PrintIndicesCommand extends WithAppRepositoryBucketCommand
         $table = new Table($output);
         $table->setHeaders(['UUID', 'App Id', 'Is Ok?', 'Doc Count', 'Size']);
         /**
-         * @var Index $index
+         * @var Index
          */
         foreach ($indices as $index) {
             $table->addRow([
