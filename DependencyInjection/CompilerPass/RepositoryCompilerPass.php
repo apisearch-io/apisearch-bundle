@@ -17,13 +17,9 @@ namespace Apisearch\DependencyInjection\CompilerPass;
 
 use Apisearch\App\HttpAppRepository;
 use Apisearch\App\InMemoryAppRepository;
-use Apisearch\Event\HttpEventRepository;
-use Apisearch\Event\InMemoryEventRepository;
 use Apisearch\Http\GuzzleClient;
 use Apisearch\Http\RetryMap;
 use Apisearch\Http\TestClient;
-use Apisearch\Log\HttpLogRepository;
-use Apisearch\Log\InMemoryLogRepository;
 use Apisearch\Model\AppUUID;
 use Apisearch\Model\IndexUUID;
 use Apisearch\Model\TokenUUID;
@@ -161,26 +157,6 @@ class RepositoryCompilerPass implements CompilerPassInterface
             $name,
             $repositoryConfiguration,
             $indexName
-        );
-
-        $this->createStandardRepository(
-            $container,
-            $name,
-            $repositoryConfiguration,
-            $indexName,
-            'event',
-            InMemoryEventRepository::class,
-            HttpEventRepository::class
-        );
-
-        $this->createStandardRepository(
-            $container,
-            $name,
-            $repositoryConfiguration,
-            $indexName,
-            'log',
-            InMemoryLogRepository::class,
-            HttpLogRepository::class
         );
     }
 

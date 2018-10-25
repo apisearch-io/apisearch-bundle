@@ -11,12 +11,6 @@ services:
     apisearch.user_repository_bucket:
         class: Apisearch\User\UserRepositoryBucket
 
-    apisearch.event_repository_bucket:
-        class: Apisearch\Event\EventRepositoryBucket
-
-    apisearch.log_repository_bucket:
-        class: Apisearch\Log\LogRepositoryBucket
-
     #
     # Mocks
     #
@@ -25,12 +19,6 @@ services:
 
     apisearch.app_repository_mock:
         class: Apisearch\App\MockAppRepository
-
-    apisearch.events_repository_mock:
-        class: Apisearch\Event\MockEventRepository
-
-    apisearch.logs_repository_mock:
-        class: Apisearch\Log\MockLogRepository
 
     apisearch.user_repository_mock:
         class: Apisearch\User\MockUserRepository
