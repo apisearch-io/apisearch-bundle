@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Apisearch\Command;
 
+use Apisearch\Model\AppUUID;
+use Apisearch\Model\IndexUUID;
 use Apisearch\Model\Token;
 use Apisearch\Model\TokenUUID;
 use Ramsey\Uuid\Uuid;
@@ -48,7 +50,7 @@ class AddTokenCommand extends WithAppRepositoryBucketCommand
                 Uuid::uuid4()->toString()
             )
             ->addOption(
-                'index',
+                'index-name',
                 null,
                 InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
                 'Indices',
@@ -136,16 +138,31 @@ class AddTokenCommand extends WithAppRepositoryBucketCommand
      */
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        list($app_id, $indices) = $this->getRepositoryAndIndices($input, $output);
+        list($appId, $indices) = $this->getRepositoryAndIndices($input, $output);
         $endpoints = $this->getEndpoints($input, $output);
+
+        $appName = $input->getArgument('app-name');
+        $this->printInfoMessage(
+            $output,
+            $this->getHeader(),
+            "App name: <strong>{$appName}</strong>"
+        );
+
+        $this->printInfoMessage(
+            $output,
+            $this->getHeader(),
+            "App UUID: <strong>{$appId}</strong>"
+        );
 
         $this
             ->repositoryBucket->findRepository($input->getArgument('app-name'))
             ->addToken(
                 new Token(
                     TokenUUID::createById($input->getArgument('uuid')),
-                    (string) $app_id,
-                    $indices,
+                    AppUUID::createById($appId),
+                    array_map(function (string $index) {
+                        return IndexUUID::createById($index);
+                    }, $indices),
                     $input->getOption('http-referrer'),
                     $endpoints,
                     $input->getOption('plugin'),

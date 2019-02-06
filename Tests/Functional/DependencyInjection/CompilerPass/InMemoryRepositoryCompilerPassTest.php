@@ -51,7 +51,7 @@ class InMemoryRepositoryCompilerPassTest extends BaseFunctionalTest
                         'main' => [
                             'adapter' => 'in_memory',
                             'test' => true,
-                            'indexes' => [
+                            'indices' => [
                                 'default' => 'xxx',
                             ],
                         ],

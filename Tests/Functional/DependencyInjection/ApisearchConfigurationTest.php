@@ -15,91 +15,15 @@ declare(strict_types=1);
 
 namespace Apisearch\Tests\Functional\DependencyInjection;
 
-use Apisearch\ApisearchBundle;
 use Apisearch\Exception\MockException;
 use Apisearch\Http\Retry;
-use Mmoreram\BaseBundle\Kernel\BaseKernel;
-use Mmoreram\BaseBundle\Tests\BaseFunctionalTest;
-use Symfony\Component\HttpKernel\KernelInterface;
+use Apisearch\Tests\Functional\ApisearchBundleFunctionalTest;
 
 /**
  * Class ApisearchConfigurationTest.
  */
-class ApisearchConfigurationTest extends BaseFunctionalTest
+class ApisearchConfigurationTest extends ApisearchBundleFunctionalTest
 {
-    /**
-     * Get kernel.
-     *
-     * @return KernelInterface
-     */
-    protected static function getKernel(): KernelInterface
-    {
-        return new BaseKernel(
-            [
-                ApisearchBundle::class,
-            ], [
-                'parameters' => [
-                    'kernel.secret' => 'sdhjshjkds',
-                ],
-                'framework' => [
-                    'test' => true,
-                ],
-                'apisearch' => [
-                    'repositories' => [
-                        'main' => [
-                            'adapter' => 'http',
-                            'http' => [
-                                'retry_map' => [
-                                    'items' => [
-                                        'url' => '/items',
-                                        'method' => 'get',
-                                        'retries' => 3,
-                                        'microseconds_between_retries' => 1000,
-                                    ],
-                                    'items2' => [
-                                        'url' => '/items2',
-                                        'method' => 'get',
-                                    ],
-                                    'items3' => [
-                                        'url' => '/items3',
-                                    ],
-                                    'default' => null,
-                                ],
-                            ],
-                            'endpoint' => '~',
-                            'app_id' => '~',
-                            'token' => '~',
-                            'test' => true,
-                            'indexes' => [
-                                'default' => 'xxx',
-                            ],
-                        ],
-                        'main2' => [
-                            'adapter' => 'in_memory',
-                            'endpoint' => '~',
-                            'app_id' => '~',
-                            'token' => '~',
-                            'test' => true,
-                            'indexes' => [
-                                'default' => 'xxx',
-                            ],
-                        ],
-                        'main3' => [
-                            'adapter' => 'service',
-                            'test' => true,
-                            'indexes' => [
-                                'default' => 'xxx',
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            [],
-            'test',
-            true
-        );
-    }
-
     /**
      * Test main repository configuration.
      */

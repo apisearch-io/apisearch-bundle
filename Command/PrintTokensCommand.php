@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\Command;
 
+use Apisearch\Model\IndexUUID;
 use Apisearch\Model\Token;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -59,13 +60,8 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
 
         $indexArray = $this
                 ->repositoryBucket
-                ->getConfiguration()[$appName]['indexes'] ?? [];
+                ->getConfiguration()[$appName]['indices'] ?? [];
 
-        /**
-         * @var Token
-         */
-        $table = new Table($output);
-        $table->setHeaders(['UUID', 'Indices', 'Seconds Valid', 'Max hits per query', 'HTTP Referrers', 'endpoints', 'plugins', 'ttl']);
         foreach ($tokens as $token) {
             $indicesReversed = array_flip($indexArray);
             $indices = array_map(function (string $index) use ($indicesReversed) {
@@ -73,9 +69,41 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
             }, $token->getIndices());
             $indices = array_filter($indices);
 
+            $token->setIndices(array_map(function (string $index) {
+                return IndexUUID::createById($index);
+            }, $indices));
+        }
+
+        /**
+         * @var Token
+         */
+        static::printIndices(
+            $input,
+            $output,
+            $tokens
+        );
+    }
+
+    /**
+     * Print tokens.
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     * @param Token[]         $tokens
+     */
+    public static function printIndices(
+        InputInterface $input,
+        OutputInterface $output,
+        array $tokens
+    ) {
+        $table = new Table($output);
+        $table->setHeaders(['UUID', 'Indices', 'Seconds Valid', 'Max hits per query', 'HTTP Referrers', 'endpoints', 'plugins', 'ttl']);
+        foreach ($tokens as $token) {
             $table->addRow([
                 $token->getTokenUUID()->composeUUID(),
-                implode(', ', $indices),
+                implode(', ', array_map(function (IndexUUID $index) {
+                    return $index->composeUUID();
+                }, $token->getIndices())),
                 $token->getSecondsValid(),
                 $token->getMaxHitsPerQuery(),
                 implode(', ', $token->getHttpReferrers()),

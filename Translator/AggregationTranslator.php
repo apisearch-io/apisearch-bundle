@@ -32,7 +32,7 @@ class AggregationTranslator
     /**
      * Translator constructor.
      *
-     * @param null|TranslatorInterface $symfonyTranslator
+     * @param TranslatorInterface|null $symfonyTranslator
      */
     public function __construct(? TranslatorInterface $symfonyTranslator)
     {

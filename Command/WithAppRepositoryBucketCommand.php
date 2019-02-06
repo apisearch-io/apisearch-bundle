@@ -58,32 +58,32 @@ abstract class WithAppRepositoryBucketCommand extends ApisearchFormattedCommand
         InputInterface $input,
         OutputInterface $output
     ): array {
-        $repository = $input->getArgument('repository');
+        $appName = $input->getArgument('app-name');
         $configuration = $this->repositoryBucket->getConfiguration();
 
-        if (!isset($configuration[$repository])) {
-            throw new Exception(sprintf('Repository %s not found under apisearch configuration', $repository));
+        if (!isset($configuration[$appName])) {
+            throw new Exception(sprintf('App %s not found under apisearch configuration', $appName));
         }
 
-        if (!$input->hasOption('index')) {
-            return [$configuration[$repository]['app_id'], []];
+        if (!$input->hasOption('index-name')) {
+            return [$configuration[$appName]['app_id'], []];
         }
 
-        $indexArray = $configuration[$repository]['indexes'] ?? [];
+        $indexNamesAsArray = $configuration[$appName]['indices'] ?? [];
 
-        $indices = array_map(function (string $index) use ($indexArray, $repository, $output) {
-            if (!isset($indexArray[$index])) {
+        $indices = array_map(function (string $indexName) use ($indexNamesAsArray, $appName, $output) {
+            if (!isset($indexNamesAsArray[$indexName])) {
                 throw new Exception(sprintf(
                     'Index %s not found under %s repository. Indices availables: %s',
-                    $index,
-                    $repository,
-                    implode(', ', array_keys($indexArray))
+                    $indexName,
+                    $appName,
+                    implode(', ', array_keys($indexNamesAsArray))
                 ));
             }
 
-            return $indexArray[$index];
-        }, $input->getOption('index'));
+            return $indexNamesAsArray[$indexName];
+        }, $input->getOption('index-name'));
 
-        return [$configuration[$repository]['app_id'], $indices];
+        return [$configuration[$appName]['app_id'], $indices];
     }
 }

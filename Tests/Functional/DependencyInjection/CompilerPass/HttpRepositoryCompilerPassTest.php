@@ -54,7 +54,7 @@ class HttpRepositoryCompilerPassTest extends BaseFunctionalTest
                             'app_id' => '4444',
                             'endpoint' => 'xxx',
                             'token' => 'lala',
-                            'indexes' => [
+                            'indices' => [
                                 'default' => 'xxx',
                             ],
                         ],

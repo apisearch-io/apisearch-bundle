@@ -54,14 +54,6 @@ class RepositoryCompilerPass implements CompilerPassInterface
                 $repositoryConfiguration
             );
 
-            /*
-             * @deprecated 1.0.0 Will only use indices instead of indexes. Remove
-             *             this convalidation
-             */
-            if (!empty($repositoryConfiguration['indexes'])) {
-                $repositoryConfiguration['indices'] = $repositoryConfiguration['indexes'];
-            }
-
             foreach ($repositoryConfiguration['indices'] as $indexName => $indexId) {
                 $indexId = (string) $indexId;
                 $this->createIndexRepositories(
