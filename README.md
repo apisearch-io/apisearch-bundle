@@ -2,7 +2,7 @@
 
 This library is part of the Apisearch project.
 
-[![Build Status](https://travis-ci.org/apisearch-io/apisearch-bundle.svg?branch=master)](https://travis-ci.org/apisearch-io/apisearch-bundle)
+[![CircleCI](https://circleci.com/gh/apisearch-io/apisearch-bundle.svg?style=svg)](https://circleci.com/gh/apisearch-io/apisearch-bundle)
 [![Join the chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apisearch_io/general)
 
 Apisearch is an open source search engine fully based on open source third party

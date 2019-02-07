@@ -67,9 +67,9 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
                 'App name'
             )
             ->addArgument(
-                'index',
+                'index-name',
                 InputArgument::REQUIRED,
-                'Index'
+                'Index name'
             )
             ->addOption(
                 'language',
@@ -134,7 +134,19 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
         $appName = $input->getArgument('app-name');
-        $indexUUID = IndexUUID::createById($input->getArgument('index'));
+        $indexName = $input->getArgument('index-name');
+        $indexArray = $this
+                ->repositoryBucket
+                ->getConfiguration()[$appName]['indices'] ?? [];
+
+        if (!isset($indexArray[$indexName])) {
+            $this->printInfoMessage(
+                $output,
+                $this->getHeader(),
+                'Index does not exist with this name.'
+            );
+        }
+        $indexId = $indexArray[$indexName];
 
         $this->printInfoMessage(
             $output,
@@ -145,7 +157,7 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
         $this->printInfoMessage(
             $output,
             $this->getHeader(),
-            "Index ID: <strong>{$indexUUID->composeUUID()}</strong>"
+            "Index name: <strong>{$indexName}</strong>"
         );
 
         $synonyms = $this
@@ -161,7 +173,7 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
                 ->repositoryBucket
                 ->findRepository($appName)
                 ->createIndex(
-                    $indexUUID,
+                    IndexUUID::createById($indexId),
                     Config::createFromArray([
                         'language' => $input->getOption('language'),
                         'store_searchable_metadata' => !$input->getOption('no-store-searchable-metadata'),

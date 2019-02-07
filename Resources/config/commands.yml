@@ -15,7 +15,7 @@ services:
         arguments:
             - "@apisearch.app_repository_bucket"
         tags:
-            - { name: console.command }
+            -  { name: console.command, command: apisearch-server:print-indices }
 
     apisearch.create_index_command:
         class: Apisearch\Command\CreateIndexCommand

@@ -15,51 +15,21 @@ declare(strict_types=1);
 
 namespace Apisearch\Tests\Functional\DependencyInjection;
 
-use Apisearch\ApisearchBundle;
-use Mmoreram\BaseBundle\Kernel\BaseKernel;
-use Mmoreram\BaseBundle\Tests\BaseFunctionalTest;
-use Symfony\Component\HttpKernel\KernelInterface;
+use Apisearch\Tests\Functional\ApisearchBundleFunctionalTest;
 
 /**
  * Class DisableCommandsTest.
  */
-class DisableCommandsTest extends BaseFunctionalTest
+class DisableCommandsTest extends ApisearchBundleFunctionalTest
 {
     /**
-     * Get kernel.
+     * Load commands.
      *
-     * @return KernelInterface
+     * @return bool
      */
-    protected static function getKernel(): KernelInterface
+    protected static function loadCommands(): bool
     {
-        return new BaseKernel(
-            [
-                ApisearchBundle::class,
-            ], [
-                'parameters' => [
-                    'kernel.secret' => 'sdhjshjkds',
-                ],
-                'framework' => [
-                    'test' => true,
-                ],
-                'apisearch' => [
-                    'load_commands' => false,
-                    'repositories' => [
-                        'main' => [
-                            'adapter' => 'in_memory',
-                            'app_id' => 'nnn',
-                            'token' => 'lll',
-                            'test' => true,
-                            'indexes' => [
-                                'default' => 'xxx',
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-            [],
-            'prod', false
-        );
+        return false;
     }
 
     /**
@@ -69,8 +39,8 @@ class DisableCommandsTest extends BaseFunctionalTest
     {
         $content = static::runCommand([
             'command' => 'apisearch:create-index',
-            'app-name' => 'main',
-            'index' => 'default',
+            'app-name' => 'app123name',
+            'index-name' => 'index123name',
             '--env' => 'prod',
             '-v' => true,
         ]);

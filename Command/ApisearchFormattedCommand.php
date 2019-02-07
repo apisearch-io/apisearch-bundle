@@ -32,7 +32,7 @@ abstract class ApisearchFormattedCommand extends ApisearchCommand
      * execute() method, you set the code to execute by passing
      * a Closure to the setCode() method.
      *
-     * @return null|int null or 0 if everything went fine, or an error code
+     * @return int|null null or 0 if everything went fine, or an error code
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

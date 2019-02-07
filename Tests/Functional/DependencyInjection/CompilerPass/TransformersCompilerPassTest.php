@@ -71,7 +71,7 @@ class TransformersCompilerPassTest extends BaseFunctionalTest
                         'main' => [
                             'adapter' => 'service',
                             'test' => true,
-                            'indexes' => [
+                            'indices' => [
                                 'default' => 'xxx',
                             ],
                         ],

@@ -40,9 +40,9 @@ class DeleteIndexCommand extends WithAppRepositoryBucketCommand
                 'App name'
             )
             ->addArgument(
-                'index',
+                'index-name',
                 InputArgument::REQUIRED,
-                'Index'
+                'Index name'
             );
     }
 
@@ -67,13 +67,24 @@ class DeleteIndexCommand extends WithAppRepositoryBucketCommand
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
         $appName = $input->getArgument('app-name');
-        $index = $input->getArgument('index');
+        $indexName = $input->getArgument('index-name');
+        $indexArray = $this
+                ->repositoryBucket
+                ->getConfiguration()[$appName]['indices'] ?? [];
+
+        if (!isset($indexArray[$indexName])) {
+            $this->printInfoMessage(
+                $output,
+                $this->getHeader(),
+                'Index does not exist with this name.'
+            );
+        }
 
         try {
             $this
                 ->repositoryBucket
                 ->findRepository($appName)
-                ->deleteIndex(IndexUUID::createById($index));
+                ->deleteIndex(IndexUUID::createById($indexArray[$indexName]));
         } catch (ResourceNotAvailableException $exception) {
             $this->printInfoMessage(
                 $output,
