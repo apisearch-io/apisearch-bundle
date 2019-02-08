@@ -26,13 +26,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
 abstract class ApisearchBundleFunctionalTest extends BaseFunctionalTest
 {
     /**
-     * @var int
-     *
-     * Apisearch server port
-     */
-    const APISEARCH_SERVER_PORT = 8200;
-
-    /**
      * @var string
      *
      * Token
@@ -105,8 +98,7 @@ abstract class ApisearchBundleFunctionalTest extends BaseFunctionalTest
                             ],
                         ],
                         'app123name' => [
-                            'adapter' => 'http',
-                            'endpoint' => 'localhost:'.self::APISEARCH_SERVER_PORT,
+                            'adapter' => 'disk',
                             'app_id' => 'app123',
                             'token' => self::TOKEN,
                             'indices' => [
@@ -117,9 +109,20 @@ abstract class ApisearchBundleFunctionalTest extends BaseFunctionalTest
                 ],
             ],
             [],
-            'prod',
+            'test',
             false
         );
+    }
+
+    /**
+     * Sets up the fixture, for example, open a network connection.
+     * This method is called before a test is executed.
+     */
+    protected function setUp()
+    {
+        @unlink('/tmp/apisearch.repository.app123name');
+        @unlink('/tmp/apisearch.repository.app.app123name');
+        @unlink('/tmp/apisearch.repository.user.app123name');
     }
 
     /**

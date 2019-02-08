@@ -36,30 +36,31 @@ abstract class ApisearchFormattedCommand extends ApisearchCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->startCommand($output);
+        $stopwatch = self::startCommand($output);
+
         try {
             $result = $this->runCommand(
                 $input,
                 $output
             );
 
-            $successfulMessage = $this->getSuccessMessage($input, $result);
+            $successfulMessage = static::getSuccessMessage($input, $result);
             if (!empty($successfulMessage)) {
-                $this->printMessage(
+                self::printMessage(
                     $output,
-                    $this->getHeader(),
-                    $this->getSuccessMessage($input, $result)
+                    static::getHeader(),
+                    $successfulMessage
                 );
             }
         } catch (Exception $e) {
-            $this->printMessageFail(
+            self::printMessageFail(
                 $output,
-                $this->getHeader(),
+                static::getHeader(),
                 $e->getMessage()
             );
         }
 
-        $this->finishCommand($output);
+        self::finishCommand($stopwatch, $output);
     }
 
     /**
@@ -67,7 +68,10 @@ abstract class ApisearchFormattedCommand extends ApisearchCommand
      *
      * @return string
      */
-    abstract protected function getHeader(): string;
+    protected static function getHeader(): string
+    {
+        return 'Apisearch command';
+    }
 
     /**
      * Dispatch domain event.
@@ -87,8 +91,10 @@ abstract class ApisearchFormattedCommand extends ApisearchCommand
      *
      * @return string
      */
-    abstract protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
-    ): string;
+    ): string {
+        return 'Command ended properly';
+    }
 }

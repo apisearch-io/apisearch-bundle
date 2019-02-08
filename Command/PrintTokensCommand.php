@@ -33,7 +33,6 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
     protected function configure()
     {
         $this
-            ->setName('apisearch:print-tokens')
             ->setDescription('Print all tokens of an app-id')
             ->addArgument(
                 'app-name',
@@ -62,6 +61,9 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
                 ->repositoryBucket
                 ->getConfiguration()[$appName]['indices'] ?? [];
 
+        /**
+         * @var Token[]
+         */
         foreach ($tokens as $token) {
             $indicesReversed = array_flip($indexArray);
             $indices = array_map(function (string $index) use ($indicesReversed) {
@@ -77,7 +79,7 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
         /**
          * @var Token
          */
-        static::printIndices(
+        static::printTokens(
             $input,
             $output,
             $tokens
@@ -91,7 +93,7 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
      * @param OutputInterface $output
      * @param Token[]         $tokens
      */
-    public static function printIndices(
+    public static function printTokens(
         InputInterface $input,
         OutputInterface $output,
         array $tokens
@@ -120,7 +122,7 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
      *
      * @return string
      */
-    protected function getHeader(): string
+    protected static function getHeader(): string
     {
         return 'Print tokens';
     }
@@ -133,7 +135,7 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {

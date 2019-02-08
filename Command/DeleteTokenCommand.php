@@ -31,7 +31,6 @@ class DeleteTokenCommand extends WithAppRepositoryBucketCommand
     protected function configure()
     {
         $this
-            ->setName('apisearch:delete-token')
             ->setDescription('Delete a token')
             ->addArgument(
                 'app-name',
@@ -43,34 +42,6 @@ class DeleteTokenCommand extends WithAppRepositoryBucketCommand
                 InputArgument::REQUIRED,
                 'UUID'
             );
-    }
-
-    /**
-     * Dispatch domain event.
-     *
-     * @return string
-     */
-    protected function getHeader(): string
-    {
-        return 'Delete token';
-    }
-
-    /**
-     * Get success message.
-     *
-     * @param InputInterface $input
-     * @param mixed          $result
-     *
-     * @return string
-     */
-    protected function getSuccessMessage(
-        InputInterface $input,
-        $result
-    ): string {
-        return sprintf(
-            'Token with UUID <%s> deleted properly',
-            $input->getArgument('uuid')
-        );
     }
 
     /**
@@ -90,5 +61,33 @@ class DeleteTokenCommand extends WithAppRepositoryBucketCommand
             ->deleteToken(
                 TokenUUID::createById($input->getArgument('uuid'))
             );
+    }
+
+    /**
+     * Dispatch domain event.
+     *
+     * @return string
+     */
+    protected static function getHeader(): string
+    {
+        return 'Delete token';
+    }
+
+    /**
+     * Get success message.
+     *
+     * @param InputInterface $input
+     * @param mixed          $result
+     *
+     * @return string
+     */
+    protected static function getSuccessMessage(
+        InputInterface $input,
+        $result
+    ): string {
+        return sprintf(
+            'Token with UUID <%s> deleted properly',
+            $input->getArgument('uuid')
+        );
     }
 }

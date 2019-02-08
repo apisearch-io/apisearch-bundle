@@ -20,7 +20,6 @@ use Apisearch\Config\Config;
 use Apisearch\Config\Synonym;
 use Apisearch\Config\SynonymReader;
 use Apisearch\Exception\ResourceNotAvailableException;
-use Apisearch\Model\IndexUUID;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -59,7 +58,6 @@ class ConfigureIndexCommand extends WithAppRepositoryBucketCommand
     protected function configure()
     {
         $this
-            ->setName('apisearch:configure-index')
             ->setDescription('Configure an index')
             ->addArgument(
                 'app-name',
@@ -67,7 +65,7 @@ class ConfigureIndexCommand extends WithAppRepositoryBucketCommand
                 'App name'
             )
             ->addArgument(
-                'index',
+                'index-name',
                 InputArgument::REQUIRED,
                 'Index'
             )
@@ -116,16 +114,6 @@ class ConfigureIndexCommand extends WithAppRepositoryBucketCommand
     /**
      * Dispatch domain event.
      *
-     * @return string
-     */
-    protected function getHeader(): string
-    {
-        return 'Configure index';
-    }
-
-    /**
-     * Dispatch domain event.
-     *
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
@@ -134,19 +122,7 @@ class ConfigureIndexCommand extends WithAppRepositoryBucketCommand
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
         $appName = $input->getArgument('app-name');
-        $indexUUID = IndexUUID::createById($input->getArgument('index'));
-
-        $this->printInfoMessage(
-            $output,
-            $this->getHeader(),
-            "App name: <strong>{$appName}</strong>"
-        );
-
-        $this->printInfoMessage(
-            $output,
-            $this->getHeader(),
-            "Index ID: <strong>{$indexUUID->composeUUID()}</strong>"
-        );
+        list($_, $indexUUID) = $this->getRepositoryAndIndex($input, $output);
 
         $synonyms = $this
             ->synonymReader
@@ -173,12 +149,22 @@ class ConfigureIndexCommand extends WithAppRepositoryBucketCommand
                     ])
                 );
         } catch (ResourceNotAvailableException $exception) {
-            $this->printInfoMessage(
+            self::printInfoMessage(
                 $output,
                 $this->getHeader(),
                 'Index not found. Skipping.'
             );
         }
+    }
+
+    /**
+     * Dispatch domain event.
+     *
+     * @return string
+     */
+    protected static function getHeader(): string
+    {
+        return 'Configure index';
     }
 
     /**
@@ -189,7 +175,7 @@ class ConfigureIndexCommand extends WithAppRepositoryBucketCommand
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {
