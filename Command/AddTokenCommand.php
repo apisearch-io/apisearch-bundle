@@ -15,8 +15,6 @@ declare(strict_types=1);
 
 namespace Apisearch\Command;
 
-use Apisearch\Model\AppUUID;
-use Apisearch\Model\IndexUUID;
 use Apisearch\Model\Token;
 use Apisearch\Model\TokenUUID;
 use Ramsey\Uuid\Uuid;
@@ -36,7 +34,6 @@ class AddTokenCommand extends WithAppRepositoryBucketCommand
     protected function configure()
     {
         $this
-            ->setName('apisearch:add-token')
             ->setDescription('Add a token')
             ->addArgument(
                 'app-name',
@@ -105,7 +102,7 @@ class AddTokenCommand extends WithAppRepositoryBucketCommand
      *
      * @return string
      */
-    protected function getHeader(): string
+    protected static function getHeader(): string
     {
         return 'Add token';
     }
@@ -118,7 +115,7 @@ class AddTokenCommand extends WithAppRepositoryBucketCommand
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {
@@ -138,31 +135,16 @@ class AddTokenCommand extends WithAppRepositoryBucketCommand
      */
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        list($appId, $indices) = $this->getRepositoryAndIndices($input, $output);
-        $endpoints = $this->getEndpoints($input, $output);
-
-        $appName = $input->getArgument('app-name');
-        $this->printInfoMessage(
-            $output,
-            $this->getHeader(),
-            "App name: <strong>{$appName}</strong>"
-        );
-
-        $this->printInfoMessage(
-            $output,
-            $this->getHeader(),
-            "App UUID: <strong>{$appId}</strong>"
-        );
+        list($appUUID, $indices) = $this->getRepositoryAndIndices($input, $output);
+        $endpoints = $this->getEndpoints($input);
 
         $this
             ->repositoryBucket->findRepository($input->getArgument('app-name'))
             ->addToken(
                 new Token(
                     TokenUUID::createById($input->getArgument('uuid')),
-                    AppUUID::createById($appId),
-                    array_map(function (string $index) {
-                        return IndexUUID::createById($index);
-                    }, $indices),
+                    $appUUID,
+                    $indices,
                     $input->getOption('http-referrer'),
                     $endpoints,
                     $input->getOption('plugin'),

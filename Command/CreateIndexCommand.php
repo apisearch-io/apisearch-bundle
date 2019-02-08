@@ -20,7 +20,6 @@ use Apisearch\Config\Config;
 use Apisearch\Config\Synonym;
 use Apisearch\Config\SynonymReader;
 use Apisearch\Exception\ResourceNotAvailableException;
-use Apisearch\Model\IndexUUID;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -59,7 +58,6 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
     protected function configure()
     {
         $this
-            ->setName('apisearch:create-index')
             ->setDescription('Create an index')
             ->addArgument(
                 'app-name',
@@ -116,16 +114,6 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
     /**
      * Dispatch domain event.
      *
-     * @return string
-     */
-    protected function getHeader(): string
-    {
-        return 'Create index';
-    }
-
-    /**
-     * Dispatch domain event.
-     *
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
@@ -134,31 +122,7 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
         $appName = $input->getArgument('app-name');
-        $indexName = $input->getArgument('index-name');
-        $indexArray = $this
-                ->repositoryBucket
-                ->getConfiguration()[$appName]['indices'] ?? [];
-
-        if (!isset($indexArray[$indexName])) {
-            $this->printInfoMessage(
-                $output,
-                $this->getHeader(),
-                'Index does not exist with this name.'
-            );
-        }
-        $indexId = $indexArray[$indexName];
-
-        $this->printInfoMessage(
-            $output,
-            $this->getHeader(),
-            "App name: <strong>{$appName}</strong>"
-        );
-
-        $this->printInfoMessage(
-            $output,
-            $this->getHeader(),
-            "Index name: <strong>{$indexName}</strong>"
-        );
+        list($_, $indexUUID) = $this->getRepositoryAndIndex($input, $output);
 
         $synonyms = $this
             ->synonymReader
@@ -173,7 +137,7 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
                 ->repositoryBucket
                 ->findRepository($appName)
                 ->createIndex(
-                    IndexUUID::createById($indexId),
+                    $indexUUID,
                     Config::createFromArray([
                         'language' => $input->getOption('language'),
                         'store_searchable_metadata' => !$input->getOption('no-store-searchable-metadata'),
@@ -185,12 +149,22 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
                     ])
                 );
         } catch (ResourceNotAvailableException $exception) {
-            $this->printInfoMessage(
+            self::printInfoMessage(
                 $output,
                 $this->getHeader(),
                 'Index is already created. Skipping.'
             );
         }
+    }
+
+    /**
+     * Dispatch domain event.
+     *
+     * @return string
+     */
+    protected static function getHeader(): string
+    {
+        return 'Create index';
     }
 
     /**
@@ -201,7 +175,7 @@ class CreateIndexCommand extends WithAppRepositoryBucketCommand
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {

@@ -145,7 +145,7 @@ class PrintIndicesCommand extends WithAppRepositoryBucketCommand
      *
      * @return string
      */
-    protected function getHeader(): string
+    protected static function getHeader(): string
     {
         return 'Print indices';
     }
@@ -158,7 +158,7 @@ class PrintIndicesCommand extends WithAppRepositoryBucketCommand
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {

@@ -22,7 +22,6 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
-use Symfony\Component\Stopwatch\StopwatchEvent;
 
 /**
  * Class ApisearchCommand.
@@ -30,55 +29,45 @@ use Symfony\Component\Stopwatch\StopwatchEvent;
 abstract class ApisearchCommand extends Command
 {
     /**
-     * @var Stopwatch
-     *
-     * Stopwatch instance
-     */
-    private $stopwatch;
-
-    /**
      * Start command.
      *
      * @param OutputInterface $output      Output
      * @param bool            $longCommand Show long time message
      *
-     * @return $this Self object
+     * @return Stopwatch
      */
-    protected function startCommand(
+    protected static function startCommand(
         OutputInterface $output,
         $longCommand = false
-    ) {
-        $this->configureFormatter($output);
-        $this->stopwatch = new Stopwatch();
-        $this->startStopWatch('command');
+    ): Stopwatch {
+        self::configureFormatter($output);
+        $stopwatch = new Stopwatch();
+        $stopwatch->start('command');
         $output->writeln('');
-        $this
-            ->printSystemMessage(
-                $output,
-                $this->getProjectHeader(),
-                'Command started at '.date('r')
-            );
+        self::printSystemMessage(
+            $output,
+            self::getProjectHeader(),
+            'Command started at '.date('r')
+        );
+
         if ($longCommand) {
-            $this
-                ->printMessage(
-                    $output,
-                    $this->getProjectHeader(),
-                    'This process may take a few minutes. Please, be patient'
-                );
+            self::printMessage(
+                $output,
+                self::getProjectHeader(),
+                'This process may take a few minutes. Please, be patient'
+            );
         }
         $output->writeln('');
 
-        return $this;
+        return $stopwatch;
     }
 
     /**
-     * Configure formatter with Elcodi specific style.
+     * Configure formatter with Apisearch specific style.
      *
-     * @param OutputInterface $output Output
-     *
-     * @return $this Self object
+     * @param OutputInterface $output
      */
-    protected function configureFormatter(OutputInterface $output)
+    protected static function configureFormatter(OutputInterface $output)
     {
         $formatter = $output->getFormatter();
         $formatter->setStyle('system', new OutputFormatterStyle('green'));
@@ -87,118 +76,86 @@ abstract class ApisearchCommand extends Command
         $formatter->setStyle('info', new OutputFormatterStyle('blue'));
         $formatter->setStyle('body', new OutputFormatterStyle('white'));
         $formatter->setStyle('strong', new OutputFormatterStyle(null, null, ['bold']));
-
-        return $this;
     }
 
     /**
-     * Start stopwatch.
+     * Print system message.
      *
-     * @param string $eventName Event name
-     *
-     * @return StopwatchEvent Event
+     * @param OutputInterface $output
+     * @param string          $header
+     * @param string          $body
      */
-    protected function startStopWatch($eventName)
-    {
-        return $this
-            ->stopwatch
-            ->start($eventName);
-    }
-
-    /**
-     * Print message.
-     *
-     * @param OutputInterface $output Output
-     * @param string          $header Message header
-     * @param string          $body   Message body
-     *
-     * @return ApisearchCommand
-     */
-    protected function printSystemMessage(
+    protected static function printSystemMessage(
         OutputInterface $output,
         $header,
         $body
-    ): ApisearchCommand {
-        $this->printStructureMessage(
+    ) {
+        self::printStructureMessage(
             $output,
             $header,
             $body,
             'system'
         );
-
-        return $this;
     }
 
     /**
-     * Print message.
+     * Print line message.
      *
-     * @param OutputInterface $output Output
-     * @param string          $header Message header
-     * @param string          $body   Message body
-     *
-     * @return ApisearchCommand
+     * @param OutputInterface $output
+     * @param string          $header
+     * @param string          $body
      */
-    protected function printMessage(
+    protected static function printMessage(
         OutputInterface $output,
         $header,
         $body
     ) {
-        $this->printStructureMessage(
+        self::printStructureMessage(
             $output,
             $header,
             $body,
             'line'
         );
-
-        return $this;
     }
 
     /**
-     * Print message.
+     * Print info message.
      *
-     * @param OutputInterface $output Output
-     * @param string          $header Message header
-     * @param string          $body   Message body
-     *
-     * @return ApisearchCommand
+     * @param OutputInterface $output
+     * @param string          $header
+     * @param string          $body
      */
-    protected function printInfoMessage(
+    protected static function printInfoMessage(
         OutputInterface $output,
         $header,
         $body
-    ): ApisearchCommand {
-        $this->printStructureMessage(
+    ) {
+        self::printStructureMessage(
             $output,
             $header,
             $body,
             'info'
         );
-
-        return $this;
     }
 
     /**
-     * Print message.
+     * Print fail message.
      *
-     * @param OutputInterface $output Output
-     * @param string          $header Message header
-     * @param string          $body   Message body
-     *
-     * @return ApisearchCommand
+     * @param OutputInterface $output
+     * @param string          $header
+     * @param string          $body
      */
-    protected function printMessageFail(
+    protected static function printMessageFail(
         OutputInterface $output,
         $header,
         $body
-    ): ApisearchCommand {
-        $this->printStructureMessage(
+    ) {
+        self::printStructureMessage(
             $output,
             $header,
             $body,
             'failLine'
         );
-
-        return $this;
     }
 
     /**
@@ -209,7 +166,7 @@ abstract class ApisearchCommand extends Command
      * @param string          $body
      * @param string          $type
      */
-    private function printStructureMessage(
+    private static function printStructureMessage(
         OutputInterface $output,
         $header,
         $body,
@@ -226,58 +183,41 @@ abstract class ApisearchCommand extends Command
     /**
      * Finish command.
      *
-     * @param OutputInterface $output Output
-     *
-     * @return $this Self object
+     * @param OutputInterface $output
      */
-    protected function finishCommand(OutputInterface $output)
-    {
+    protected static function finishCommand(
+        Stopwatch $stopwatch,
+        OutputInterface $output
+    ) {
         $output->writeln('');
-        $event = $this->stopStopWatch('command');
-        $this
-            ->printSystemMessage(
-                $output,
-                $this->getProjectHeader(),
-                'Command finished in '.$event->getDuration().' milliseconds'
-            )
-            ->printSystemMessage(
-                $output,
-                $this->getProjectHeader(),
-                'Max memory used: '.$event->getMemory().' bytes'
-            );
+        $event = $stopwatch->stop('command');
+
+        self::printSystemMessage(
+            $output,
+            self::getProjectHeader(),
+            'Command finished in '.$event->getDuration().' milliseconds'
+        );
+
+        self::printSystemMessage(
+            $output,
+            self::getProjectHeader(),
+            'Max memory used: '.$event->getMemory().' bytes'
+        );
+
         $output->writeln('');
-
-        return $this;
-    }
-
-    /**
-     * Stop stopwatch.
-     *
-     * @param string $eventName Event name
-     *
-     * @return StopwatchEvent Event
-     */
-    protected function stopStopWatch($eventName)
-    {
-        return $this
-            ->stopwatch
-            ->stop($eventName);
     }
 
     /**
      * Get endpoint compositions given their names.
      *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
+     * @param InputInterface $input
      *
      * @return array
      *
      * @throws Exception
      */
-    protected function getEndpoints(
-        InputInterface $input,
-        OutputInterface $output
-    ): array {
+    protected function getEndpoints(InputInterface $input): array
+    {
         $endpointsName = $input->getOption('endpoint');
         $endpoints = Endpoints::compose($endpointsName);
 
@@ -296,7 +236,7 @@ abstract class ApisearchCommand extends Command
      *
      * @return string Get project header
      */
-    protected function getProjectHeader()
+    protected static function getProjectHeader()
     {
         return 'Apisearch';
     }

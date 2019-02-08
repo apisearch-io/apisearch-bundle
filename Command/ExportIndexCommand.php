@@ -41,7 +41,7 @@ class ExportIndexCommand extends WithRepositoryBucketCommand
                 'App name'
             )
             ->addArgument(
-                'index',
+                'index-name',
                 InputArgument::REQUIRED,
                 'Index name'
             )
@@ -55,16 +55,6 @@ class ExportIndexCommand extends WithRepositoryBucketCommand
     /**
      * Dispatch domain event.
      *
-     * @return string
-     */
-    protected function getHeader(): string
-    {
-        return 'Export index';
-    }
-
-    /**
-     * Dispatch domain event.
-     *
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
@@ -72,30 +62,45 @@ class ExportIndexCommand extends WithRepositoryBucketCommand
      */
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        $appName = $input->getArgument('app-name');
-        $indexName = $input->getArgument('index');
+        $repository = $this->getRepository($input, $output);
         $file = $input->getArgument('file');
+
+        self::exportToFile(
+            $file,
+            $output,
+            function (Query $query) use ($repository) {
+                return $repository->query($query);
+            }
+        );
+    }
+
+    /**
+     * Save items and return total imported.
+     *
+     * @param string          $file
+     * @param OutputInterface $output
+     * @param callable        $queryItems
+     */
+    public static function exportToFile(
+        string $file,
+        OutputInterface $output,
+        callable $queryItems
+    ): void {
         $resource = fopen($file, 'w');
 
-        $i = 0;
+        $i = 1;
         while (true) {
-            $items = $this
-                ->repositoryBucket
-                ->findRepository(
-                    $appName,
-                    $indexName
-                )
-                ->query(Query::create('', $i, 100))
-                ->getItems();
+            $items = $queryItems(Query::create('', $i, 100))->getItems();
 
             if (empty($items)) {
-                return;
+                break;
             }
 
-            $this->writeItemsToResource(
+            self::writeItemsToResource(
                 $resource,
                 $items
             );
+            self::printPartialCountSaved($output, count($items));
 
             ++$i;
         }
@@ -104,27 +109,12 @@ class ExportIndexCommand extends WithRepositoryBucketCommand
     }
 
     /**
-     * Get success message.
-     *
-     * @param InputInterface $input
-     * @param mixed          $result
-     *
-     * @return string
-     */
-    protected function getSuccessMessage(
-        InputInterface $input,
-        $result
-    ): string {
-        return 'Index exported properly';
-    }
-
-    /**
      * Echo items as CSV.
      *
      * @param resource $resource
      * @param Item[]   $items
      */
-    private function writeItemsToResource(
+    private static function writeItemsToResource(
         $resource,
         array $items
     ) {
@@ -144,5 +134,47 @@ class ExportIndexCommand extends WithRepositoryBucketCommand
                 ),
             ]);
         }
+    }
+
+    /**
+     * Print partial save.
+     *
+     * @param OutputInterface $output
+     * @param int             $count
+     */
+    private static function printPartialCountSaved(
+        OutputInterface $output,
+        int $count
+    ) {
+        self::printInfoMessage(
+            $output,
+            self::getHeader(),
+            sprintf('Partial export of %d items', $count)
+        );
+    }
+
+    /**
+     * Dispatch domain event.
+     *
+     * @return string
+     */
+    protected static function getHeader(): string
+    {
+        return 'Export index';
+    }
+
+    /**
+     * Get success message.
+     *
+     * @param InputInterface $input
+     * @param mixed          $result
+     *
+     * @return string
+     */
+    protected static function getSuccessMessage(
+        InputInterface $input,
+        $result
+    ): string {
+        return 'Index exported properly';
     }
 }

@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace Apisearch\Command;
 
-use Apisearch\Model\IndexUUID;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,7 +30,6 @@ class ResetIndexCommand extends WithAppRepositoryBucketCommand
     protected function configure()
     {
         $this
-            ->setName('apisearch:reset-index')
             ->setDescription('Reset your search index. Prepared a clean instance of the index and remove existing objects')
             ->addArgument(
                 'app-name',
@@ -39,20 +37,10 @@ class ResetIndexCommand extends WithAppRepositoryBucketCommand
                 'App name'
             )
             ->addArgument(
-                'index',
+                'index-name',
                 InputArgument::REQUIRED,
                 'Index name'
             );
-    }
-
-    /**
-     * Dispatch domain event.
-     *
-     * @return string
-     */
-    protected function getHeader(): string
-    {
-        return 'Reset index';
     }
 
     /**
@@ -66,12 +54,22 @@ class ResetIndexCommand extends WithAppRepositoryBucketCommand
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
         $appName = $input->getArgument('app-name');
-        $index = $input->getArgument('index');
+        list($_, $indexUUID) = $this->getRepositoryAndIndex($input, $output);
 
         $this
             ->repositoryBucket
             ->findRepository($appName)
-            ->resetIndex(new IndexUUID($index));
+            ->resetIndex($indexUUID);
+    }
+
+    /**
+     * Dispatch domain event.
+     *
+     * @return string
+     */
+    protected static function getHeader(): string
+    {
+        return 'Reset index';
     }
 
     /**
@@ -82,7 +80,7 @@ class ResetIndexCommand extends WithAppRepositoryBucketCommand
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {

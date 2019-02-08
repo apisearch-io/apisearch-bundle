@@ -16,6 +16,8 @@ declare(strict_types=1);
 namespace Apisearch\Command;
 
 use Apisearch\App\AppRepositoryBucket;
+use Apisearch\Model\AppUUID;
+use Apisearch\Model\IndexUUID;
 use Exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -65,6 +67,13 @@ abstract class WithAppRepositoryBucketCommand extends ApisearchFormattedCommand
             throw new Exception(sprintf('App %s not found under apisearch configuration', $appName));
         }
 
+        $appId = $configuration[$appName]['app_id'];
+        self::printInfoMessage(
+            $output,
+            $this->getHeader(),
+            "App: <strong>{$appName} / {$appId}</strong>"
+        );
+
         if (!$input->hasOption('index-name')) {
             return [$configuration[$appName]['app_id'], []];
         }
@@ -81,9 +90,71 @@ abstract class WithAppRepositoryBucketCommand extends ApisearchFormattedCommand
                 ));
             }
 
-            return $indexNamesAsArray[$indexName];
+            $indexId = $indexNamesAsArray[$indexName];
+            self::printInfoMessage(
+                $output,
+                $this->getHeader(),
+                "Index: <strong>{$indexName} / {$indexId}</strong>"
+            );
+
+            return IndexUUID::createById($indexId);
         }, $input->getOption('index-name'));
 
-        return [$configuration[$appName]['app_id'], $indices];
+        return [
+            AppUUID::createById($appId),
+            $indices,
+        ];
+    }
+
+    /**
+     * Get repository and index.
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return array
+     *
+     * @throws Exception
+     */
+    protected function getRepositoryAndIndex(
+        InputInterface $input,
+        OutputInterface $output
+    ): array {
+        $appName = $input->getArgument('app-name');
+        $indexName = $input->getArgument('index-name');
+        $configuration = $this->repositoryBucket->getConfiguration();
+
+        if (!isset($configuration[$appName])) {
+            throw new Exception(sprintf('App %s not found under apisearch configuration', $appName));
+        }
+
+        $appId = $configuration[$appName]['app_id'];
+        self::printInfoMessage(
+            $output,
+            $this->getHeader(),
+            "App: <strong>{$appName} / {$appId}</strong>"
+        );
+
+        $indexNamesAsArray = $configuration[$appName]['indices'] ?? [];
+        if (!isset($indexNamesAsArray[$indexName])) {
+            throw new Exception(sprintf(
+                'Index %s not found under %s repository. Indices availables: %s',
+                $indexName,
+                $appName,
+                implode(', ', array_keys($indexNamesAsArray))
+            ));
+        }
+
+        $indexId = $indexNamesAsArray[$indexName];
+        self::printInfoMessage(
+            $output,
+            $this->getHeader(),
+            "Index: <strong>{$indexName} / {$indexId}</strong>"
+        );
+
+        return [
+            AppUUID::createById($appId),
+            IndexUUID::createById($indexId),
+        ];
     }
 }

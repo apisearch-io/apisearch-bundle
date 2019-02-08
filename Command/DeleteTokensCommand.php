@@ -30,7 +30,6 @@ class DeleteTokensCommand extends WithAppRepositoryBucketCommand
     protected function configure()
     {
         $this
-            ->setName('apisearch:delete-all-token')
             ->setDescription('Delete all tokens')
             ->addArgument(
                 'app-name',
@@ -60,7 +59,7 @@ class DeleteTokensCommand extends WithAppRepositoryBucketCommand
      *
      * @return string
      */
-    protected function getHeader(): string
+    protected static function getHeader(): string
     {
         return 'Delete all tokens';
     }
@@ -73,7 +72,7 @@ class DeleteTokensCommand extends WithAppRepositoryBucketCommand
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {

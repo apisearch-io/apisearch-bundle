@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\DependencyInjection\CompilerPass;
 
+use Apisearch\App\DiskAppRepository;
 use Apisearch\App\HttpAppRepository;
 use Apisearch\App\InMemoryAppRepository;
 use Apisearch\Http\GuzzleClient;
@@ -23,10 +24,12 @@ use Apisearch\Http\TestClient;
 use Apisearch\Model\AppUUID;
 use Apisearch\Model\IndexUUID;
 use Apisearch\Model\TokenUUID;
+use Apisearch\Repository\DiskRepository;
 use Apisearch\Repository\HttpRepository;
 use Apisearch\Repository\InMemoryRepository;
 use Apisearch\Repository\RepositoryReference;
 use Apisearch\Repository\TransformableRepository;
+use Apisearch\User\DiskUserRepository;
 use Apisearch\User\HttpUserRepository;
 use Apisearch\User\InMemoryUserRepository;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -106,6 +109,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
             '',
             'app',
             InMemoryAppRepository::class,
+            DiskAppRepository::class,
             HttpAppRepository::class
         );
 
@@ -116,6 +120,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
             '',
             'user',
             InMemoryUserRepository::class,
+            DiskUserRepository::class,
             HttpUserRepository::class
         );
     }
@@ -235,20 +240,34 @@ class RepositoryCompilerPass implements CompilerPassInterface
         $repositoryTransformableName = "apisearch.repository_transformable_$name.$indexName";
         $clientName = "apisearch.client_$name";
 
-        if (!$this->repositoryIsService($repositoryConfiguration)) {
-            $repositoryDefinition = 'in_memory' === $repositoryConfiguration['adapter']
-                ? $container
+        switch ($repositoryConfiguration['adapter']) {
+            case 'in_memory':
+                $repositoryDefinition = $container
                     ->register($repositoryName, InMemoryRepository::class)
-                    ->setPublic($this->repositoryIsTest($repositoryConfiguration))
-                : $container
+                    ->setPublic($this->repositoryIsTest($repositoryConfiguration));
+                break;
+
+            case 'disk':
+                $repositoryDefinition = $container
+                    ->register($repositoryName, DiskRepository::class)
+                    ->addArgument($repositoryConfiguration['disk_file'].'.'.$name)
+                    ->setPublic($this->repositoryIsTest($repositoryConfiguration));
+                break;
+
+            case 'http':
+            case 'http_test':
+                $repositoryDefinition = $container
                     ->register($repositoryName, HttpRepository::class)
                     ->addArgument(new Reference($clientName))
                     ->setPublic($this->repositoryIsTest($repositoryConfiguration));
-        } else {
-            $container->setAlias($repositoryName, $repositoryConfiguration['search']['repository_service']);
-            $aliasDefinition = $container->getAlias($repositoryName);
-            $aliasDefinition->setPublic($this->repositoryIsTest($repositoryConfiguration));
-            $repositoryDefinition = $container->getDefinition($repositoryConfiguration['search']['repository_service']);
+                break;
+
+            case 'service':
+                $container->setAlias($repositoryName, $repositoryConfiguration['search']['repository_service']);
+                $aliasDefinition = $container->getAlias($repositoryName);
+                $aliasDefinition->setPublic($this->repositoryIsTest($repositoryConfiguration));
+                $repositoryDefinition = $container->getDefinition($repositoryConfiguration['search']['repository_service']);
+                break;
         }
 
         $this->injectRepositoryCredentials(
@@ -290,6 +309,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
      * @param string           $indexName
      * @param string           $prefix
      * @param string           $inMemoryRepositoryNamespace
+     * @param string           $diskRepositoryNamespace
      * @param string           $httpRepositoryNamespace
      */
     private function createStandardRepository(
@@ -299,6 +319,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $indexName,
         string $prefix,
         string $inMemoryRepositoryNamespace,
+        string $diskRepositoryNamespace,
         string $httpRepositoryNamespace
     ) {
         $repositoryName = rtrim("apisearch.{$prefix}_repository_$appName.$indexName", '.');
@@ -314,17 +335,32 @@ class RepositoryCompilerPass implements CompilerPassInterface
             ->addArgument((string) $repositoryConfiguration['token'])
             ->setPrivate(true);
 
-        if (!$this->repositoryIsService($repositoryConfiguration)) {
-            $repositoryReferenceName = rtrim("apisearch.repository_reference.$appName.$indexName", '.');
-            $repositoryReferenceReference = new Reference($repositoryReferenceName);
-            'in_memory' === $repositoryConfiguration['adapter']
-                ? $container
+        $repositoryReferenceName = rtrim("apisearch.repository_reference.$appName.$indexName", '.');
+        $repositoryReferenceReference = new Reference($repositoryReferenceName);
+
+        switch ($repositoryConfiguration['adapter']) {
+            case 'in_memory':
+                $container
                     ->register($repositoryName, $inMemoryRepositoryNamespace)
                     ->addMethodCall('setRepositoryReference', [
                         $repositoryReferenceReference,
                     ])
-                    ->setPublic($this->repositoryIsTest($repositoryConfiguration))
-                : $container
+                    ->setPublic($this->repositoryIsTest($repositoryConfiguration));
+                break;
+
+            case 'disk':
+                $container
+                    ->register($repositoryName, $diskRepositoryNamespace)
+                    ->addMethodCall('setRepositoryReference', [
+                        $repositoryReferenceReference,
+                    ])
+                    ->addArgument($repositoryConfiguration['disk_file'].'.'.$prefix.'.'.$appName)
+                    ->setPublic($this->repositoryIsTest($repositoryConfiguration));
+                break;
+
+            case 'http':
+            case 'http_test':
+                $container
                     ->register($repositoryName, $httpRepositoryNamespace)
                     ->addArgument(new Reference($clientName))
                     ->addMethodCall('setCredentials', [
@@ -332,18 +368,20 @@ class RepositoryCompilerPass implements CompilerPassInterface
                         new Reference($tokenUUIDName),
                     ])
                     ->setPublic($this->repositoryIsTest($repositoryConfiguration));
-        } else {
-            $repoDefinition = $container->getDefinition($repositoryConfiguration[$prefix]['repository_service']);
-            $this->injectRepositoryCredentials(
-                $repoDefinition,
-                $appName,
-                $repositoryConfiguration,
-                $indexName
-            );
+                break;
 
-            $container->setAlias($repositoryName, $repositoryConfiguration[$prefix]['repository_service']);
-            $aliasDefinition = $container->getAlias($repositoryName);
-            $aliasDefinition->setPublic($this->repositoryIsTest($repositoryConfiguration));
+            case 'service':
+                $repoDefinition = $container->getDefinition($repositoryConfiguration[$prefix]['repository_service']);
+                $this->injectRepositoryCredentials(
+                    $repoDefinition,
+                    $appName,
+                    $repositoryConfiguration,
+                    $indexName
+                );
+
+                $container->setAlias($repositoryName, $repositoryConfiguration[$prefix]['repository_service']);
+                $aliasDefinition = $container->getAlias($repositoryName);
+                $aliasDefinition->setPublic($this->repositoryIsTest($repositoryConfiguration));
         }
 
         $container
@@ -457,17 +495,5 @@ class RepositoryCompilerPass implements CompilerPassInterface
     private function repositoryIsHttp(array $repositoryConfiguration)
     {
         return in_array($repositoryConfiguration['adapter'], ['http', 'http_test']);
-    }
-
-    /**
-     * Is Service.
-     *
-     * @param array $repositoryConfiguration
-     *
-     * @return bool
-     */
-    private function repositoryIsService(array $repositoryConfiguration)
-    {
-        return in_array($repositoryConfiguration['adapter'], ['service']);
     }
 }

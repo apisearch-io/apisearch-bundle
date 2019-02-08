@@ -8,14 +8,14 @@ services:
         arguments:
             - "@apisearch.app_repository_bucket"
         tags:
-            - { name: console.command }
+            - { name: console.command, command: apisearch:reset-index }
 
     apisearch.print_indices_command:
         class: Apisearch\Command\PrintIndicesCommand
         arguments:
             - "@apisearch.app_repository_bucket"
         tags:
-            -  { name: console.command, command: apisearch-server:print-indices }
+            - { name: console.command, command: apisearch:print-indices }
 
     apisearch.create_index_command:
         class: Apisearch\Command\CreateIndexCommand
@@ -23,14 +23,14 @@ services:
             - "@apisearch.app_repository_bucket"
             - "@apisearch.synonym_reader"
         tags:
-            - { name: console.command }
+            - { name: console.command, command: apisearch:create-index }
 
     apisearch.delete_index_command:
         class: Apisearch\Command\DeleteIndexCommand
         arguments:
             - "@apisearch.app_repository_bucket"
         tags:
-            - { name: console.command }
+            - { name: console.command, command: apisearch:delete-index }
 
     apisearch.configure_index_command:
         class: Apisearch\Command\ConfigureIndexCommand
@@ -38,46 +38,53 @@ services:
             - "@apisearch.app_repository_bucket"
             - "@apisearch.synonym_reader"
         tags:
-            - { name: console.command }
+            - { name: console.command, command: apisearch:configure-index }
 
     apisearch.export_index_command:
         class: Apisearch\Command\ExportIndexCommand
         arguments:
             - "@apisearch.repository_bucket"
         tags:
-            - { name: console.command }
+            - { name: console.command, command: apisearch:export-index }
 
     apisearch.import_index_command:
         class: Apisearch\Command\ImportIndexCommand
         arguments:
             - "@apisearch.repository_bucket"
         tags:
-            - { name: console.command }
+            - { name: console.command, command: apisearch:import-index }
+
+    apisearch.query_command:
+        class: Apisearch\Command\QueryCommand
+        arguments:
+            - "@apisearch.repository_bucket"
+        tags:
+            - { name: console.command, command: apisearch:query }
 
     apisearch.print_tokens_command:
         class: Apisearch\Command\PrintTokensCommand
         arguments:
             - "@apisearch.app_repository_bucket"
         tags:
-            - { name: console.command }
+            - { name: console.command, command: apisearch:print-tokens }
 
     apisearch.add_token_command:
         class: Apisearch\Command\AddTokenCommand
         arguments:
             - "@apisearch.app_repository_bucket"
         tags:
-            - { name: console.command }
+            - { name: console.command, command: apisearch:add-token }
 
     apisearch.delete_token_command:
         class: Apisearch\Command\DeleteTokenCommand
         arguments:
             - "@apisearch.app_repository_bucket"
         tags:
-            - { name: console.command }
+            - { name: console.command, command: apisearch:delete-token }
 
     apisearch.delete_all_tokens_command:
         class: Apisearch\Command\DeleteTokensCommand
         arguments:
             - "@apisearch.app_repository_bucket"
         tags:
-            - { name: console.command }
+            - { name: console.command, command: apisearch:delete-all-tokens }

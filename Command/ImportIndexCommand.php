@@ -39,7 +39,7 @@ class ImportIndexCommand extends WithRepositoryBucketCommand
                 'App name'
             )
             ->addArgument(
-                'index',
+                'index-name',
                 InputArgument::REQUIRED,
                 'Index name'
             )
@@ -53,16 +53,6 @@ class ImportIndexCommand extends WithRepositoryBucketCommand
     /**
      * Dispatch domain event.
      *
-     * @return string
-     */
-    protected function getHeader(): string
-    {
-        return 'Import index';
-    }
-
-    /**
-     * Dispatch domain event.
-     *
      * @param InputInterface  $input
      * @param OutputInterface $output
      *
@@ -70,15 +60,38 @@ class ImportIndexCommand extends WithRepositoryBucketCommand
      */
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
-        $appName = $input->getArgument('app-name');
-        $indexName = $input->getArgument('index');
+        $repository = $this->getRepository($input, $output);
         $file = $input->getArgument('file');
-        $repository = $this
-            ->repositoryBucket
-            ->findRepository(
-                $appName,
-                $indexName
-            );
+
+        self::importFromFile(
+            $file,
+            $output,
+            function (array $items, bool $lastIteration) use ($repository) {
+                foreach ($items as $item) {
+                    $repository->addItem($item);
+                }
+
+                $repository->flush(500, !$lastIteration);
+            }
+        );
+    }
+
+    /**
+     * Import from file and return total number of elements.
+     *
+     * @param string          $file
+     * @param OutputInterface $output
+     * @param callable        $saveItems
+     *
+     * @return int
+     */
+    public static function importFromFile(
+        string $file,
+        OutputInterface $output,
+        callable $saveItems
+    ) {
+        $itemsBuffer = [];
+        $itemsNb = 0;
 
         if (false !== ($handle = fopen($file, 'r'))) {
             while (false !== ($data = fgetcsv($handle, 0, ','))) {
@@ -99,12 +112,51 @@ class ImportIndexCommand extends WithRepositoryBucketCommand
                 }
 
                 $item = Item::createFromArray($itemAsArray);
-                $repository->addItem($item);
-                $repository->flush(500, true);
+                $itemsBuffer[] = $item;
+                ++$itemsNb;
+
+                if (count($itemsBuffer) >= 500) {
+                    $saveItems($itemsBuffer, false);
+                    self::printPartialCountSaved($output, count($itemsBuffer));
+
+                    $itemsBuffer = [];
+                }
             }
-            $repository->flush(500, false);
-            fclose($handle);
+
+            $saveItems($itemsBuffer, true);
+            self::printPartialCountSaved($output, count($itemsBuffer));
         }
+
+        fclose($handle);
+
+        return $itemsNb;
+    }
+
+    /**
+     * Print partial save.
+     *
+     * @param OutputInterface $output
+     * @param int             $count
+     */
+    private static function printPartialCountSaved(
+        OutputInterface $output,
+        int $count
+    ) {
+        self::printInfoMessage(
+            $output,
+            self::getHeader(),
+            sprintf('Partial import of %d items', $count)
+        );
+    }
+
+    /**
+     * Dispatch domain event.
+     *
+     * @return string
+     */
+    protected static function getHeader(): string
+    {
+        return 'Import index';
     }
 
     /**
@@ -115,7 +167,7 @@ class ImportIndexCommand extends WithRepositoryBucketCommand
      *
      * @return string
      */
-    protected function getSuccessMessage(
+    protected static function getSuccessMessage(
         InputInterface $input,
         $result
     ): string {
