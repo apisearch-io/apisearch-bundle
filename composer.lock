@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/apisearch-io/php-client.git",
-                "reference": "32deacf5d1f70d2f67386604870bc4e697aa4e33"
+                "reference": "333a5839e7985015038638e68577ba9ae3f8210c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apisearch-io/php-client/zipball/32deacf5d1f70d2f67386604870bc4e697aa4e33",
-                "reference": "32deacf5d1f70d2f67386604870bc4e697aa4e33",
+                "url": "https://api.github.com/repos/apisearch-io/php-client/zipball/333a5839e7985015038638e68577ba9ae3f8210c",
+                "reference": "333a5839e7985015038638e68577ba9ae3f8210c",
                 "shasum": ""
             },
             "require": {
@@ -51,7 +51,7 @@
                     "email": "yuhu@mmoreram.com"
                 }
             ],
-            "time": "2019-02-08T16:08:51+00:00"
+            "time": "2019-02-08T23:29:58+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

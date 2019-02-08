@@ -54,13 +54,6 @@ class AddTokenCommand extends WithAppRepositoryBucketCommand
                 []
             )
             ->addOption(
-                'http-referrer',
-                null,
-                InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
-                'Http referrers',
-                []
-            )
-            ->addOption(
                 'endpoint',
                 null,
                 InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
@@ -75,25 +68,38 @@ class AddTokenCommand extends WithAppRepositoryBucketCommand
                 []
             )
             ->addOption(
-                'seconds-valid',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Seconds valid',
-                Token::INFINITE_DURATION
-            )
-            ->addOption(
-                'max-hits-per-query',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'Maximum hits per query',
-                Token::INFINITE_HITS_PER_QUERY
-            )
-            ->addOption(
                 'ttl',
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'TTL',
                 Token::DEFAULT_TTL
+            );
+    }
+
+    /**
+     * Dispatch domain event.
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     *
+     * @return mixed|null
+     */
+    protected function runCommand(InputInterface $input, OutputInterface $output)
+    {
+        list($appUUID, $indices) = $this->getRepositoryAndIndices($input, $output);
+        $endpoints = $this->getEndpoints($input);
+
+        $this
+            ->repositoryBucket->findRepository($input->getArgument('app-name'))
+            ->addToken(
+                new Token(
+                    TokenUUID::createById($input->getArgument('uuid')),
+                    $appUUID,
+                    $indices,
+                    $endpoints,
+                    $input->getOption('plugin'),
+                    (int) $input->getOption('ttl')
+                )
             );
     }
 
@@ -119,39 +125,6 @@ class AddTokenCommand extends WithAppRepositoryBucketCommand
         InputInterface $input,
         $result
     ): string {
-        return sprintf(
-            'Token with UUID <strong>%s</strong> added properly',
-            $input->getArgument('uuid')
-        );
-    }
-
-    /**
-     * Dispatch domain event.
-     *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return mixed|null
-     */
-    protected function runCommand(InputInterface $input, OutputInterface $output)
-    {
-        list($appUUID, $indices) = $this->getRepositoryAndIndices($input, $output);
-        $endpoints = $this->getEndpoints($input);
-
-        $this
-            ->repositoryBucket->findRepository($input->getArgument('app-name'))
-            ->addToken(
-                new Token(
-                    TokenUUID::createById($input->getArgument('uuid')),
-                    $appUUID,
-                    $indices,
-                    $input->getOption('http-referrer'),
-                    $endpoints,
-                    $input->getOption('plugin'),
-                    (int) $input->getOption('seconds-valid'),
-                    (int) $input->getOption('max-hits-per-query'),
-                    (int) $input->getOption('ttl')
-                )
-            );
+        return 'Token added properly';
     }
 }
