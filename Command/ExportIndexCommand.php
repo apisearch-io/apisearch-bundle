@@ -80,17 +80,20 @@ class ExportIndexCommand extends WithRepositoryBucketCommand
      * @param string          $file
      * @param OutputInterface $output
      * @param callable        $queryItems
+     *
+     * @return int
      */
     public static function exportToFile(
         string $file,
         OutputInterface $output,
         callable $queryItems
-    ): void {
+    ) {
         $resource = fopen($file, 'w');
 
         $i = 1;
+        $count = 0;
         while (true) {
-            $items = $queryItems(Query::create('', $i, 100))->getItems();
+            $items = $queryItems(Query::create('', $i, 500))->getItems();
 
             if (empty($items)) {
                 break;
@@ -102,10 +105,13 @@ class ExportIndexCommand extends WithRepositoryBucketCommand
             );
             self::printPartialCountSaved($output, count($items));
 
+            $count += count($items);
             ++$i;
         }
 
         fclose($resource);
+
+        return $count;
     }
 
     /**

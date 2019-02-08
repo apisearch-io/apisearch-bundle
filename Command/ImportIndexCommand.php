@@ -89,7 +89,7 @@ class ImportIndexCommand extends WithRepositoryBucketCommand
         string $file,
         OutputInterface $output,
         callable $saveItems
-    ) {
+    ): int {
         $itemsBuffer = [];
         $itemsNb = 0;
 
