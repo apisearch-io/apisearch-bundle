@@ -20,6 +20,7 @@ use Apisearch\Model\Token;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -38,6 +39,12 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
                 'app-name',
                 InputArgument::REQUIRED,
                 'App name'
+            )
+            ->addOption(
+                'with-metadata',
+                null,
+                InputOption::VALUE_NONE,
+                'Print metadata'
             );
     }
 
@@ -61,7 +68,7 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
                 ->repositoryBucket
                 ->getConfiguration()[$appName]['indices'] ?? [];
 
-        /**
+        /*
          * @var Token[]
          */
         foreach ($tokens as $token) {
@@ -98,22 +105,44 @@ class PrintTokensCommand extends WithAppRepositoryBucketCommand
         OutputInterface $output,
         array $tokens
     ) {
+        $withMetadata = $input->getOption('with-metadata');
         $table = new Table($output);
-        $table->setHeaders(['UUID', 'Indices', 'Seconds Valid', 'Max hits per query', 'HTTP Referrers', 'endpoints', 'plugins', 'ttl']);
+        $headers = ['UUID', 'Indices', 'endpoints', 'plugins', 'ttl'];
+        if ($withMetadata) {
+            $headers[] = 'Metadata';
+        }
+        $table->setHeaders($headers);
+
         foreach ($tokens as $token) {
-            $table->addRow([
+            $row = [
                 $token->getTokenUUID()->composeUUID(),
                 implode(', ', array_map(function (IndexUUID $index) {
                     return $index->composeUUID();
                 }, $token->getIndices())),
-                $token->getSecondsValid(),
-                $token->getMaxHitsPerQuery(),
-                implode(', ', $token->getHttpReferrers()),
                 implode(', ', $token->getEndpoints()),
                 implode(', ', $token->getPlugins()),
                 $token->getTtl(),
-            ]);
+            ];
+
+            if ($withMetadata) {
+                $metadataRow = [];
+                foreach ($token->getMetadata() as $metadataField => $metadataValue) {
+                    $metadataRow[] = sprintf("$metadataField = %s",
+                        is_bool($metadataValue)
+                            ? $metadataValue ? 'true' : 'false'
+                            : (
+                                is_array($metadataValue)
+                                    ? implode(', ', $metadataValue)
+                                    : (string) $metadataValue
+                            )
+                    );
+                }
+                $row[] = implode(PHP_EOL, $metadataRow);
+            }
+
+            $table->addRow($row);
         }
+
         $table->render();
     }
 
