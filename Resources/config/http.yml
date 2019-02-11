@@ -1,9 +1,10 @@
 services:
 
     #
-    # Commands
+    # HTTP
     #
-    apisearch.guzzle_client_adapter:
-        class: GuzzleHttp\Client
-        arguments:
-            - { defaults: { timeout: 5, http_errors: false } }
+    apisearch.http_curl_adapter:
+        class: Apisearch\Http\CurlAdapter
+
+    apisearch.http_adapter:
+        alias: apisearch.http_curl_adapter
