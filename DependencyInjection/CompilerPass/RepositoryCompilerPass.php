@@ -20,6 +20,7 @@ use Apisearch\App\HttpAppRepository;
 use Apisearch\App\InMemoryAppRepository;
 use Apisearch\Http\GuzzleClient;
 use Apisearch\Http\RetryMap;
+use Apisearch\Http\TCPClient;
 use Apisearch\Http\TestClient;
 use Apisearch\Model\AppUUID;
 use Apisearch\Model\IndexUUID;
@@ -212,10 +213,10 @@ class RepositoryCompilerPass implements CompilerPassInterface
                 ])
                 ->setPublic($this->repositoryIsTest($repositoryConfiguration))
             : $container
-                ->register($clientName, GuzzleClient::class)
+                ->register($clientName, TCPClient::class)
                 ->setArguments([
-                    new Reference('apisearch.guzzle_client_adapter'),
                     $repositoryConfiguration['endpoint'],
+                    new Reference('apisearch.http_adapter'),
                     $repositoryConfiguration['version'],
                     new reference($clientRetryMapName),
                 ])
