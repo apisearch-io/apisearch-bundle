@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/apisearch-io/php-client.git",
-                "reference": "0c07641428ce4322282b8accc75402548951c6dd"
+                "reference": "d661a02dfa61f793acc819ff108e1e532b10ce6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apisearch-io/php-client/zipball/0c07641428ce4322282b8accc75402548951c6dd",
-                "reference": "0c07641428ce4322282b8accc75402548951c6dd",
+                "url": "https://api.github.com/repos/apisearch-io/php-client/zipball/d661a02dfa61f793acc819ff108e1e532b10ce6c",
+                "reference": "d661a02dfa61f793acc819ff108e1e532b10ce6c",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +50,7 @@
                     "email": "yuhu@mmoreram.com"
                 }
             ],
-            "time": "2019-02-11 19:18:36"
+            "time": "2019-02-19 14:41:59"
         },
         {
             "name": "mmoreram/base-bundle",
@@ -1989,16 +1989,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v2.14.1",
+            "version": "v2.14.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfPHP/PHP-CS-Fixer.git",
-                "reference": "2e82abd1322897eb8aacb861e5ff551af3888349"
+                "reference": "ff401e58261ffc5934a58f795b3f95b355e276cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/2e82abd1322897eb8aacb861e5ff551af3888349",
-                "reference": "2e82abd1322897eb8aacb861e5ff551af3888349",
+                "url": "https://api.github.com/repos/FriendsOfPHP/PHP-CS-Fixer/zipball/ff401e58261ffc5934a58f795b3f95b355e276cb",
+                "reference": "ff401e58261ffc5934a58f795b3f95b355e276cb",
                 "shasum": ""
             },
             "require": {
@@ -2018,9 +2018,6 @@
                 "symfony/polyfill-php72": "^1.4",
                 "symfony/process": "^3.0 || ^4.0",
                 "symfony/stopwatch": "^3.0 || ^4.0"
-            },
-            "conflict": {
-                "hhvm": "*"
             },
             "require-dev": {
                 "johnkary/phpunit-speedtrap": "^1.1 || ^2.0 || ^3.0",
@@ -2076,7 +2073,7 @@
                 }
             ],
             "description": "A tool to automatically fix PHP code style",
-            "time": "2019-02-10T22:52:33+00:00"
+            "time": "2019-02-17T17:44:13+00:00"
         },
         {
             "name": "mmoreram/php-formatter",
@@ -2882,6 +2879,7 @@
                 "mock",
                 "xunit"
             ],
+            "abandoned": true,
             "time": "2017-06-30T09:13:00+00:00"
         },
         {

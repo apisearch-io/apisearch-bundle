@@ -18,7 +18,6 @@ namespace Apisearch\DependencyInjection\CompilerPass;
 use Apisearch\App\DiskAppRepository;
 use Apisearch\App\HttpAppRepository;
 use Apisearch\App\InMemoryAppRepository;
-use Apisearch\Http\GuzzleClient;
 use Apisearch\Http\RetryMap;
 use Apisearch\Http\TCPClient;
 use Apisearch\Http\TestClient;
