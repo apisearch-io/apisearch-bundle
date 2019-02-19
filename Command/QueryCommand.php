@@ -65,6 +65,13 @@ class QueryCommand extends WithRepositoryBucketCommand
                 InputOption::VALUE_OPTIONAL,
                 'Number of results',
                 ModelQuery::DEFAULT_SIZE
+            )
+            ->addOption(
+                'parameter',
+                null,
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+                'Query parameters',
+                []
             );
     }
 
@@ -79,11 +86,12 @@ class QueryCommand extends WithRepositoryBucketCommand
     protected function runCommand(InputInterface $input, OutputInterface $output)
     {
         $repository = $this->getRepository($input, $output);
+        $parameters = $input->getOption('parameter');
         self::makeQueryAndPrintResults(
             $input,
             $output,
-            function (Query $query) use ($repository) {
-                return $repository->query($query);
+            function (Query $query) use ($repository, $parameters) {
+                return $repository->query($query, $parameters);
             }
         );
     }

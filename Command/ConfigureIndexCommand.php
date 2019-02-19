@@ -92,8 +92,7 @@ class ConfigureIndexCommand extends WithAppRepositoryBucketCommand
                 'synonyms-file',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'Synonyms file',
-                ''
+                'Synonyms file'
             )
             ->addOption(
                 'shards',
@@ -123,10 +122,13 @@ class ConfigureIndexCommand extends WithAppRepositoryBucketCommand
     {
         $appName = $input->getArgument('app-name');
         list($_, $indexUUID) = $this->getRepositoryAndIndex($input, $output);
+        $synonymsFile = $input->getOption('synonyms-file');
 
-        $synonyms = $this
-            ->synonymReader
-            ->readSynonymsFromFile($input->getOption('synonyms-file'));
+        $synonyms = !is_null($synonymsFile)
+            ? $this
+                ->synonymReader
+                ->readSynonymsFromFile($input->getOption('synonyms-file'))
+            : [];
 
         $synonyms += $this
             ->synonymReader

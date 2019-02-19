@@ -29,11 +29,13 @@ class IndexCommandTest extends ApisearchBundleFunctionalTest
     {
         $fileName = tempnam('/tmp', 'test-apisearch');
 
-        static::runCommand([
+        $createOutput = static::runCommand([
             'command' => 'apisearch:create-index',
             'app-name' => 'app123name',
             'index-name' => 'index123name',
         ]);
+
+        $this->assertNotFalse(strpos($createOutput, 'Index created properly'));
 
         $importOutput = static::runCommand([
             'command' => 'apisearch:import-index',
@@ -42,9 +44,7 @@ class IndexCommandTest extends ApisearchBundleFunctionalTest
             'file' => __DIR__.'/data.as',
         ]);
 
-        $this->assertTrue(
-            false !== strpos($importOutput, 'Partial import of 28 items')
-        );
+        $this->assertNotFalse(strpos($importOutput, 'Partial import of 28 items'));
 
         $exportOutput = static::runCommand([
             'command' => 'apisearch:export-index',
@@ -58,8 +58,19 @@ class IndexCommandTest extends ApisearchBundleFunctionalTest
             file_get_contents($fileName)
         );
 
-        $this->assertTrue(
-            false !== strpos($exportOutput, 'Partial export of 28 items')
+        $this->assertNotFalse(strpos($exportOutput, 'Partial export of 28 items'));
+
+        $configureOutput = static::runCommand([
+            'command' => 'apisearch:configure-index',
+            'app-name' => 'app123name',
+            'index-name' => 'index123name',
+        ]);
+
+        $this->assertNotFalse(strpos($configureOutput, 'Index configured properly'));
+
+        $this->assertEquals(
+            file_get_contents(__DIR__.'/data.as'),
+            file_get_contents($fileName)
         );
 
         static::runCommand([

@@ -44,9 +44,7 @@ class AddDeleteTokensCommandTest extends ApisearchBundleFunctionalTest
             'app-name' => 'app123name',
         ]);
 
-        $this->assertTrue(
-            false !== strpos($output, 'new-token-999')
-        );
+        $this->assertNotFalse(strpos($output, 'new-token-999'));
 
         static::runCommand([
             'command' => 'apisearch:delete-token',
@@ -78,13 +76,8 @@ class AddDeleteTokensCommandTest extends ApisearchBundleFunctionalTest
             'app-name' => 'app123name',
         ]);
 
-        $this->assertTrue(
-            false !== strpos($output, 'new-token-888')
-        );
-
-        $this->assertTrue(
-            false !== strpos($output, 'new-token-999')
-        );
+        $this->assertNotFalse(strpos($output, 'new-token-888'));
+        $this->assertNotFalse(strpos($output, 'new-token-999'));
 
         $output = static::runCommand([
             'command' => 'apisearch:delete-all-tokens',
