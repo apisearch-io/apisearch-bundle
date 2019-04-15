@@ -219,7 +219,7 @@ abstract class ApisearchCommand extends Command
     protected function getEndpoints(InputInterface $input): array
     {
         $endpointsName = $input->getOption('endpoint');
-        $endpoints = Endpoints::compose($endpointsName);
+        $endpoints = Endpoints::filter($endpointsName);
 
         if (count($endpointsName) > count($endpoints)) {
             throw new Exception(sprintf(
