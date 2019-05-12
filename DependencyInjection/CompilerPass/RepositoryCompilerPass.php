@@ -206,7 +206,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
             ? $container
                 ->register($clientName, TestClient::class)
                 ->setArguments([
-                    new Reference('test.client'),
+                    new Reference('kernel'),
                     $repositoryConfiguration['version'],
                     new reference($clientRetryMapName),
                 ])
