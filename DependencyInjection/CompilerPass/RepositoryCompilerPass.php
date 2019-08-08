@@ -18,9 +18,9 @@ namespace Apisearch\DependencyInjection\CompilerPass;
 use Apisearch\App\DiskAppRepository;
 use Apisearch\App\HttpAppRepository;
 use Apisearch\App\InMemoryAppRepository;
+use Apisearch\Http\AsyncTestClient;
 use Apisearch\Http\RetryMap;
 use Apisearch\Http\TCPClient;
-use Apisearch\Http\TestClient;
 use Apisearch\Model\AppUUID;
 use Apisearch\Model\IndexUUID;
 use Apisearch\Model\TokenUUID;
@@ -204,9 +204,9 @@ class RepositoryCompilerPass implements CompilerPassInterface
         $clientRetryMapName = rtrim("apisearch.retry_map_$name", '.');
         ('http_test' === $repositoryConfiguration['adapter'])
             ? $container
-                ->register($clientName, TestClient::class)
+                ->register($clientName, AsyncTestClient::class)
                 ->setArguments([
-                    new Reference('test.client'),
+                    new Reference('kernel'),
                     $repositoryConfiguration['version'],
                     new reference($clientRetryMapName),
                 ])
