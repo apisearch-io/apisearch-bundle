@@ -49,6 +49,9 @@ abstract class ApisearchBundleFunctionalTest extends BaseFunctionalTest
                 'framework' => [
                     'test' => true,
                 ],
+                'imports' => [
+                    ['resource' => dirname(__FILE__) . '/autowiring.yml']
+                ],
                 'apisearch' => [
                     'load_commands' => static::loadCommands(),
                     'repositories' => [
@@ -73,7 +76,7 @@ abstract class ApisearchBundleFunctionalTest extends BaseFunctionalTest
                                 ],
                             ],
                             'endpoint' => '~',
-                            'app_id' => '~',
+                            'app_id' => 'app1',
                             'token' => '~',
                             'test' => true,
                             'indices' => [
@@ -83,7 +86,7 @@ abstract class ApisearchBundleFunctionalTest extends BaseFunctionalTest
                         'main2' => [
                             'adapter' => 'in_memory',
                             'endpoint' => '~',
-                            'app_id' => '~',
+                            'app_id' => 'app2',
                             'token' => '~',
                             'test' => true,
                             'indices' => [
@@ -92,6 +95,7 @@ abstract class ApisearchBundleFunctionalTest extends BaseFunctionalTest
                         ],
                         'main3' => [
                             'adapter' => 'service',
+                            'app_id' => 'app3',
                             'test' => true,
                             'indices' => [
                                 'default' => 'xxx',

@@ -1,0 +1,9 @@
+services:
+
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Apisearch\Tests\Functional\:
+    resource: '.'
+    public: true
