@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Apisearch\DependencyInjection\CompilerPass;
 
+use Apisearch\App\AppRepository;
 use Apisearch\App\DiskAppRepository;
 use Apisearch\App\HttpAppRepository;
 use Apisearch\App\InMemoryAppRepository;
@@ -27,11 +28,13 @@ use Apisearch\Model\TokenUUID;
 use Apisearch\Repository\DiskRepository;
 use Apisearch\Repository\HttpRepository;
 use Apisearch\Repository\InMemoryRepository;
+use Apisearch\Repository\Repository;
 use Apisearch\Repository\RepositoryReference;
 use Apisearch\Repository\TransformableRepository;
 use Apisearch\User\DiskUserRepository;
 use Apisearch\User\HttpUserRepository;
 use Apisearch\User\InMemoryUserRepository;
+use Apisearch\User\UserRepository;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -110,7 +113,8 @@ class RepositoryCompilerPass implements CompilerPassInterface
             'app',
             InMemoryAppRepository::class,
             DiskAppRepository::class,
-            HttpAppRepository::class
+            HttpAppRepository::class,
+            AppRepository::class
         );
 
         $this->createStandardRepository(
@@ -121,7 +125,8 @@ class RepositoryCompilerPass implements CompilerPassInterface
             'user',
             InMemoryUserRepository::class,
             DiskUserRepository::class,
-            HttpUserRepository::class
+            HttpUserRepository::class,
+            UserRepository::class
         );
     }
 
@@ -161,7 +166,6 @@ class RepositoryCompilerPass implements CompilerPassInterface
      * Create client retry map.
      *
      * @param ContainerBuilder $container
-     * @param string           $name
      * @param string           $name
      * @param array            $repositoryConfiguration
      */
@@ -226,19 +230,20 @@ class RepositoryCompilerPass implements CompilerPassInterface
      * Create a repository by connection configuration.
      *
      * @param ContainerBuilder $container
-     * @param string           $name
+     * @param string           $appName
      * @param array            $repositoryConfiguration
      * @param string           $indexName
      */
     private function createSearchRepository(
         ContainerBuilder $container,
-        string $name,
+        string $appName,
         array $repositoryConfiguration,
         string $indexName
     ) {
-        $repositoryName = "apisearch.repository_$name.$indexName";
-        $repositoryTransformableName = "apisearch.repository_transformable_$name.$indexName";
-        $clientName = "apisearch.client_$name";
+        $repositoryName = "apisearch.repository_$appName.$indexName";
+        $aliasName = rtrim(sprintf("apisearch %s %s repository", $appName, $indexName), '.');
+        $repositoryTransformableName = "apisearch.repository_transformable_$appName.$indexName";
+        $clientName = "apisearch.client_$appName";
 
         switch ($repositoryConfiguration['adapter']) {
             case 'in_memory':
@@ -250,7 +255,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
             case 'disk':
                 $repositoryDefinition = $container
                     ->register($repositoryName, DiskRepository::class)
-                    ->addArgument($repositoryConfiguration['disk_file'].'.'.$name)
+                    ->addArgument($repositoryConfiguration['disk_file'].'.'.$appName)
                     ->setPublic($this->repositoryIsTest($repositoryConfiguration));
                 break;
 
@@ -272,7 +277,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
 
         $this->injectRepositoryCredentials(
             $repositoryDefinition,
-            $name,
+            $appName,
             $repositoryConfiguration,
             $indexName
         );
@@ -286,7 +291,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
 
         $this->injectRepositoryCredentials(
             $definition,
-            $name,
+            $appName,
             $repositoryConfiguration,
             $indexName
         );
@@ -295,9 +300,11 @@ class RepositoryCompilerPass implements CompilerPassInterface
             ->getDefinition('apisearch.repository_bucket')
             ->addMethodCall(
                 'addRepository',
-                [$name, $indexName, new Reference($repositoryName)]
+                [$appName, $indexName, new Reference($repositoryName)]
             )
             ->setPublic($this->repositoryIsTest($repositoryConfiguration));
+
+        $container->registerAliasForArgument($repositoryName, Repository::class, $aliasName);
     }
 
     /**
@@ -311,6 +318,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
      * @param string           $inMemoryRepositoryNamespace
      * @param string           $diskRepositoryNamespace
      * @param string           $httpRepositoryNamespace
+     * @param string           $interfaceNamespace
      */
     private function createStandardRepository(
         ContainerBuilder $container,
@@ -320,9 +328,11 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $prefix,
         string $inMemoryRepositoryNamespace,
         string $diskRepositoryNamespace,
-        string $httpRepositoryNamespace
+        string $httpRepositoryNamespace,
+        string $interfaceNamespace
     ) {
         $repositoryName = rtrim("apisearch.{$prefix}_repository_$appName.$indexName", '.');
+        $aliasName = rtrim(sprintf("apisearch %s %s %s repository", $appName, $indexName, $prefix), '.');
         $tokenUUIDName = rtrim("apisearch.token_uuid.$appName");
         $clientName = rtrim("apisearch.client_$appName", '.');
 
@@ -391,6 +401,8 @@ class RepositoryCompilerPass implements CompilerPassInterface
                 [$appName, new Reference($repositoryName)]
             )
             ->setPublic($this->repositoryIsTest($repositoryConfiguration));
+
+        $container->registerAliasForArgument($repositoryName, $interfaceNamespace, $aliasName);
     }
 
     /**
