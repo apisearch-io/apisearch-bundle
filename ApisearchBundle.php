@@ -66,7 +66,6 @@ class ApisearchBundle extends BaseBundle
     public static function getBundleDependencies(KernelInterface $kernel): array
     {
         return [
-            BaseBundle::class,
             FrameworkBundle::class,
         ];
     }
