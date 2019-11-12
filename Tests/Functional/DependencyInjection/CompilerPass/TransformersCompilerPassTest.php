@@ -98,5 +98,6 @@ class TransformersCompilerPassTest extends BaseFunctionalTest
     public function testBothTransormers()
     {
         // No error means that the transformers have been properly built
+        $this->assertTrue(true);
     }
 }
