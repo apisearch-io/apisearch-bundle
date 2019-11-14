@@ -19,7 +19,7 @@ use Apisearch\App\AppRepository;
 use Apisearch\App\DiskAppRepository;
 use Apisearch\App\HttpAppRepository;
 use Apisearch\App\InMemoryAppRepository;
-use Apisearch\Http\AsyncTestClient;
+use Apisearch\Drift\AsyncTestClient;
 use Apisearch\Http\RetryMap;
 use Apisearch\Http\TCPClient;
 use Apisearch\Model\AppUUID;
