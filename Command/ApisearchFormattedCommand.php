@@ -61,6 +61,8 @@ abstract class ApisearchFormattedCommand extends ApisearchCommand
         }
 
         self::finishCommand($stopwatch, $output);
+
+        return 0;
     }
 
     /**
