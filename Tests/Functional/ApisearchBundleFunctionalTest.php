@@ -50,7 +50,7 @@ abstract class ApisearchBundleFunctionalTest extends BaseFunctionalTest
                     'test' => true,
                 ],
                 'imports' => [
-                    ['resource' => dirname(__FILE__) . '/autowiring.yml']
+                    ['resource' => dirname(__FILE__).'/autowiring.yml'],
                 ],
                 'apisearch' => [
                     'load_commands' => static::loadCommands(),

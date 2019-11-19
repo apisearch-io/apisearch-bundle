@@ -1,5 +1,17 @@
 <?php
 
+/*
+ * This file is part of the Apisearch Bundle.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * Feel free to edit as you please, and have fun.
+ *
+ * @author Marc Morera <yuhu@mmoreram.com>
+ */
+
+declare(strict_types=1);
 
 namespace Apisearch\Tests\Functional;
 
@@ -8,7 +20,7 @@ use Apisearch\Repository\Repository;
 use Apisearch\User\UserRepository;
 
 /**
- * Class AService
+ * Class AService.
  */
 class AService
 {
@@ -25,15 +37,13 @@ class AService
     /**
      * AService constructor.
      *
-     * @param AppRepository $apisearchMain2AppRepository
-     * @param AppRepository $apisearchApp123nameAppRepository
-     * @param AppRepository $apisearchMainAppRepository
-     *
+     * @param AppRepository  $apisearchMain2AppRepository
+     * @param AppRepository  $apisearchApp123nameAppRepository
+     * @param AppRepository  $apisearchMainAppRepository
      * @param UserRepository $apisearchMainUserRepository
      * @param UserRepository $apisearchApp123nameUserRepository
-     *
-     * @param Repository $apisearchMain2DefaultRepository
-     * @param Repository $apisearchApp123nameIndex123nameRepository
+     * @param Repository     $apisearchMain2DefaultRepository
+     * @param Repository     $apisearchApp123nameIndex123nameRepository
      */
     public function __construct(
         AppRepository $apisearchMain2AppRepository,
@@ -45,8 +55,7 @@ class AService
 
         Repository $apisearchMain2DefaultRepository,
         Repository $apisearchApp123nameIndex123nameRepository
-    )
-    {
+    ) {
         $this->appRepo1 = $apisearchMain2AppRepository;
         $this->appRepo2 = $apisearchApp123nameAppRepository;
         $this->appRepo3 = $apisearchMainAppRepository;
