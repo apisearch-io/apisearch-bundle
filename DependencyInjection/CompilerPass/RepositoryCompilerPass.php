@@ -241,7 +241,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $indexName
     ) {
         $repositoryName = "apisearch.repository_$appName.$indexName";
-        $aliasName = rtrim(sprintf("apisearch %s %s repository", $appName, $indexName), '.');
+        $aliasName = rtrim(sprintf('apisearch %s %s repository', $appName, $indexName), '.');
         $repositoryTransformableName = "apisearch.repository_transformable_$appName.$indexName";
         $clientName = "apisearch.client_$appName";
 
@@ -332,7 +332,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $interfaceNamespace
     ) {
         $repositoryName = rtrim("apisearch.{$prefix}_repository_$appName.$indexName", '.');
-        $aliasName = rtrim(sprintf("apisearch %s %s %s repository", $appName, $indexName, $prefix), '.');
+        $aliasName = rtrim(sprintf('apisearch %s %s %s repository', $appName, $indexName, $prefix), '.');
         $tokenUUIDName = rtrim("apisearch.token_uuid.$appName");
         $clientName = rtrim("apisearch.client_$appName", '.');
 

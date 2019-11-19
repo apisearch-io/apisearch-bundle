@@ -11,7 +11,12 @@ jobs:
       - run:
           name: Install PHPUnit
           command: |
-            composer require phpunit/phpunit:7.*
+            composer require phpunit/phpunit:7.5.17  --prefer-dist --prefer-stable --prefer-lowest --no-suggest
+
+      - run:
+          name: Run tests / Symfony 3^3
+          command: |
+            php vendor/bin/phpunit
 
       - run:
           name: Run tests / Symfony 4^3
