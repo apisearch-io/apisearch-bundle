@@ -59,7 +59,6 @@ class ApisearchExtension extends BaseExtension
         $files = [
             'repositories',
             'url',
-            'twig',
             'http',
             'transformers',
             'exporters',
