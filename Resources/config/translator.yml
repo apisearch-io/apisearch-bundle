@@ -1,9 +1,0 @@
-services:
-
-    #
-    # Aggregation Translator
-    #
-    apisearch.aggregation_translator:
-        class: Apisearch\Translator\AggregationTranslator
-        arguments:
-            - "@?translator"
