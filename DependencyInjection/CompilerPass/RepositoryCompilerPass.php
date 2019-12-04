@@ -305,6 +305,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
             ->setPublic($this->repositoryIsTest($repositoryConfiguration));
 
         $container->registerAliasForArgument($repositoryName, Repository::class, $aliasName);
+        $container->registerAliasForArgument($repositoryName, TransformableRepository::class, $aliasName);
     }
 
     /**

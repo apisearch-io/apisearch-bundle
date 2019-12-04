@@ -17,6 +17,7 @@ namespace Apisearch\Tests\Functional;
 
 use Apisearch\App\AppRepository;
 use Apisearch\Repository\Repository;
+use Apisearch\Repository\TransformableRepository;
 use Apisearch\User\UserRepository;
 
 /**
@@ -43,7 +44,7 @@ class AService
      * @param UserRepository $apisearchMainUserRepository
      * @param UserRepository $apisearchApp123nameUserRepository
      * @param Repository     $apisearchMain2DefaultRepository
-     * @param Repository     $apisearchApp123nameIndex123nameRepository
+     * @param TransformableRepository     $apisearchApp123nameIndex123nameRepository
      */
     public function __construct(
         AppRepository $apisearchMain2AppRepository,
@@ -54,7 +55,7 @@ class AService
         UserRepository $apisearchApp123nameUserRepository,
 
         Repository $apisearchMain2DefaultRepository,
-        Repository $apisearchApp123nameIndex123nameRepository
+        TransformableRepository $apisearchApp123nameIndex123nameRepository
     ) {
         $this->appRepo1 = $apisearchMain2AppRepository;
         $this->appRepo2 = $apisearchApp123nameAppRepository;
