@@ -1,9 +1,0 @@
-services:
-
-    #
-    # Query services
-    #
-    apisearch.url_builder:
-        class: Apisearch\Url\UrlBuilder
-        arguments:
-            - "@router"
