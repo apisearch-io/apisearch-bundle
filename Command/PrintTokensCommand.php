@@ -29,6 +29,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class PrintTokensCommand extends WithAppRepositoryBucketCommand
 {
     /**
+     * @var string
+     */
+    protected static $defaultName = 'apisearch:print-tokens';
+
+    /**
      * Configures the current command.
      */
     protected function configure()

@@ -26,6 +26,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DeleteTokenCommand extends WithAppRepositoryBucketCommand
 {
     /**
+     * @var string
+     */
+    protected static $defaultName = 'apisearch:delete-token';
+
+    /**
      * Configures the current command.
      */
     protected function configure()

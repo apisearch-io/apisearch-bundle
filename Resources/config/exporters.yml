@@ -1,27 +1,16 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
 
     #
     # Exporters
     #
-    apisearch.exporter_collection:
-        class: Apisearch\Exporter\ExporterCollection
-
-    apisearch.exporter_json:
-        class: Apisearch\Exporter\JSONExporter
-        tags:
-            - { name: apisearch.exporter }
-
-    apisearch.exporter_csv:
-        class: Apisearch\Exporter\CSVExporter
-        tags:
-            - { name: apisearch.exporter }
-
-    apisearch.exporter_yaml:
-        class: Apisearch\Exporter\YamlExporter
-        tags:
-            - { name: apisearch.exporter }
-
-    apisearch.index_exporter:
-        class: Apisearch\Exporter\IndexExporter
-        arguments:
-            - "@apisearch.exporter_collection"
+    Apisearch\Exporter\ExporterCollection:
+    Apisearch\Exporter\IndexExporter:
+    Apisearch\Exporter\JSONExporter:
+        tags: ['apisearch.exporter']
+    Apisearch\Exporter\YamlExporter:
+        tags: ['apisearch.exporter']
+    Apisearch\Exporter\CSVExporter:
+        tags: ['apisearch.exporter']

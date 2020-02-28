@@ -25,6 +25,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ResetIndexCommand extends WithAppRepositoryBucketCommand
 {
     /**
+     * @var string
+     */
+    protected static $defaultName = 'apisearch:reset-index';
+
+    /**
      * Configures the current command.
      */
     protected function configure()

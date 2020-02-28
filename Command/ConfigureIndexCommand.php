@@ -27,6 +27,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ConfigureIndexCommand extends IndexBasedCommand
 {
     /**
+     * @var string
+     */
+    protected static $defaultName = 'apisearch:configure-index';
+
+    /**
      * Dispatch domain event.
      *
      * @param InputInterface  $input

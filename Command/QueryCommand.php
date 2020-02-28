@@ -30,6 +30,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class QueryCommand extends WithRepositoryBucketCommand
 {
     /**
+     * @var string
+     */
+    protected static $defaultName = 'apisearch:query';
+
+    /**
      * Configures the current command.
      */
     protected function configure()

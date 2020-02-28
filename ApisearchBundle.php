@@ -21,6 +21,7 @@ use Apisearch\DependencyInjection\CompilerPass\ReadTransformerCompilerPass;
 use Apisearch\DependencyInjection\CompilerPass\RepositoryCompilerPass;
 use Apisearch\DependencyInjection\CompilerPass\WriteTransformerCompilerPass;
 use Mmoreram\BaseBundle\BaseBundle;
+use Mmoreram\SymfonyBundleDependencies\DependentBundleInterface;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -29,7 +30,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 /**
  * Class ApisearchBundle.
  */
-class ApisearchBundle extends BaseBundle
+class ApisearchBundle extends BaseBundle implements DependentBundleInterface
 {
     /**
      * Return a CompilerPass instance array.

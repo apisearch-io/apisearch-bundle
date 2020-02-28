@@ -1,6 +1,8 @@
 services:
 
-    apisearch.transformer:
-        class: Apisearch\Transformer\Transformer
-        arguments:
-            - "@event_dispatcher"
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    Apisearch\Transformer\Transformer:
+

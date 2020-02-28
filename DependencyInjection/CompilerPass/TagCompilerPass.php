@@ -15,10 +15,10 @@ declare(strict_types=1);
 
 namespace Apisearch\DependencyInjection\CompilerPass;
 
+use Apisearch\Server\Domain\Plugin\PluginMiddlewareCollector;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\PriorityTaggedServiceTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Class TagCompilerPass.
@@ -34,6 +34,7 @@ abstract class TagCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        $container->has(PluginMiddlewareCollector::class);
         if (!$container->has($this->getCollectorServiceName())) {
             return;
         }

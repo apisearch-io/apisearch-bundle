@@ -1,24 +1,15 @@
 services:
 
-    apisearch.repository_bucket:
-        class: Apisearch\Repository\RepositoryBucket
-
-    apisearch.app_repository_bucket:
-        class: Apisearch\App\AppRepositoryBucket
+    Apisearch\Repository\RepositoryBucket:
+    Apisearch\User\UserRepositoryBucket:
+    Apisearch\App\AppRepositoryBucket:
         arguments:
             - "%apisearch.repository_configuration%"
 
-    apisearch.user_repository_bucket:
-        class: Apisearch\User\UserRepositoryBucket
 
     #
     # Mocks
     #
-    apisearch.repository_mock:
-        class: Apisearch\Repository\MockRepository
-
-    apisearch.app_repository_mock:
-        class: Apisearch\App\MockAppRepository
-
-    apisearch.user_repository_mock:
-        class: Apisearch\User\MockUserRepository
+    Apisearch\Repository\MockRepository:
+    Apisearch\App\MockAppRepository:
+    Apisearch\User\MockUserRepository:

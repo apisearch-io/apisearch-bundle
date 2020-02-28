@@ -26,12 +26,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ImportIndexCommand extends WithRepositoryBucketCommand
 {
     /**
+     * @var string
+     */
+    protected static $defaultName = 'apisearch:import-index';
+
+    /**
      * Configures the current command.
      */
     protected function configure()
     {
         $this
-            ->setName('apisearch:import-index')
             ->setDescription('Import your index')
             ->addArgument(
                 'app-name',

@@ -28,12 +28,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ExportIndexCommand extends WithRepositoryBucketCommand
 {
     /**
+     * @var string
+     */
+    protected static $defaultName = 'apisearch:export-index';
+
+    /**
      * Configures the current command.
      */
     protected function configure()
     {
         $this
-            ->setName('apisearch:export-index')
             ->setDescription('Export your index')
             ->addArgument(
                 'app-name',
