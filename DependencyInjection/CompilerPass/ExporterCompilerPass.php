@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Apisearch\DependencyInjection\CompilerPass;
 
+use Apisearch\Exporter\ExporterCollection;
+
 /**
  * Class ExporterCompilerPass.
  */
@@ -27,7 +29,7 @@ class ExporterCompilerPass extends TagCompilerPass
      */
     public function getCollectorServiceName(): string
     {
-        return 'apisearch.exporter_collection';
+        return ExporterCollection::class;
     }
 
     /**

@@ -26,6 +26,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DeleteIndexCommand extends WithAppRepositoryBucketCommand
 {
     /**
+     * @var string
+     */
+    protected static $defaultName = 'apisearch:delete-index';
+
+    /**
      * Configures the current command.
      */
     protected function configure()

@@ -38,13 +38,13 @@ class AService
     /**
      * AService constructor.
      *
-     * @param AppRepository  $apisearchMain2AppRepository
-     * @param AppRepository  $apisearchApp123nameAppRepository
-     * @param AppRepository  $apisearchMainAppRepository
-     * @param UserRepository $apisearchMainUserRepository
-     * @param UserRepository $apisearchApp123nameUserRepository
-     * @param Repository     $apisearchMain2DefaultRepository
-     * @param TransformableRepository     $apisearchApp123nameIndex123nameRepository
+     * @param AppRepository           $apisearchMain2AppRepository
+     * @param AppRepository           $apisearchApp123nameAppRepository
+     * @param AppRepository           $apisearchMainAppRepository
+     * @param UserRepository          $apisearchMainUserRepository
+     * @param UserRepository          $apisearchApp123nameUserRepository
+     * @param Repository              $apisearchMain2DefaultRepository
+     * @param TransformableRepository $apisearchApp123nameIndex123nameRepository
      */
     public function __construct(
         AppRepository $apisearchMain2AppRepository,

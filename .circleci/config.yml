@@ -1,27 +1,17 @@
 version: 2
 jobs:
-  test-php72:
+  test-php73:
     docker:
-      - image: circleci/php:7.2-cli
+      - image: circleci/php:7.4-cli
 
     working_directory: ~/project
     steps:
       - checkout
 
       - run:
-          name: Install PHPUnit
-          command: |
-            composer require phpunit/phpunit:7.5.17  --prefer-dist --prefer-stable --prefer-lowest --no-suggest
-
-      - run:
-          name: Run tests / Symfony 3^3
-          command: |
-            php vendor/bin/phpunit
-
-      - run:
           name: Run tests / Symfony 4^3
           command: |
-            composer update -n --prefer-dist --prefer-stable --no-suggest
+            composer update -n --prefer-dist --prefer-lowest --no-suggest
             php vendor/bin/phpunit
 
       - run:
@@ -39,20 +29,14 @@ jobs:
       - checkout
 
       - run:
-          name: Install PHPUnit
-          command: |
-            composer require phpunit/phpunit:7.5.17  --prefer-dist --prefer-stable --prefer-lowest --no-suggest
-
-      - run:
           name: Run tests / Symfony 5^0
           command: |
             composer update -n --prefer-dist --no-suggest
             php vendor/bin/phpunit
 
-
 workflows:
   version: 2
   test:
     jobs:
-      - test-php72
+      - test-php73
       - test-php74

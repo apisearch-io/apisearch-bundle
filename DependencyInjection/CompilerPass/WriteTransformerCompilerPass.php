@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace Apisearch\DependencyInjection\CompilerPass;
 
+use Apisearch\Transformer\Transformer;
+
 /**
  * Class WriteTransformerCompilerPass.
  */
@@ -27,7 +29,7 @@ class WriteTransformerCompilerPass extends TagCompilerPass
      */
     public function getCollectorServiceName(): string
     {
-        return 'apisearch.transformer';
+        return Transformer::class;
     }
 
     /**

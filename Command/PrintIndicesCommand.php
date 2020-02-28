@@ -28,6 +28,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class PrintIndicesCommand extends WithAppRepositoryBucketCommand
 {
     /**
+     * @var string
+     */
+    protected static $defaultName = 'apisearch:print-indices';
+
+    /**
      * Configures the current command.
      */
     protected function configure()

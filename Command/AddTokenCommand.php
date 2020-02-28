@@ -29,6 +29,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AddTokenCommand extends WithAppRepositoryBucketCommand
 {
     /**
+     * @var string
+     */
+    protected static $defaultName = 'apisearch:add-token';
+
+    /**
      * Configures the current command.
      */
     protected function configure()

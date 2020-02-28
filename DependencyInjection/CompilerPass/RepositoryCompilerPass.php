@@ -16,10 +16,12 @@ declare(strict_types=1);
 namespace Apisearch\DependencyInjection\CompilerPass;
 
 use Apisearch\App\AppRepository;
+use Apisearch\App\AppRepositoryBucket;
 use Apisearch\App\DiskAppRepository;
 use Apisearch\App\HttpAppRepository;
 use Apisearch\App\InMemoryAppRepository;
 use Apisearch\Drift\AsyncTestClient;
+use Apisearch\Http\HttpAdapter;
 use Apisearch\Http\RetryMap;
 use Apisearch\Http\TCPClient;
 use Apisearch\Model\AppUUID;
@@ -29,12 +31,15 @@ use Apisearch\Repository\DiskRepository;
 use Apisearch\Repository\HttpRepository;
 use Apisearch\Repository\InMemoryRepository;
 use Apisearch\Repository\Repository;
+use Apisearch\Repository\RepositoryBucket;
 use Apisearch\Repository\RepositoryReference;
 use Apisearch\Repository\TransformableRepository;
+use Apisearch\Transformer\Transformer;
 use Apisearch\User\DiskUserRepository;
 use Apisearch\User\HttpUserRepository;
 use Apisearch\User\InMemoryUserRepository;
 use Apisearch\User\UserRepository;
+use Apisearch\User\UserRepositoryBucket;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -114,6 +119,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
             InMemoryAppRepository::class,
             DiskAppRepository::class,
             HttpAppRepository::class,
+            AppRepositoryBucket::class,
             AppRepository::class
         );
 
@@ -126,6 +132,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
             InMemoryUserRepository::class,
             DiskUserRepository::class,
             HttpUserRepository::class,
+            UserRepositoryBucket::class,
             UserRepository::class
         );
     }
@@ -178,14 +185,18 @@ class RepositoryCompilerPass implements CompilerPassInterface
             return;
         }
 
+        $aliasName = "$name retry map";
         $clientRetryMapName = rtrim("apisearch.retry_map_$name", '.');
         $container
-                ->register($clientRetryMapName, RetryMap::class)
-                ->setFactory([
-                    RetryMap::class,
-                    'createFromArray',
-                ])
-                ->setArgument(0, $repositoryConfiguration['http']['retry_map']);
+            ->register($clientRetryMapName, RetryMap::class)
+            ->setFactory([
+                RetryMap::class,
+                'createFromArray',
+            ])
+            ->setArgument(0, $repositoryConfiguration['http']['retry_map'])
+            ->setPrivate(true);
+
+        $container->registerAliasForArgument($clientRetryMapName, RetryMap::class, $aliasName);
     }
 
     /**
@@ -219,7 +230,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
                 ->register($clientName, TCPClient::class)
                 ->setArguments([
                     $repositoryConfiguration['endpoint'],
-                    new Reference('apisearch.http_adapter'),
+                    new Reference(HttpAdapter::class),
                     $repositoryConfiguration['version'],
                     new reference($clientRetryMapName),
                 ])
@@ -286,7 +297,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
             ->register($repositoryTransformableName, TransformableRepository::class)
             ->setDecoratedService($repositoryName)
             ->addArgument(new Reference($repositoryTransformableName.'.inner'))
-            ->addArgument(new Reference('apisearch.transformer'))
+            ->addArgument(new Reference(Transformer::class))
             ->setPublic($this->repositoryIsTest($repositoryConfiguration));
 
         $this->injectRepositoryCredentials(
@@ -297,7 +308,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
         );
 
         $container
-            ->getDefinition('apisearch.repository_bucket')
+            ->getDefinition(RepositoryBucket::class)
             ->addMethodCall(
                 'addRepository',
                 [$appName, $indexName, new Reference($repositoryName)]
@@ -330,6 +341,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
         string $inMemoryRepositoryNamespace,
         string $diskRepositoryNamespace,
         string $httpRepositoryNamespace,
+        string $bucketNamespace,
         string $interfaceNamespace
     ) {
         $repositoryName = rtrim("apisearch.{$prefix}_repository_$appName.$indexName", '.');
@@ -396,7 +408,7 @@ class RepositoryCompilerPass implements CompilerPassInterface
         }
 
         $container
-            ->getDefinition("apisearch.{$prefix}_repository_bucket")
+            ->getDefinition($bucketNamespace)
             ->addMethodCall(
                 'addRepository',
                 [$appName, new Reference($repositoryName)]

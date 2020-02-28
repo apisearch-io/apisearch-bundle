@@ -3,8 +3,6 @@ services:
     #
     # HTTP
     #
-    apisearch.http_curl_adapter:
-        class: Apisearch\Http\CurlAdapter
-
-    apisearch.http_adapter:
-        alias: apisearch.http_curl_adapter
+    Apisearch\Http\CurlAdapter:
+    Apisearch\Http\HttpAdapter:
+        alias: Apisearch\Http\CurlAdapter

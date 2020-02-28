@@ -27,6 +27,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CreateIndexCommand extends IndexBasedCommand
 {
     /**
+     * @var string
+     */
+    protected static $defaultName = 'apisearch:create-index';
+
+    /**
      * Dispatch domain event.
      *
      * @param InputInterface  $input

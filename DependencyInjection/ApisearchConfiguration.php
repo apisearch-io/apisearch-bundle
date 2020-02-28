@@ -15,7 +15,10 @@ declare(strict_types=1);
 
 namespace Apisearch\DependencyInjection;
 
+use Apisearch\App\MockAppRepository;
 use Apisearch\Http\Retry;
+use Apisearch\Repository\MockRepository;
+use Apisearch\User\MockUserRepository;
 use Mmoreram\BaseBundle\DependencyInjection\BaseConfiguration;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 
@@ -93,7 +96,7 @@ class ApisearchConfiguration extends BaseConfiguration
                                 ->addDefaultsIfNotSet()
                                 ->children()
                                     ->scalarNode('repository_service')
-                                        ->defaultValue('apisearch.repository_mock')
+                                        ->defaultValue(MockRepository::class)
                                     ->end()
                                 ->end()
                             ->end()
@@ -101,7 +104,7 @@ class ApisearchConfiguration extends BaseConfiguration
                                 ->addDefaultsIfNotSet()
                                 ->children()
                                     ->scalarNode('repository_service')
-                                        ->defaultValue('apisearch.app_repository_mock')
+                                        ->defaultValue(MockAppRepository::class)
                                     ->end()
                                 ->end()
                             ->end()
@@ -109,7 +112,7 @@ class ApisearchConfiguration extends BaseConfiguration
                                 ->addDefaultsIfNotSet()
                                 ->children()
                                     ->scalarNode('repository_service')
-                                        ->defaultValue('apisearch.user_repository_mock')
+                                        ->defaultValue(MockUserRepository::class)
                                     ->end()
                                 ->end()
                             ->end();
