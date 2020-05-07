@@ -2,7 +2,7 @@ version: 2
 jobs:
   test-php73:
     docker:
-      - image: circleci/php:7.4-cli
+      - image: circleci/php:7.3-cli
 
     working_directory: ~/project
     steps:
