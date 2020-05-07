@@ -136,7 +136,7 @@ class PrintIndicesCommand extends WithAppRepositoryBucketCommand
 
             if ($withMetadata) {
                 foreach ($index->getMetadata() as $_ => $value) {
-                    $row[] = $value;
+                    $row[] = is_scalar($value) ? $value : json_encode($value);
                 }
             }
 

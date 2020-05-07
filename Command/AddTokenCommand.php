@@ -96,7 +96,7 @@ class AddTokenCommand extends WithAppRepositoryBucketCommand
 
         $this
             ->repositoryBucket->findRepository($input->getArgument('app-name'))
-            ->addToken(
+            ->putToken(
                 new Token(
                     TokenUUID::createById($input->getArgument('uuid')),
                     $appUUID,
