@@ -122,7 +122,7 @@ abstract class ApisearchBundleFunctionalTest extends BaseFunctionalTest
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         @unlink('/tmp/apisearch.repository.app123name');
         @unlink('/tmp/apisearch.repository.app.app123name');
